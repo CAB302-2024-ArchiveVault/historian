@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 // Nathan test commit
+// Isaac test commit too
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
