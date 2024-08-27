@@ -4,9 +4,8 @@ import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountDAOSingleton;
 import com.example.historian.models.account.IAccountDAO;
+import com.example.historian.utils.StageManager;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -32,10 +31,7 @@ public class HomepageController {
   //When the database button is clicked, creates and swaps to the database stage + scene
   @FXML
   protected void onDatabaseButtonClick() throws IOException {
-    Stage databaseStage = (Stage) databaseButton.getScene().getWindow();
-    FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("database-view.fxml"));
-    Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-    databaseStage.setScene(scene);
+    StageManager.switchScene("database-view.fxml");
   }
 
   @FXML
@@ -70,10 +66,7 @@ public class HomepageController {
     authSingleton.setAccount(account);
 
     // Move to the gallery stage
-    Stage galleryStage = (Stage) loginButton.getScene().getWindow();
-    FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("gallery-view.fxml"));
-    Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-    galleryStage.setScene(scene);
+    StageManager.switchScene("gallery-view.fxml");
   }
 
   private void showError(String message) {

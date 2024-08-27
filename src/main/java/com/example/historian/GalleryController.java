@@ -2,12 +2,10 @@ package com.example.historian;
 
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
+import com.example.historian.utils.StageManager;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -20,21 +18,19 @@ public class GalleryController {
   private Account authorisedAccount;
 
   @FXML
-  public void initialize() {
+  public void initialize() throws IOException {
     // Get the Auth Singleton
     AuthSingleton authSingleton = AuthSingleton.getInstance();
+    if (!authSingleton.checkAuthorised()) {
+      StageManager.switchToHomepage();
+    }
+
     authorisedAccount = authSingleton.getAccount();
-
-    // TODO: If the account does not exist, redirect to the homepage
-
     accountText.setText(authorisedAccount.getUsername());
   }
 
   @FXML
-  protected void onlogoutButtonClick() throws IOException {
-    Stage homepageStage = (Stage) logoutButton.getScene().getWindow();
-    FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("homepage-view.fxml"));
-    Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-    homepageStage.setScene(scene);
+  protected void onLogoutButtonClick() throws IOException {
+    StageManager.switchToHomepage();
   }
 }
