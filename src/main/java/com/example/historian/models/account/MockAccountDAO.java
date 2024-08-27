@@ -1,4 +1,4 @@
-package com.example.historian.models;
+package com.example.historian.models.account;
 
 import java.util.ArrayList;
 import java.util.List;

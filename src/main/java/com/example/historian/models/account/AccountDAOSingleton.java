@@ -1,4 +1,4 @@
-package com.example.historian.models;
+package com.example.historian.models.account;
 
 public class AccountDAOSingleton {
   private static AccountDAOSingleton instance;

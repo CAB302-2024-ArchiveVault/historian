@@ -1,4 +1,4 @@
-package com.example.historian.models;
+package com.example.historian.models.account;
 
 public enum AccountPrivilege {
   ADMIN,

@@ -1,8 +1,8 @@
 package com.example.historian;
 
-import com.example.historian.models.Account;
-import com.example.historian.models.AccountDAOSingleton;
-import com.example.historian.models.MockAccountDAO;
+import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountDAOSingleton;
+import com.example.historian.models.account.MockAccountDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
