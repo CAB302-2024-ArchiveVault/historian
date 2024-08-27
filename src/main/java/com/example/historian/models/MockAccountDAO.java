@@ -2,6 +2,7 @@ package com.example.historian.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MockAccountDAO implements IAccountDAO {
   public static final ArrayList<Account> accounts = new ArrayList<>();
@@ -40,6 +41,16 @@ public class MockAccountDAO implements IAccountDAO {
   public Account getAccount(int accountId) {
     for (Account account : accounts) {
       if (account.getId() == accountId) {
+        return account;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Account getAccount(String username) {
+    for (Account account : accounts) {
+      if (Objects.equals(account.getUsername(), username)) {
         return account;
       }
     }

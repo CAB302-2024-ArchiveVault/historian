@@ -11,5 +11,7 @@ public interface IAccountDAO {
 
   public Account getAccount(int accountId);
 
+  public Account getAccount(String username);
+
   public List<Account> getAllAccounts();
 }
