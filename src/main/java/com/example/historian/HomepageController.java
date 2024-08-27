@@ -1,8 +1,9 @@
 package com.example.historian;
 
+import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountDAOSingleton;
-import com.example.historian.models.account.MockAccountDAO;
+import com.example.historian.models.account.IAccountDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -49,29 +50,37 @@ public class HomepageController {
       return;
     }
 
-    // Check if the account exists and the password is correct
-    MockAccountDAO accountDAO = AccountDAOSingleton.getInstance().getAccountDAO();
+    // Check if the account exists
+    IAccountDAO accountDAO = AccountDAOSingleton.getInstance().getAccountDAO();
     Account account = accountDAO.getAccount(inputtedUsername);
     if (account == null) {
       showError("This account does not exist.");
       return;
     }
 
+    // Check if the password is correct
     boolean isPasswordCorrect = account.comparePassword(inputtedPassword);
     if (!isPasswordCorrect) {
       showError("Password is incorrect.");
-    } else {
-      Stage galleryStage = (Stage) loginButton.getScene().getWindow();
-      FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("gallery-view.fxml"));
-      Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-      galleryStage.setScene(scene);
+      return;
     }
+
+    // Set the validated account in the Auth Singleton
+    AuthSingleton authSingleton = AuthSingleton.getInstance();
+    authSingleton.setAccount(account);
+
+    // Move to the gallery stage
+    Stage galleryStage = (Stage) loginButton.getScene().getWindow();
+    FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("gallery-view.fxml"));
+    Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
+    galleryStage.setScene(scene);
   }
 
   private void showError(String message) {
     errorText.setText(message);
     errorText.setVisible(true);
   }
+
   private void hideError() {
     errorText.setVisible(false);
   }

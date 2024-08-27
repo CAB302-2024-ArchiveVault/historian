@@ -2,7 +2,7 @@ package com.example.historian.models.account;
 
 public class AccountDAOSingleton {
   private static AccountDAOSingleton instance;
-  private MockAccountDAO accountDAO;
+  private IAccountDAO accountDAO;
 
   private AccountDAOSingleton() {
     accountDAO = new MockAccountDAO();
@@ -15,7 +15,7 @@ public class AccountDAOSingleton {
     return instance;
   }
 
-  public MockAccountDAO getAccountDAO() {
+  public IAccountDAO getAccountDAO() {
     return accountDAO;
   }
 }
