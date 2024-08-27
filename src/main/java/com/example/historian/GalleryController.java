@@ -15,22 +15,23 @@ public class GalleryController {
   @FXML
   private Text accountText;
 
-  private Account authorisedAccount;
+  private AuthSingleton authSingleton;
 
   @FXML
   public void initialize() throws IOException {
     // Get the Auth Singleton
-    AuthSingleton authSingleton = AuthSingleton.getInstance();
+    authSingleton = AuthSingleton.getInstance();
     if (!authSingleton.checkAuthorised()) {
       StageManager.switchToHomepage();
     }
 
-    authorisedAccount = authSingleton.getAccount();
+    Account authorisedAccount = authSingleton.getAccount();
     accountText.setText(authorisedAccount.getUsername());
   }
 
   @FXML
   protected void onLogoutButtonClick() throws IOException {
+    authSingleton.signOut();
     StageManager.switchToHomepage();
   }
 }
