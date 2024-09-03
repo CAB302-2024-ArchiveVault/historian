@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
@@ -8,15 +7,16 @@
 
 <?import javafx.geometry.Insets?>
 <VBox alignment="TOP_CENTER" spacing="15.0" fillWidth="false" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.historian.GalleryController">
+      fx:controller="com.example.historian.IndividualPhoto">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
-<HBox alignment="CENTER" spacing="15.0">
-    <Button fx:id="uploadButton" text="Upload Photo" onAction="#onuploadButtonClick"/>
-    <Button text="Sort View"/>
-</HBox>
     <ListView/>
-    <Button fx:id="logoutButton" text="Logout" onAction="#onlogoutButtonClick"/>
+    <HBox alignment="CENTER" spacing="15.0">
+        <Button text="Date"/>
+        <Button text="location"/>
+        <Button text="Tag"/>
+        <Button text="Finish"/>
+    </HBox>
 
 </VBox>
