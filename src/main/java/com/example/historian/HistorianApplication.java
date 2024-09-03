@@ -1,29 +1,28 @@
 package com.example.historian;
 
+import com.example.historian.utils.StageManager;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class HistorianApplication extends Application {
 
-    //Default variables for titles and stage sizes
-    public static final String APPTITLE = "Historian";
-    public static final int WIDTH = 640;
-    public static final int HEIGHT = 360;
+  //Default variables for titles and stage sizes
+  public static final String APPTITLE = "Historian";
 
-    @Override
-    public void start(Stage homepageStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("homepage-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
-        homepageStage.setTitle(APPTITLE);
-        homepageStage.setScene(scene);
-        homepageStage.show();
+  @Override
+  public void start(Stage homepageStage) throws IOException {
+    try {
+      StageManager.setPrimaryStage(homepageStage);
+      StageManager.switchToHomepage();
+      homepageStage.setTitle(APPTITLE);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    public static void main(String[] args) {
-        launch();
-    }
+  public static void main(String[] args) {
+    launch();
+  }
 }
