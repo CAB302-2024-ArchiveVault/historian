@@ -19,11 +19,11 @@
     <Label text="Select an account to view or edit." />
     <HBox VBox.vgrow="ALWAYS" spacing="20.0">
         <VBox spacing="10.0">
-            <ListView fx:id="contactsListView"  />
+            <ListView fx:id="accountsListView"  />
             <Button text="New" maxWidth="Infinity"/>
         </VBox>
-        <VBox spacing="10.0" prefWidth="400" >
-            <Label text="Enter the account's details below." />
+        <VBox spacing="10.0" prefWidth="400" fx:id="accountContainer">
+            <Label text="Enter the account details" />
 
             <GridPane hgap="5.0" vgap="5.0" >
                 <columnConstraints>
