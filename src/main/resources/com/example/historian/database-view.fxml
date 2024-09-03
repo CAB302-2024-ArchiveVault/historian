@@ -44,7 +44,7 @@
                 <Button text="Delete" />
             </HBox>
             <HBox spacing="10.0" alignment="BOTTOM_CENTER">
-                <Button fx:id="exitButton" text="Exit" onAction="#onexitButtonClick"/>
+                <Button fx:id="exitButton" text="Exit" onAction="#onExitButtonClick"/>
             </HBox>
 
         </VBox>
