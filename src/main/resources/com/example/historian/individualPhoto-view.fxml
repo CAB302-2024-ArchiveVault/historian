@@ -17,6 +17,7 @@
         <Button text="location"/>
         <Button text="Tag"/>
         <Button text="Finish"/>
+        <Button fx:id="BackButton" text="Back" onAction="#onBackButtonClick"/>
     </HBox>
 
 </VBox>
