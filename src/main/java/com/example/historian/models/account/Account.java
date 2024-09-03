@@ -10,14 +10,18 @@ import java.util.Objects;
 public class Account {
   private int id;
   private String username;
-  private byte[] passwordSalt;
-  private String passwordHash;
+  private Password password;
   private AccountPrivilege accountPrivilege;
 
-  public Account(String username, String password, AccountPrivilege accountPrivilege) throws Exception {
+  public Account(String username, String password, AccountPrivilege accountPrivilege) {
     this.username = username;
-    this.passwordSalt = this.getSalt();
-    this.passwordHash = this.hashPassword(password, this.passwordSalt);
+    this.password = new Password(password);
+    this.accountPrivilege = accountPrivilege;
+  }
+
+  public Account(String username, Password password, AccountPrivilege accountPrivilege) {
+    this.username = username;
+    this.password = password;
     this.accountPrivilege = accountPrivilege;
   }
 
@@ -33,36 +37,11 @@ public class Account {
     return this.username;
   }
 
-  public byte[] getPasswordSalt() {
-    return this.passwordSalt;
-  }
-
-  public String getPasswordHash() {
-    return this.passwordHash;
+  public Password getPassword() {
+    return this.password;
   }
 
   public AccountPrivilege getAccountPrivilege() {
     return accountPrivilege;
-  }
-
-  // Password hashing
-
-  private byte[] getSalt() throws Exception {
-    SecureRandom sr = new SecureRandom();
-    byte[] salt = new byte[16];
-    sr.nextBytes(salt);
-    return salt;
-  }
-
-  private String hashPassword(String password, byte[] salt) throws Exception {
-    KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-    SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-    byte[] hash = factory.generateSecret(spec).getEncoded();
-    return Base64.getEncoder().encodeToString(hash);
-  }
-
-  public boolean comparePassword(String otherPassword) throws Exception {
-    String otherPasswordHashed = this.hashPassword(otherPassword, this.passwordSalt);
-    return otherPasswordHashed.equals(this.passwordHash);
   }
 }

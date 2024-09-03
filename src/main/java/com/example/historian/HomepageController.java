@@ -10,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -56,7 +55,7 @@ public class HomepageController {
 
     // Check if the password is correct
     try {
-      boolean isPasswordCorrect = account.comparePassword(inputtedPassword);
+      boolean isPasswordCorrect = account.getPassword().compare(inputtedPassword);
       if (!isPasswordCorrect) {
         showError("Password is incorrect.");
         return;

@@ -6,7 +6,7 @@ public class AccountDAOSingleton {
 
   private AccountDAOSingleton() {
     try {
-      accountDAO = new MockAccountDAO();
+      accountDAO = new SqliteAccountDAO();
     } catch (Exception e) {
       e.printStackTrace();
     }
