@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.text.Text?>
 <VBox alignment="CENTER" spacing="15.0" fillWidth="false" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.historian.HomepageController">
     <Label text="Welcome to Historian"/>
@@ -16,16 +17,18 @@
         <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
         </padding>
-        <Button fx:id="dataBaseButton" text="Database" onAction="#ondataBaseButtonClick"/>
+        <Button fx:id="databaseButton" text="Database" onAction="#onDatabaseButtonClick"/>
     </HBox>
     <VBox alignment="CENTER" spacing="15.0" fillWidth="false">
         <GridPane hgap="5.0" vgap="5.0" >
             <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextField fx:id="userNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity"/>
-            <PasswordField fx:id="passWordTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity"/>
+            <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         </GridPane>
 
-        <Button fx:id="loginButton" text="Login" onAction="#onloginButtonClick"/>
+        <Text fx:id="errorText" visible="false" style="-fx-fill: red;" />
+
+        <Button fx:id="loginButton" text="Login" onAction="#onLoginButtonClick"/>
     </VBox>
 </VBox>
