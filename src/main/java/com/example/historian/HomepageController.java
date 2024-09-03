@@ -55,10 +55,14 @@ public class HomepageController {
     }
 
     // Check if the password is correct
-    boolean isPasswordCorrect = account.comparePassword(inputtedPassword);
-    if (!isPasswordCorrect) {
-      showError("Password is incorrect.");
-      return;
+    try {
+      boolean isPasswordCorrect = account.comparePassword(inputtedPassword);
+      if (!isPasswordCorrect) {
+        showError("Password is incorrect.");
+        return;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
     // Set the validated account in the Auth Singleton

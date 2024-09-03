@@ -8,7 +8,7 @@ public class MockAccountDAO implements IAccountDAO {
   public static final ArrayList<Account> accounts = new ArrayList<>();
   private static int autoIncrementedId = 0;
 
-  public MockAccountDAO() {
+  public MockAccountDAO() throws Exception {
     addAccount(new Account("i_am_admin", "admin123", AccountPrivilege.ADMIN));
     addAccount(new Account("i_am_curator", "curator123", AccountPrivilege.CURATOR));
     addAccount(new Account("i_am_member", "member123", AccountPrivilege.MEMBER));
