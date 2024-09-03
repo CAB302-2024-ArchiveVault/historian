@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="15.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.historian.AuditLogController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <Label text="Audit Log"/>
+    <HBox alignment="CENTER" VBox.vgrow="ALWAYS" spacing="20.0" maxWidth="Infinity">
+        <VBox spacing="10.0">
+            <ListView fx:id="auditLogList" maxWidth="Infinity" />
+        </VBox>
+    </HBox>
+    <HBox spacing="10.0" alignment="BOTTOM_CENTER">
+        <Button fx:id="exitButton" text="Exit" onAction="#onExitButtonClick"/>
+    </HBox>
+</VBox>
