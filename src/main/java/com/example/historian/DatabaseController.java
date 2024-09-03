@@ -1,12 +1,10 @@
 package com.example.historian;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
+import com.example.historian.utils.StageManager;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -23,34 +21,21 @@ public class DatabaseController {
 
     @FXML
     protected void onAuditLogClick() throws IOException {
-        Stage homepageStage = (Stage) auditLogButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("audit-log-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-        homepageStage.setScene(scene);
+        StageManager.switchScene("audit-log-view.fxml");
     }
 
     @FXML
     protected void onAccountManagementClick() throws IOException {
-        Stage homepageStage = (Stage) accountManagementButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("account-management-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-        homepageStage.setScene(scene);
+        StageManager.switchScene("account-management-view.fxml");
     }
 
     @FXML
     protected void onExitButtonClick() throws IOException {
-        Stage homepageStage = (Stage) exitButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("homepage-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-        homepageStage.setScene(scene);
+        StageManager.switchScene("homepage-view.fxml");
     }
 
     @FXML
     protected void onDeleteDatabaseClick() throws IOException {
-        Stage homepageStage = (Stage) deleteDatabaseButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("homepage-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Database Deletion Confirmation");
         alert.setHeaderText("Warning! You are about to delete the database. This will erase all data.");
@@ -58,10 +43,10 @@ public class DatabaseController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             // IF THEY CONFIRM DELETE
-            homepageStage.setScene(scene);
+            StageManager.switchScene("homepage-view.fxml");
         } else {
             // IF THEY CANCEL DELETE
-            homepageStage.setScene(scene);
+            StageManager.switchScene("homepage-view.fxml");
         }
     }
 }
