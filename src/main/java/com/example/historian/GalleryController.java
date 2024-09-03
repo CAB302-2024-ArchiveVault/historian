@@ -38,9 +38,6 @@ public class GalleryController {
 
     @FXML
     protected void onuploadButtonClick() throws IOException {
-        Stage homepageStage = (Stage) uploadButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HistorianApplication.class.getResource("individualPhoto-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HistorianApplication.WIDTH, HistorianApplication.HEIGHT);
-        homepageStage.setScene(scene);
+        StageManager.switchScene("individualPhoto-view.fxml");
     }
 }
