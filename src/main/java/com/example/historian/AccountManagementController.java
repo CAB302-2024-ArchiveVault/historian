@@ -31,8 +31,7 @@ public class AccountManagementController {
     private ComboBox<AccountPrivilege> privilegeComboBox;
 
     public AccountManagementController() {
-        accountDAO = new MockAccountDAO();
-        accountDAO.addAccount(new Account("admin", "password", AccountPrivilege.ADMIN));
+        accountDAO = new SqliteAccountDAO();
     }
 
     private ListCell<Account> renderCell(ListView<Account> accountsListView) {

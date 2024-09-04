@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SqliteAccountDAO implements IAccountDAO {
-  private Connection connection;
+  private final Connection connection;
 
   public SqliteAccountDAO() {
     connection = SqliteConnection.getInstance();
@@ -39,10 +39,10 @@ public class SqliteAccountDAO implements IAccountDAO {
       String clearQuery = "DELETE FROM accounts";
       clearStatement.execute(clearQuery);
 
+      addAccount(new Account("i_am_database_owner", "database_owner123", AccountPrivilege.VIEWER));
       addAccount(new Account("i_am_admin", "admin123", AccountPrivilege.ADMIN));
       addAccount(new Account("i_am_curator", "curator123", AccountPrivilege.CURATOR));
       addAccount(new Account("i_am_member", "member123", AccountPrivilege.MEMBER));
-      addAccount(new Account("i_am_viewer", "viewer123", AccountPrivilege.VIEWER));
     } catch (Exception e) {
       e.printStackTrace();
     }

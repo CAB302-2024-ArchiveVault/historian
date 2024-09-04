@@ -1,15 +1,8 @@
 package com.example.historian.models.account;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import java.security.SecureRandom;
-import java.security.spec.KeySpec;
-import java.util.Base64;
-import java.util.Objects;
-
 public class Account {
   private int id;
-  private String username;
+  private final String username;
   private Password password;
   private AccountPrivilege accountPrivilege;
 
@@ -50,6 +43,6 @@ public class Account {
   }
 
   public void resetPassword(String password) {
-    this.password = password;
+    this.password = new Password(password);
   }
 }
