@@ -5,7 +5,11 @@ public class AccountDAOSingleton {
   private IAccountDAO accountDAO;
 
   private AccountDAOSingleton() {
-    accountDAO = new MockAccountDAO();
+    try {
+      accountDAO = new SqliteAccountDAO();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public static synchronized AccountDAOSingleton getInstance() {
