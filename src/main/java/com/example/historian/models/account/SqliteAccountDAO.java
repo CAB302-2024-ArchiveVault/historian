@@ -15,6 +15,7 @@ public class SqliteAccountDAO implements IAccountDAO {
   public SqliteAccountDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
+//    insertSampleData();
   }
 
   private void createTable() {
