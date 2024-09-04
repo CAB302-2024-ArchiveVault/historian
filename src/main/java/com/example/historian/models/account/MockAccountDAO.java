@@ -9,10 +9,10 @@ public class MockAccountDAO implements IAccountDAO {
   private static int autoIncrementedId = 0;
 
   public MockAccountDAO() {
+    addAccount(new Account("i_am_database_owner", "database_owner123", AccountPrivilege.DATABASE_OWNER));
     addAccount(new Account("i_am_admin", "admin123", AccountPrivilege.ADMIN));
     addAccount(new Account("i_am_curator", "curator123", AccountPrivilege.CURATOR));
     addAccount(new Account("i_am_member", "member123", AccountPrivilege.MEMBER));
-    addAccount(new Account("i_am_viewer", "viewer123", AccountPrivilege.VIEWER));
   }
 
   @Override

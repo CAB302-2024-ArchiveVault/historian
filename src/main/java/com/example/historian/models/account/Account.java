@@ -22,4 +22,12 @@ public class Account {
   public boolean comparePassword(String otherPassword) {
     return Objects.equals(otherPassword, this.password);
   }
+
+  public void setAccountPrivilege(AccountPrivilege accountPrivilege) {
+    this.accountPrivilege = accountPrivilege;
+  }
+
+  public void resetPassword(String password) {
+    this.password = password;
+  }
 }
