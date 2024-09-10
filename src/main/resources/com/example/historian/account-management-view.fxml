@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.ComboBox?>
+<VBox spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.historian.AccountManagementController"
+>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <Label text="Select an account to view or edit." />
+    <HBox VBox.vgrow="ALWAYS" spacing="20.0">
+        <VBox spacing="10.0">
+            <ListView fx:id="accountsListView"  />
+            <Button text="Create Account" maxWidth="Infinity" onAction="#onCreateAccount"/>
+        </VBox>
+        <VBox spacing="10.0" prefWidth="400" fx:id="accountContainer">
+            <Label text="Enter the account details" />
+
+            <GridPane hgap="5.0" vgap="5.0" >
+                <columnConstraints>
+                    <ColumnConstraints minWidth="70" />
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+                <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="usernameTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity" editable="false"/>
+
+                <Label text="Permission Level:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <ComboBox fx:id="privilegeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label fx:id="databaseOwnerLabel" text="DATABASE OWNER" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false" />
+
+                <Label text="New Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Button fx:id="resetPasswordButton" text="Reset Password" GridPane.columnIndex="1" GridPane.rowIndex="2" onAction="#onResetPasswordShow"/>
+                <TextField fx:id="newPasswordTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" maxWidth="Infinity" visible="false"/>
+
+                <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3" >
+                    <Button text="Confirm" onAction="#onEditConfirm"/>
+                    <Button text="Cancel" onAction="#onEditCancel"/>
+                    <Button fx:id="deleteAccountButton" text="Delete" onAction="#onDeleteAccount"/>
+                </HBox>
+
+            </GridPane>
+            <HBox spacing="10.0" alignment="BOTTOM_CENTER">
+                <Button text="Exit" onAction="#onExitButtonClick"/>
+            </HBox>
+
+        </VBox>
+    </HBox>
+</VBox>
