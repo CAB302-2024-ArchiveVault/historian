@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.lang.Object;
@@ -24,6 +25,8 @@ public class IndividualPhoto {
     @FXML
     private Button Date;
     @FXML
+    private DatePicker myDatePicker;
+    @FXML
     private Button Location;
     @FXML
     private Button Tag;
@@ -38,5 +41,12 @@ public class IndividualPhoto {
         StageManager.switchScene("gallery-view.fxml");
     }
 
+    public void getDate(ActionEvent event) {
 
+        LocalDate myDate = myDatePicker.getValue();
+    }
 }
+
+
+
+
