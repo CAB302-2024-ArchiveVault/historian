@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class StageManager {
-  private static Stage primaryStage;
+  public static Stage primaryStage;
   public static final int WIDTH = 640;
   public static final int HEIGHT = 360;
   public static final String ABSOLUTE_RESOURCES_PATH = "/com/example/historian/";
