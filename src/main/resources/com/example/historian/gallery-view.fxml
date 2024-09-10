@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<VBox alignment="TOP_CENTER" spacing="15.0" fillWidth="false" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.historian.GalleryController">
+
+<VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="350.0" prefWidth="500.0" spacing="15.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.historian.GalleryController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <HBox alignment="CENTER" spacing="15.0">
-        <Button fx:id="uploadButton" text="Upload Photo" onAction="#onuploadButtonClick"/>
-        <Button text="Sort View"/>
+        <Button fx:id="uploadPhotoButton" onAction="#onUploadPhotoClick" text="Upload Photo" />
+        <Button fx:id="viewButton" text="Sort View" />
+       <Button fx:id="logoutButton" onAction="#onLogoutButtonClick" text="Logout" />
 
         <!-- Temporary - display the current user -->
         <Text fx:id="accountText" />
     </HBox>
-    <ListView/>
-    <Button fx:id="logoutButton" text="Logout" onAction="#onLogoutButtonClick"/>
+   <GridPane prefHeight="240.0" prefWidth="400.0">
+     <columnConstraints>
+         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+     </columnConstraints>
+     <rowConstraints>
+       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+     </rowConstraints>
+      <children>
+         <ImageView fx:id="Image1" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" />
+         <ImageView fx:id="Image2" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" />
+         <ImageView fx:id="Image3" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" />
+         <ImageView fx:id="Image4" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1" />
+         <ImageView fx:id="Image5" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         <ImageView fx:id="Image6" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      </children>
+   </GridPane>
+   <HBox spacing="15.0">
+      <children>
+         <Button fx:id="backButton" mnemonicParsing="false" onAction="#onBackButtonClick" text="Back" visible="false" />
+         <Button fx:id="forwardButton" mnemonicParsing="false" onAction="#onForwardButtonClick" text="Forward" visible="false" />
+      </children>
+   </HBox>
 </VBox>
