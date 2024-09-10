@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"com.example.historian","l":"com.example.historian"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"com.example.historian","l":"com.example.historian"},{"m":"com.example.historian","l":"com.example.historian.auth"},{"m":"com.example.historian","l":"com.example.historian.utils"}];updateSearchResults();

@@ -1,2 +1,4 @@
 module:com.example.historian
 com.example.historian
+com.example.historian.auth
+com.example.historian.utils
