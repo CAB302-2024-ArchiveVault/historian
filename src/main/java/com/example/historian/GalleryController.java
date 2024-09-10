@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.example.historian.utils.StageManager.primaryStage;
+import static com.example.historian.utils.StageManager.switchScene;
 
 public class GalleryController {
   @FXML
@@ -39,7 +40,7 @@ public class GalleryController {
   private AuthSingleton authSingleton;
 
   //Current method for storing the images, will be removed once DB functionality added
-  public List<File> imageDatabase = new ArrayList<>();
+  public static List<File> imageDatabase = new ArrayList<>();
 
   @FXML
   public void initialize() throws IOException {
@@ -151,5 +152,11 @@ public class GalleryController {
     clearImageViewers();
     displayPhotos();
     buttonUpdate();
+  }
+
+  @FXML
+  protected void oneditButtonClick() throws IOException {
+    StageManager.switchScene("individualPhoto-view.fxml",500,600);
+    IndividualPhoto.displayImage();
   }
 }
