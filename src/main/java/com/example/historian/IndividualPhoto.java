@@ -1,14 +1,18 @@
 package com.example.historian;
 
 import com.example.historian.utils.StageManager;
+import com.example.historian.GalleryController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.lang.Object;
@@ -23,7 +27,7 @@ import javafx.scene.control.DatePicker;
 public class IndividualPhoto {
 
     @FXML
-    private Button Date;
+    private Label Date;
     @FXML
     private DatePicker myDatePicker;
     @FXML
@@ -34,6 +38,8 @@ public class IndividualPhoto {
     private Button Finish;
     @FXML
     private Button Back;
+    @FXML
+    private ImageView imageDisplay;
 
 
     @FXML
@@ -44,6 +50,12 @@ public class IndividualPhoto {
     public void getDate(ActionEvent event) {
 
         LocalDate myDate = myDatePicker.getValue();
+        String myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        Date.setText(myFormattedDate);
+    }
+
+    public static void displayImage(){
+        Image image1 = new Image(GalleryController.imageDatabase.get(0).toURI().toString());
     }
 }
 
