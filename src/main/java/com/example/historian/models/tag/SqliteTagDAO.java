@@ -1,5 +1,6 @@
 package com.example.historian.models.tag;
 
+import com.example.historian.models.person.IPersonDAO;
 import com.example.historian.models.person.Person;
 import com.example.historian.models.person.SqlitePersonDAO;
 import com.example.historian.utils.SqliteConnection;
@@ -42,7 +43,7 @@ public class SqliteTagDAO implements ITagDAO {
       String clearQuery = "DELETE FROM accounts";
       clearStatement.execute(clearQuery);
 
-      SqlitePersonDAO sqlitePersonDAO = new SqlitePersonDAO();
+      IPersonDAO sqlitePersonDAO = new SqlitePersonDAO();
       List<Person> people = sqlitePersonDAO.getAllPersons();
 
       addTag(new Tag(people.getFirst(), 30, 45));
@@ -60,7 +61,7 @@ public class SqliteTagDAO implements ITagDAO {
     int yCoord = resultSet.getInt("yCoord");
 
     // Retrieve the person
-    SqlitePersonDAO sqlitePersonDAO = new SqlitePersonDAO();
+    IPersonDAO sqlitePersonDAO = new SqlitePersonDAO();
     Person person = sqlitePersonDAO.getPerson(personId);
 
     if (person == null) {
