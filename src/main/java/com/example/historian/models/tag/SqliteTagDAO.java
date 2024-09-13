@@ -3,6 +3,9 @@ package com.example.historian.models.tag;
 import com.example.historian.models.person.IPersonDAO;
 import com.example.historian.models.person.Person;
 import com.example.historian.models.person.SqlitePersonDAO;
+import com.example.historian.models.photo.IPhotoDAO;
+import com.example.historian.models.photo.Photo;
+import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.SqliteConnection;
 
 import java.sql.Connection;
@@ -26,9 +29,11 @@ public class SqliteTagDAO implements ITagDAO {
       Statement statement = connection.createStatement();
       String query = "CREATE TABLE IF NOT EXISTS tags ("
               + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-              + "personId INTEGER,"
-              + "xCoord INTEGER,"
-              + "yCoord INTEGER,"
+              + "photoId INTEGER NOT NULL,"
+              + "personId INTEGER NOT NULL,"
+              + "xCoord INTEGER NOT NULL,"
+              + "yCoord INTEGER NOT NULL,"
+              + "FOREIGN KEY(photoId) REFERENCES photos(id),"
               + "FOREIGN KEY(personId) REFERENCES people(id)"
               + ")";
       statement.execute(query);
@@ -43,12 +48,15 @@ public class SqliteTagDAO implements ITagDAO {
       String clearQuery = "DELETE FROM accounts";
       clearStatement.execute(clearQuery);
 
-      IPersonDAO sqlitePersonDAO = new SqlitePersonDAO();
-      List<Person> people = sqlitePersonDAO.getAllPersons();
+      IPhotoDAO photoDAO = new SqlitePhotoDAO();
+      List<Photo> photos = photoDAO.getAllPhotos();
 
-      addTag(new Tag(people.getFirst(), 30, 45));
-      addTag(new Tag(people.get(1), 24, 89));
-      addTag(new Tag(people.get(2), 45, 324));
+      IPersonDAO personDAO = new SqlitePersonDAO();
+      List<Person> people = personDAO.getAllPersons();
+
+      addTag(new Tag(photos.getFirst().getId(), people.getFirst(), 30, 45));
+      addTag(new Tag(photos.getFirst().getId(), people.get(1), 24, 89));
+      addTag(new Tag(photos.getFirst().getId(), people.get(2), 45, 324));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -56,19 +64,20 @@ public class SqliteTagDAO implements ITagDAO {
 
   private Tag createFromResultSet(ResultSet resultSet) throws Exception {
     int id = resultSet.getInt("id");
+    int photoId = resultSet.getInt("photoId");
     int personId = resultSet.getInt("personId");
     int xCoord = resultSet.getInt("xCoord");
     int yCoord = resultSet.getInt("yCoord");
 
     // Retrieve the person
-    IPersonDAO sqlitePersonDAO = new SqlitePersonDAO();
-    Person person = sqlitePersonDAO.getPerson(personId);
+    IPersonDAO personDAO = new SqlitePersonDAO();
+    Person person = personDAO.getPerson(personId);
 
     if (person == null) {
       throw new Exception("Unable to find person with ID: " + personId);
     }
 
-    Tag tag = new Tag(person, xCoord, yCoord);
+    Tag tag = new Tag(photoId, person, xCoord, yCoord);
     tag.setId(id);
     return tag;
   }
@@ -76,10 +85,11 @@ public class SqliteTagDAO implements ITagDAO {
   @Override
   public void addTag(Tag tag) {
     try {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO tags (personId, xCoord, yCoord) VALUES (?, ?, ?)");
-      statement.setInt(1, tag.getPerson().getId());
-      statement.setInt(2, tag.getCoordinates()[0]);
-      statement.setInt(3, tag.getCoordinates()[1]);
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO tags (photoId, personId, xCoord, yCoord) VALUES (?, ?, ?, ?)");
+      statement.setInt(1, tag.getPhotoId());
+      statement.setInt(2, tag.getPerson().getId());
+      statement.setInt(3, tag.getCoordinates()[0]);
+      statement.setInt(4, tag.getCoordinates()[1]);
       statement.executeUpdate();
 
       // Set the ID of the new tag
