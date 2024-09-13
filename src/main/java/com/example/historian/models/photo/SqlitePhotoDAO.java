@@ -7,20 +7,29 @@ import com.example.historian.utils.SqliteConnection;
 import com.example.historian.utils.SqliteDate;
 
 import java.sql.*;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The SqlitePhotoDAO class provides methods for performing CRUD operations on Photo objects
+ * using a SQLite database.
+ */
 public class SqlitePhotoDAO implements IPhotoDAO {
   private final Connection connection;
 
+  /**
+   * Constructs a SqlitePhotoDAO object.
+   */
   public SqlitePhotoDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
 //    insertSampleData();
   }
 
+  /**
+   * Creates the photos table in the database if it does not already exist.
+   */
   private void createTable() {
     try {
       Statement statement = connection.createStatement();
@@ -39,6 +48,9 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     }
   }
 
+  /**
+   * Inserts sample data into the photos table.
+   */
   private void insertSampleData() {
     try {
       Statement clearStatement = connection.createStatement();
@@ -51,6 +63,13 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     }
   }
 
+  /**
+   * Creates a Photo object from a ResultSet.
+   *
+   * @param resultSet the ResultSet containing the photo data
+   * @return the Photo object
+   * @throws Exception if an error occurs
+   */
   private Photo createFromResultSet(ResultSet resultSet) throws Exception {
 
     // Get non-nullable values

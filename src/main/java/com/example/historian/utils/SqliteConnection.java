@@ -10,6 +10,9 @@ import java.sql.SQLException;
 public class SqliteConnection {
   private static Connection instance = null;
 
+  /**
+   * Constructs a SqliteConnection object.
+   */
   private SqliteConnection() {
     String url = "jdbc:sqlite:appData.db";
     try {

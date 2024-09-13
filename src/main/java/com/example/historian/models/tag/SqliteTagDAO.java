@@ -15,15 +15,25 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The SqliteTagDAO class provides methods for performing CRUD operations on Tag objects
+ * using a SQLite database.
+ */
 public class SqliteTagDAO implements ITagDAO {
   private final Connection connection;
 
+  /**
+   * Constructs a SqliteTagDAO object.
+   */
   public SqliteTagDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
     insertSampleData();
   }
 
+  /**
+   * Creates the tags table in the database if it does not already exist.
+   */
   private void createTable() {
     try {
       Statement statement = connection.createStatement();
@@ -42,6 +52,9 @@ public class SqliteTagDAO implements ITagDAO {
     }
   }
 
+  /**
+   * Inserts sample data into the tags table.
+   */
   private void insertSampleData() {
     try {
       Statement clearStatement = connection.createStatement();
@@ -62,6 +75,13 @@ public class SqliteTagDAO implements ITagDAO {
     }
   }
 
+  /**
+   * Creates a Tag object from the specified ResultSet.
+   *
+   * @param resultSet The ResultSet to create the Tag object from.
+   * @return The Tag object created from the ResultSet.
+   * @throws Exception If an error occurs while creating the Tag object.
+   */
   private Tag createFromResultSet(ResultSet resultSet) throws Exception {
     int id = resultSet.getInt("id");
     int photoId = resultSet.getInt("photoId");

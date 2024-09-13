@@ -9,15 +9,26 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The SqliteAccountDAO class implements the IAccountDAO interface and provides
+ * methods to interact with the SQLite database for account-related operations.
+ */
 public class SqliteAccountDAO implements IAccountDAO {
   private final Connection connection;
 
+  /**
+   * Constructor for SqliteAccountDAO.
+   * Initializes the connection to the SQLite database.
+   */
   public SqliteAccountDAO() {
     connection = SqliteConnection.getInstance();
 //    createTable();
 //    insertSampleData();
   }
 
+  /**
+   * Creates the accounts table in the SQLite database if it does not already exist.
+   */
   private void createTable() {
     try {
       Statement statement = connection.createStatement();
@@ -34,6 +45,9 @@ public class SqliteAccountDAO implements IAccountDAO {
     }
   }
 
+  /**
+   * Inserts sample data into the accounts table.
+   */
   private void insertSampleData() {
     try {
       Statement clearStatement = connection.createStatement();
@@ -49,6 +63,13 @@ public class SqliteAccountDAO implements IAccountDAO {
     }
   }
 
+  /**
+   * Creates an Account object from the given ResultSet.
+   *
+   * @param resultSet The ResultSet containing account data.
+   * @return An Account object created from the ResultSet.
+   * @throws Exception If an error occurs while processing the ResultSet.
+   */
   private Account createFromResultSet(ResultSet resultSet) throws Exception {
     int id = resultSet.getInt("id");
     String username = resultSet.getString("username");

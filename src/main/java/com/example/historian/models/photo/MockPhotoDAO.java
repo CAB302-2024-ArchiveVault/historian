@@ -3,10 +3,17 @@ package com.example.historian.models.photo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The MockPhotoDAO class provides methods for performing CRUD operations on Photo objects
+ * using an in-memory list.
+ */
 public class MockPhotoDAO implements IPhotoDAO {
   public static ArrayList<Photo> photos = new ArrayList<>();
   private static int autoIncrementId = 0;
 
+  /**
+   * Constructs a MockPhotoDAO object.
+   */
   public MockPhotoDAO() {
   }
 
