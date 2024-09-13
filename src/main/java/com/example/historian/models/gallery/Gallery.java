@@ -10,65 +10,83 @@ import java.util.Date;
 import java.util.List;
 
 public class Gallery {
-    private int id;
-    private String title;
-    private List<Photo> photos;
+  private int id;
+  private String title;
+  private List<Photo> photos;
 
-    public Gallery(String title, List<Photo> photos) {
-        this.title = title;
-        this.photos = photos;
-    }
+  public Gallery(String title, List<Photo> photos) {
+    this.title = title;
+    this.photos = photos;
+  }
 
-    public int getId() {return this.id;}
-    public void setId(int id) {this.id = id;}
+  public int getId() {
+    return this.id;
+  }
 
-    public String getTitle() {return this.title;}
-    public void setTitle(String title) {this.title = title;}
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public List<Photo> getPhotos() {return this.photos;}
-    public void addPhotos(Photo photo) {this.photos.add(photo);}
-    public void addPhotos(List<Photo> photos) {this.photos.addAll(photos);}
+  public String getTitle() {
+    return this.title;
+  }
 
-    public List<Person> getAllTaggedPeople() {
-        List<Person> people = new ArrayList<>();
-        for (Photo photo : photos) {
-            for (Tag tag : photo.getTagged()) {
-                if (!people.contains(tag.getPerson())) {
-                    people.add(tag.getPerson());
-                }
-            }
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public List<Photo> getPhotos() {
+    return this.photos;
+  }
+
+  public void addPhotos(Photo photo) {
+    this.photos.add(photo);
+  }
+
+  public void addPhotos(List<Photo> photos) {
+    this.photos.addAll(photos);
+  }
+
+  public List<Person> getAllTaggedPeople() {
+    List<Person> people = new ArrayList<>();
+    for (Photo photo : photos) {
+      for (Tag tag : photo.getTagged()) {
+        if (!people.contains(tag.getPerson())) {
+          people.add(tag.getPerson());
         }
-        return people;
+      }
     }
+    return people;
+  }
 
-    public List<Location> getAllLocations() {
-        List<Location> locations = new ArrayList<>();
-        for (Photo photo : photos) {
-            if (photo.getLocation() != null && !locations.contains(photo.getLocation())) {
-                locations.add(photo.getLocation());
-            }
+  public List<Location> getAllLocations() {
+    List<Location> locations = new ArrayList<>();
+    for (Photo photo : photos) {
+      if (photo.getLocation() != null && !locations.contains(photo.getLocation())) {
+        locations.add(photo.getLocation());
+      }
+    }
+    return locations;
+  }
+
+  public Date[] getDateRange() {
+    Date fromDate = null;
+    Date toDate = null;
+
+    for (Photo photo : photos) {
+      if (photo.getDate() != null) {
+        if (fromDate == null || toDate == null) {
+          fromDate = photo.getDate();
+          toDate = photo.getDate();
+        } else {
+          if (photo.getDate().before(fromDate)) {
+            fromDate = photo.getDate();
+          } else if (photo.getDate().after(toDate)) {
+            toDate = photo.getDate();
+          }
         }
-        return locations;
+      }
     }
-
-    public Date[] getDateRange() {
-        Date fromDate = null;
-        Date toDate = null;
-
-        for (Photo photo : photos) {
-            if (photo.getDate() != null) {
-                if (fromDate == null || toDate == null) {
-                    fromDate = photo.getDate();
-                    toDate = photo.getDate();
-                } else {
-                    if (photo.getDate().before(fromDate)) {
-                        fromDate = photo.getDate();
-                    } else if (photo.getDate().after(toDate)) {
-                        toDate = photo.getDate();
-                    }
-                }
-            }
-        }
-        return (fromDate == null || toDate == null) ? null : new Date[]{fromDate, toDate};
-    }
+    return (fromDate == null || toDate == null) ? null : new Date[]{fromDate, toDate};
+  }
 }

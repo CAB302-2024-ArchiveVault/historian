@@ -3,23 +3,36 @@ package com.example.historian.models.tag;
 import com.example.historian.models.person.Person;
 
 public class Tag {
-    private int id;
-    private Person person;
-    private int xCord;
-    private int yCord;
+  private int id;
+  private int photoId;
+  private Person person;
+  private int xCoord;
+  private int yCoord;
 
-    public Tag(Person person, int xCord, int yCord) {
-        this.person = person;
-        this.xCord = xCord;
-        this.yCord = yCord;
-    }
+  public Tag(int photoId, Person person, int xCoord, int yCoord) {
+    this.photoId = photoId;
+    this.person = person;
+    this.xCoord = xCoord;
+    this.yCoord = yCoord;
+  }
 
-    public int getId() {return this.id;}
-    public void setId(int id) {this.id = id;}
+  public int getId() {
+    return this.id;
+  }
 
-    public int[] getCoordinates() {
-        return new int[]{xCord, yCord};
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public Person getPerson() {return person;}
+  public int getPhotoId() {
+    return this.photoId;
+  }
+
+  public int[] getCoordinates() {
+    return new int[]{xCoord, yCoord};
+  }
+
+  public Person getPerson() {
+    return person;
+  }
 }

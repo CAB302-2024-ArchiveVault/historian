@@ -2,8 +2,8 @@ package com.example.historian;
 
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
-import com.example.historian.models.account.AccountDAOSingleton;
 import com.example.historian.models.account.IAccountDAO;
+import com.example.historian.models.account.SqliteAccountDAO;
 import com.example.historian.utils.StageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,7 +46,7 @@ public class HomepageController {
     }
 
     // Check if the account exists
-    IAccountDAO accountDAO = AccountDAOSingleton.getInstance().getAccountDAO();
+    IAccountDAO accountDAO = new SqliteAccountDAO();
     Account account = accountDAO.getAccount(inputtedUsername);
     if (account == null) {
       showError("This account does not exist.");

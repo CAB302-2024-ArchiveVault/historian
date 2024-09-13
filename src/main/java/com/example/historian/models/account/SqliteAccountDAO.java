@@ -14,8 +14,8 @@ public class SqliteAccountDAO implements IAccountDAO {
 
   public SqliteAccountDAO() {
     connection = SqliteConnection.getInstance();
-    createTable();
-    insertSampleData();
+//    createTable();
+//    insertSampleData();
   }
 
   private void createTable() {
@@ -49,11 +49,12 @@ public class SqliteAccountDAO implements IAccountDAO {
     }
   }
 
-  private Account createAccountFromResultSet(ResultSet resultSet) throws Exception {
+  private Account createFromResultSet(ResultSet resultSet) throws Exception {
     int id = resultSet.getInt("id");
     String username = resultSet.getString("username");
     String passwordSalt = resultSet.getString("passwordSalt");
     String passwordHash = resultSet.getString("passwordHash");
+
     AccountPrivilege accountPrivilege = AccountPrivilege.fromString(resultSet.getString("accountPrivilege"));
     Password password = new Password(passwordSalt, passwordHash);
     Account account = new Account(username, password, accountPrivilege);
@@ -114,7 +115,7 @@ public class SqliteAccountDAO implements IAccountDAO {
       statement.setInt(1, accountId);
       ResultSet resultSet = statement.executeQuery();
       if (resultSet.next()) {
-        return createAccountFromResultSet(resultSet);
+        return createFromResultSet(resultSet);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -129,7 +130,7 @@ public class SqliteAccountDAO implements IAccountDAO {
       statement.setString(1, username);
       ResultSet resultSet = statement.executeQuery();
       if (resultSet.next()) {
-        return createAccountFromResultSet(resultSet);
+        return createFromResultSet(resultSet);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -144,7 +145,7 @@ public class SqliteAccountDAO implements IAccountDAO {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM accounts");
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
-        accounts.add(createAccountFromResultSet(resultSet));
+        accounts.add(createFromResultSet(resultSet));
       }
     } catch (Exception e) {
       e.printStackTrace();
