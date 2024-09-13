@@ -2,17 +2,13 @@ package com.example.historian.models.photo;
 
 import com.example.historian.models.location.Location;
 import com.example.historian.models.tag.Tag;
-import com.example.historian.utils.SqliteConnection;
-import org.sqlite.SQLiteConnection;
+import javafx.scene.image.Image;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -82,13 +78,17 @@ public class Photo {
     this.tagged.addAll(tags);
   }
 
-  public byte[] getImage() {
+  public byte[] getImageAsBytes() {
     return this.image;
   }
 
-  public String getImageAsURI() throws Exception {
-    String base64Image = Base64.getEncoder().encodeToString(this.image);
-    return "data:image/" + imageType + ";base64," + base64Image;
+  public javafx.scene.image.Image getImage() {
+    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(getImageAsBytes())) {
+      return new Image(inputStream);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   public void setImage(byte[] image) {

@@ -46,9 +46,6 @@ public class GalleryController {
   private IPhotoDAO photoDAO;
   private List<Photo> photoList;
 
-  //Current method for storing the images, will be removed once DB functionality added
-//  public static List<File> imageDatabase = new ArrayList<>();
-
 
   @FXML
   public void initialize() throws IOException {
@@ -65,6 +62,7 @@ public class GalleryController {
     photoDAO = new SqlitePhotoDAO();
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
+    buttonUpdate();
   }
 
   @FXML
@@ -96,7 +94,6 @@ public class GalleryController {
   //Potentially redundant function, creates a second list to display images, used to avoid indexing issues
 
   protected void displayPhotos() {
-
     List<Photo> photosToDisplay = new ArrayList<>();
 
     for (int i = (photoPage * 6); i < Math.min((photoPage * 6) + 6, photoList.size()); i++) {
@@ -110,12 +107,7 @@ public class GalleryController {
   }
 
   protected void displayPhoto(int index, Photo photo) {
-    Image image = null;
-    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(photo.getImage())) {
-      image = new Image(inputStream);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    Image image = photo.getImage();
 
     switch (index) {
       case 1:

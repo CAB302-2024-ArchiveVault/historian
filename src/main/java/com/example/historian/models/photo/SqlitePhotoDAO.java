@@ -101,7 +101,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
         statement.setNull(3, Types.INTEGER);
       }
 
-      statement.setBytes(4, photo.getImage());
+      statement.setBytes(4, photo.getImageAsBytes());
       statement.setString(5, photo.getImageType());
       statement.executeUpdate();
 
@@ -133,7 +133,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
         statement.setNull(3, Types.INTEGER);
       }
 
-      statement.setBytes(4, photo.getImage());
+      statement.setBytes(4, photo.getImageAsBytes());
       statement.setString(5, photo.getImageType());
       statement.setInt(6, photo.getId());
       statement.executeUpdate();
