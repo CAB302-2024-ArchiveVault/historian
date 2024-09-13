@@ -9,15 +9,26 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The SqlitePersonDAO class implements the IPersonDAO interface and provides
+ * methods to interact with the SQLite database for person-related operations.
+ */
 public class SqlitePersonDAO implements IPersonDAO {
   private final Connection connection;
 
+  /**
+   * Constructor for SqlitePersonDAO.
+   * Initializes the connection to the SQLite database.
+   */
   public SqlitePersonDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
     insertSampleData();
   }
 
+  /**
+   * Creates the people table in the SQLite database if it does not already exist.
+   */
   private void createTable() {
     try {
       Statement statement = connection.createStatement();
@@ -32,6 +43,9 @@ public class SqlitePersonDAO implements IPersonDAO {
     }
   }
 
+  /**
+   * Inserts sample data into the people table.
+   */
   private void insertSampleData() {
     try {
       Statement clearStatement = connection.createStatement();
@@ -48,6 +62,13 @@ public class SqlitePersonDAO implements IPersonDAO {
     }
   }
 
+  /**
+   * Creates a Person object from the specified ResultSet.
+   *
+   * @param resultSet the ResultSet to create the Person object from
+   * @return the Person object created from the ResultSet
+   * @throws Exception if an error occurs while creating the Person object
+   */
   private Person createFromResultSet(ResultSet resultSet) throws Exception {
     int id = resultSet.getInt("id");
     String firstName = resultSet.getString("firstName");

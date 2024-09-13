@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Mock implementation of the IAccountDAO interface for testing purposes.
+ * This class uses an in-memory list to store accounts.
+ */
 public class MockAccountDAO implements IAccountDAO {
   public static final ArrayList<Account> accounts = new ArrayList<>();
   private static int autoIncrementedId = 0;
 
+  /**
+   * Constructs a MockAccountDAO and initializes it with some default accounts.
+   */
   public MockAccountDAO() {
     addAccount(new Account("i_am_admin", "admin123", AccountPrivilege.ADMIN));
     addAccount(new Account("i_am_curator", "curator123", AccountPrivilege.CURATOR));
