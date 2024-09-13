@@ -1,4 +1,10 @@
 module:com.example.historian
 com.example.historian
 com.example.historian.auth
+com.example.historian.models.account
+com.example.historian.models.gallery
+com.example.historian.models.location
+com.example.historian.models.person
+com.example.historian.models.photo
+com.example.historian.models.tag
 com.example.historian.utils
