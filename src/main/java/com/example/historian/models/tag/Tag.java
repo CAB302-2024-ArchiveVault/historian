@@ -5,13 +5,13 @@ import com.example.historian.models.person.Person;
 public class Tag {
   private int id;
   private Person person;
-  private int xCord;
-  private int yCord;
+  private int xCoord;
+  private int yCoord;
 
-  public Tag(Person person, int xCord, int yCord) {
+  public Tag(Person person, int xCoord, int yCoord) {
     this.person = person;
-    this.xCord = xCord;
-    this.yCord = yCord;
+    this.xCoord = xCoord;
+    this.yCoord = yCoord;
   }
 
   public int getId() {
@@ -23,7 +23,7 @@ public class Tag {
   }
 
   public int[] getCoordinates() {
-    return new int[]{xCord, yCord};
+    return new int[]{xCoord, yCoord};
   }
 
   public Person getPerson() {

@@ -3,7 +3,11 @@ package com.example.historian.models.photo;
 import com.example.historian.models.location.Location;
 import com.example.historian.models.tag.Tag;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,6 +71,22 @@ public class Photo {
 
   public Blob getImage() {
     return this.image;
+  }
+
+  public byte[] getImageAsByteArray() throws SQLException, IOException {
+    InputStream inputStream = image.getBinaryStream();
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    byte[] buffer = new byte[4096];
+    int bytesRead = -1;
+
+    while((bytesRead = inputStream.read(buffer)) != -1) {
+      outputStream.write(buffer, 0, bytesRead);
+    }
+
+    inputStream.close();
+    outputStream.close();
+
+    return outputStream.toByteArray();
   }
 
   public void setImage(Blob image) {
