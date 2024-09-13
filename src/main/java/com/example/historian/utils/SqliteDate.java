@@ -17,10 +17,15 @@ public class SqliteDate {
   }
 
   public SqliteDate(String sqliteFormat) throws ParseException {
-    this.date = dateFormat.parse(sqliteFormat);
+    if (sqliteFormat == null) {
+      this.date = null;
+    } else {
+      this.date = dateFormat.parse(sqliteFormat);
+    }
   }
 
   public String toSqliteFormat() {
+    if (this.date == null) return null;
     return dateFormat.format(date);
   }
 }

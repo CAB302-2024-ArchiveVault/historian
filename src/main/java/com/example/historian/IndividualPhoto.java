@@ -53,10 +53,6 @@ public class IndividualPhoto {
         String myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         Date.setText(myFormattedDate);
     }
-
-    public static void displayImage(){
-        Image image1 = new Image(GalleryController.imageDatabase.get(0).toURI().toString());
-    }
 }
 
 

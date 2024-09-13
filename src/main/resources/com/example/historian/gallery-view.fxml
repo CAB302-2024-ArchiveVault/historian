@@ -45,7 +45,7 @@
       <children>
          <Button fx:id="backButton" mnemonicParsing="false" onAction="#onBackButtonClick" text="Back" visible="false" />
          <Button fx:id="forwardButton" mnemonicParsing="false" onAction="#onForwardButtonClick" text="Forward" visible="false" />
-         <Button fx:id="editButton" mnemonicParsing="false" onAction="#oneditButtonClick" text="Edit" />
+         <Button fx:id="editButton" mnemonicParsing="false" onAction="#onEditButtonClick" text="Edit" />
       </children>
    </HBox>
 </VBox>

@@ -18,7 +18,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   public SqlitePhotoDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
-    insertSampleData();
+//    insertSampleData();
   }
 
   private void createTable() {
@@ -26,10 +26,11 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       Statement statement = connection.createStatement();
       String query = "CREATE TABLE IF NOT EXISTS photos ("
               + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-              + "date VARCHAR NOT NULL,"
+              + "date VARCHAR,"
               + "description VARCHAR NOT NULL,"
-              + "locationId VARCHAR NOT NULL,"
+              + "locationId VARCHAR,"
               + "image BLOB NOT NULL,"
+              + "imageType VARCHAR NOT NULL,"
               + "FOREIGN KEY(locationId) REFERENCES location(id)"
               + ")";
       statement.execute(query);
@@ -51,33 +52,30 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   }
 
   private Photo createFromResultSet(ResultSet resultSet) throws Exception {
+
+    // Get non-nullable values
     int id = resultSet.getInt("id");
-    String dateString = resultSet.getString("date");
     String description = resultSet.getString("description");
-    int locationId = resultSet.getInt("locationId");
     byte[] imageStream = resultSet.getBytes("image");
+    String imageType = resultSet.getString("imageType");
 
-    Date date = null;
-    try {
-      date = new SqliteDate(dateString).getDate();
-    } catch (ParseException e) {
-      throw new Exception("Unable to parse date for photo with ID: " + id);
-    }
+    // Get nullable values
+    String dateString = resultSet.getObject("date") != null ? resultSet.getString("date") : null;
+    Date date = dateString != null ? new SqliteDate(dateString).getDate() : null;
 
-    // Parse the image blob
-    Blob imageBlob = connection.createBlob();
-    imageBlob.setBytes(1, imageStream);
-
-    // Get the location
-    ILocationDAO locationDAO = new SqliteLocationDAO();
-    Location location = locationDAO.getLocation(locationId);
-    if (location == null) {
-      throw new Exception("Unable to find location with ID: " + locationId);
+    Integer locationId = resultSet.getObject("locationId") != null ? resultSet.getInt("locationId") : null;
+    Location location = null;
+    if (locationId != null) {
+      ILocationDAO locationDAO = new SqliteLocationDAO();
+      location = locationDAO.getLocation(locationId);
+      if (location == null) {
+        throw new Exception("Unable to find location with ID: " + locationId);
+      }
     }
 
     // TODO: Get tags
 
-    Photo photo = new Photo(imageBlob, description);
+    Photo photo = new Photo(imageStream, imageType, description);
     photo.setId(id);
     photo.setLocation(location);
     photo.setDate(date);
@@ -88,11 +86,23 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   @Override
   public void addPhoto(Photo photo) {
     try {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image) VALUES (?, ?, ?, ?)");
-      statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType) VALUES (?, ?, ?, ?, ?)");
+
+      if (photo.getDate() != null) {
+        statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+      } else {
+        statement.setNull(1, Types.DATE);
+      }
       statement.setString(2, photo.getDescription());
-      statement.setInt(3, photo.getLocation().getId());
-      statement.setBytes(4, photo.getImageAsByteArray());
+
+      if (photo.getLocationId() != null) {
+        statement.setInt(3, photo.getLocationId());
+      } else {
+        statement.setNull(3, Types.INTEGER);
+      }
+
+      statement.setBytes(4, photo.getImage());
+      statement.setString(5, photo.getImageType());
       statement.executeUpdate();
 
       // Set the ID of the new photo
@@ -108,12 +118,24 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   @Override
   public void updatePhoto(Photo photo) {
     try {
-      PreparedStatement statement = connection.prepareStatement("UPDATE photos SET date = ?, description = ?, locationId = ?, image = ? WHERE id = ?");
-      statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+      PreparedStatement statement = connection.prepareStatement("UPDATE photos SET date = ?, description = ?, locationId = ?, image = ?, imageType = ? WHERE id = ?");
+
+      if (photo.getDate() != null) {
+        statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+      } else {
+        statement.setNull(1, Types.DATE);
+      }
       statement.setString(2, photo.getDescription());
-      statement.setInt(3, photo.getLocation().getId());
-      statement.setBytes(4, photo.getImageAsByteArray());
-      statement.setInt(5, photo.getId());
+
+      if (photo.getLocationId() != null) {
+        statement.setInt(3, photo.getLocationId());
+      } else {
+        statement.setNull(3, Types.INTEGER);
+      }
+
+      statement.setBytes(4, photo.getImage());
+      statement.setString(5, photo.getImageType());
+      statement.setInt(6, photo.getId());
       statement.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();
