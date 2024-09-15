@@ -39,11 +39,11 @@ public class GalleryController {
   @FXML
   public Text accountText;
 
-  public int imagepage = 0;
+  public int photoPage = 0;
   private AuthSingleton authSingleton;
 
   private IPhotoDAO photoDAO;
-  private List<Photo> photoList;
+  public List<Photo> photoList;
 
 
   @FXML
