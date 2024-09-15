@@ -14,29 +14,28 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.example.historian.utils.StageManager.primaryStage;
-import static com.example.historian.utils.StageManager.switchScene;
 
 public class GalleryController {
   @FXML
-  private Button backButton;
+  public Button backButton;
   @FXML
-  private Button forwardButton;
+  public Button forwardButton;
   @FXML
-  private ImageView Image1;
+  public ImageView Image1;
   @FXML
-  private ImageView Image2;
+  public ImageView Image2;
   @FXML
-  private ImageView Image3;
+  public ImageView Image3;
   @FXML
-  private ImageView Image4;
+  public ImageView Image4;
   @FXML
-  private ImageView Image5;
+  public ImageView Image5;
   @FXML
-  private ImageView Image6;
+  public ImageView Image6;
   @FXML
-  private Text accountText;
+  public Text accountText;
 
-  private int imagepage = 0;
+  public int imagepage = 0;
   private AuthSingleton authSingleton;
 
   //Current method for storing the images, will be removed once DB functionality added
@@ -75,7 +74,7 @@ public class GalleryController {
 
   //Potentially redundant function, creates a second list to display images, used to avoid indexing issues
 
-  protected void displayPhotos() {
+  public void displayPhotos() {
 
     List<File> displayImages = new ArrayList<>();
 
@@ -122,7 +121,7 @@ public class GalleryController {
     }
   }
 
-  protected void buttonUpdate()
+  public void buttonUpdate()
   {
     backButton.setVisible(imagepage > 0);
     forwardButton.setVisible(imageDatabase.size() > 6 && ((imagepage + 1) * 6) < imageDatabase.size());
@@ -137,7 +136,7 @@ public class GalleryController {
     Image6.setImage(null);
   }
   @FXML
-  protected void onBackButtonClick()
+  public void onBackButtonClick()
   {
     imagepage--;
     clearImageViewers();
@@ -146,7 +145,7 @@ public class GalleryController {
   }
 
   @FXML
-  protected void onForwardButtonClick()
+  public void onForwardButtonClick()
   {
     imagepage++;
     clearImageViewers();

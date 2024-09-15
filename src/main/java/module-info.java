@@ -3,6 +3,7 @@ module com.example.historian {
   requires javafx.fxml;
   requires java.sql;
   requires java.desktop;
+  requires junit;
 
 
   opens com.example.historian to javafx.fxml;
@@ -11,4 +12,6 @@ module com.example.historian {
   exports com.example.historian.utils;
   opens com.example.historian.auth;
   exports com.example.historian.auth;
+  opens com.example.historian.models.account;
+  exports com.example.historian.models.account;
 }
