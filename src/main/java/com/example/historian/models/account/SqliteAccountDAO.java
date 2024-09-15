@@ -9,15 +9,26 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The SqliteAccountDAO class implements the IAccountDAO interface and provides
+ * methods to interact with the SQLite database for account-related operations.
+ */
 public class SqliteAccountDAO implements IAccountDAO {
   private final Connection connection;
 
+  /**
+   * Constructor for SqliteAccountDAO.
+   * Initializes the connection to the SQLite database.
+   */
   public SqliteAccountDAO() {
     connection = SqliteConnection.getInstance();
-    createTable();
-    insertSampleData();
+//    createTable();
+//    insertSampleData();
   }
 
+  /**
+   * Creates the accounts table in the SQLite database if it does not already exist.
+   */
   private void createTable() {
     try {
       Statement statement = connection.createStatement();
@@ -34,6 +45,9 @@ public class SqliteAccountDAO implements IAccountDAO {
     }
   }
 
+  /**
+   * Inserts sample data into the accounts table.
+   */
   private void insertSampleData() {
     try {
       Statement clearStatement = connection.createStatement();
@@ -49,11 +63,19 @@ public class SqliteAccountDAO implements IAccountDAO {
     }
   }
 
-  private Account createAccountFromResultSet(ResultSet resultSet) throws Exception {
+  /**
+   * Creates an Account object from the given ResultSet.
+   *
+   * @param resultSet The ResultSet containing account data.
+   * @return An Account object created from the ResultSet.
+   * @throws Exception If an error occurs while processing the ResultSet.
+   */
+  private Account createFromResultSet(ResultSet resultSet) throws Exception {
     int id = resultSet.getInt("id");
     String username = resultSet.getString("username");
     String passwordSalt = resultSet.getString("passwordSalt");
     String passwordHash = resultSet.getString("passwordHash");
+
     AccountPrivilege accountPrivilege = AccountPrivilege.fromString(resultSet.getString("accountPrivilege"));
     Password password = new Password(passwordSalt, passwordHash);
     Account account = new Account(username, password, accountPrivilege);
@@ -114,7 +136,7 @@ public class SqliteAccountDAO implements IAccountDAO {
       statement.setInt(1, accountId);
       ResultSet resultSet = statement.executeQuery();
       if (resultSet.next()) {
-        return createAccountFromResultSet(resultSet);
+        return createFromResultSet(resultSet);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -129,7 +151,7 @@ public class SqliteAccountDAO implements IAccountDAO {
       statement.setString(1, username);
       ResultSet resultSet = statement.executeQuery();
       if (resultSet.next()) {
-        return createAccountFromResultSet(resultSet);
+        return createFromResultSet(resultSet);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -144,7 +166,7 @@ public class SqliteAccountDAO implements IAccountDAO {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM accounts");
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
-        accounts.add(createAccountFromResultSet(resultSet));
+        accounts.add(createFromResultSet(resultSet));
       }
     } catch (Exception e) {
       e.printStackTrace();
