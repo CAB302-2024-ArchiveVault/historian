@@ -21,25 +21,25 @@ import static com.example.historian.utils.StageManager.primaryStage;
 
 public class GalleryController {
   @FXML
-  private Button backButton;
+  public Button backButton;
   @FXML
-  private Button forwardButton;
+  public Button forwardButton;
   @FXML
-  private ImageView Image1;
+  public ImageView Image1;
   @FXML
-  private ImageView Image2;
+  public ImageView Image2;
   @FXML
-  private ImageView Image3;
+  public ImageView Image3;
   @FXML
-  private ImageView Image4;
+  public ImageView Image4;
   @FXML
-  private ImageView Image5;
+  public ImageView Image5;
   @FXML
-  private ImageView Image6;
+  public ImageView Image6;
   @FXML
-  private Text accountText;
+  public Text accountText;
 
-  private int photoPage = 0;
+  public int imagepage = 0;
   private AuthSingleton authSingleton;
 
   private IPhotoDAO photoDAO;
@@ -92,7 +92,8 @@ public class GalleryController {
 
   //Potentially redundant function, creates a second list to display images, used to avoid indexing issues
 
-  protected void displayPhotos() {
+
+  public void displayPhotos() {
     List<Photo> photosToDisplay = new ArrayList<>();
 
     for (int i = (photoPage * 6); i < Math.min((photoPage * 6) + 6, photoList.size()); i++) {
@@ -130,7 +131,8 @@ public class GalleryController {
     }
   }
 
-  protected void buttonUpdate() {
+
+  public void buttonUpdate() {
     backButton.setVisible(photoPage > 0);
     forwardButton.setVisible(photoList.size() > 6 && ((photoPage + 1) * 6) < photoList.size());
   }
@@ -145,7 +147,8 @@ public class GalleryController {
   }
 
   @FXML
-  protected void onBackButtonClick() {
+
+  public void onBackButtonClick() {
     photoPage--;
     clearImageViewers();
     displayPhotos();
@@ -153,7 +156,7 @@ public class GalleryController {
   }
 
   @FXML
-  protected void onForwardButtonClick() {
+  public void onForwardButtonClick() {
     photoPage++;
     clearImageViewers();
     displayPhotos();
