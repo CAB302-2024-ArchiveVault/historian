@@ -1,5 +1,8 @@
 package com.example.historian;
 
+import com.example.historian.auth.AuthSingleton;
+import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountPrivilege;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -10,6 +13,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class DatabaseController {
+    private AuthSingleton authSingleton;
+
     @FXML
     private Button exitButton;
     @FXML
@@ -18,6 +23,19 @@ public class DatabaseController {
     private Button accountManagementButton;
     @FXML
     private Button deleteDatabaseButton;
+
+    @FXML
+    public void initialize() throws IOException {
+        authSingleton = AuthSingleton.getInstance();
+        if (!authSingleton.checkAuthorised()) {
+            StageManager.switchToHomepage();
+        }
+
+        Account curAccount = authSingleton.getAccount();
+        if (curAccount == null || curAccount.getAccountPrivilege() != AccountPrivilege.DATABASE_OWNER) {
+            StageManager.switchToHomepage();
+        }
+    }
 
     @FXML
     protected void onAuditLogClick() throws IOException {
@@ -30,8 +48,8 @@ public class DatabaseController {
     }
 
     @FXML
-    protected void onExitButtonClick() throws IOException {
-        StageManager.switchScene("homepage-view.fxml");
+    protected void onBackButtonClick() throws IOException {
+        StageManager.switchScene("admin-options-view.fxml");
     }
 
     @FXML

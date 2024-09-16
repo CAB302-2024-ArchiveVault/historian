@@ -24,6 +24,6 @@
         </padding>
     </HBox>
     <HBox spacing="10.0" alignment="BOTTOM_CENTER">
-        <Button fx:id="exitButton" text="Exit" onAction="#onExitButtonClick"/>
+        <Button fx:id="backButton" text="Back" onAction="#onBackButtonClick"/>
     </HBox>
 </VBox>

@@ -2,6 +2,7 @@ package com.example.historian;
 
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.account.IAccountDAO;
 import com.example.historian.models.account.SqliteAccountDAO;
 import com.example.historian.utils.StageManager;
@@ -18,20 +19,11 @@ public class HomepageController {
   @FXML
   private Button loginButton;
   @FXML
-  private Button databaseButton;
-
-  @FXML
   private TextField usernameField;
   @FXML
   private PasswordField passwordField;
   @FXML
   private Text errorText;
-
-  //When the database button is clicked, creates and swaps to the database stage + scene
-  @FXML
-  protected void onDatabaseButtonClick() throws IOException {
-    StageManager.switchScene("database-view.fxml");
-  }
 
   @FXML
   protected void onLoginButtonClick() throws IOException {
@@ -68,8 +60,12 @@ public class HomepageController {
     AuthSingleton authSingleton = AuthSingleton.getInstance();
     authSingleton.setAccount(account);
 
-    // Move to the gallery stage
-    StageManager.switchScene("gallery-view.fxml");
+    Account authorisedAccount = authSingleton.getAccount();
+    if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
+      StageManager.switchScene("admin-options-view.fxml");
+    } else {
+      StageManager.switchScene("gallery-view.fxml");
+    }
   }
 
   private void showError(String message) {
