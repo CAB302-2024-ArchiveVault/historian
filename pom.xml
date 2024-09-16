@@ -15,6 +15,7 @@
     </properties>
 
     <dependencies>
+        <!-- JavaFX dependencies -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -26,6 +27,7 @@
             <version>21</version>
         </dependency>
 
+        <!-- JUnit dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -38,31 +40,53 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- SQLite JDBC -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.36.0.3</version>
         </dependency>
+
+        <!-- Apache Maven Plugin -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>3.0.1</version>
         </dependency>
+
+        <!-- JUnit 4 for compatibility -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Mockito dependencies -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.10.0</version> <!-- Add -->
+            <version>5.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>3.6.28</version>
+        </dependency>
+
+        <!-- TestFX dependencies -->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-core</artifactId>
+            <version>4.0.16-alpha</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.0.16-alpha</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -77,13 +101,14 @@
                     <target>21</target>
                 </configuration>
             </plugin>
+
+            <!-- JavaFX Maven Plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>com.example.historian/com.example.historian.HistorianApplication</mainClass>
@@ -97,11 +122,22 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Maven Surefire Plugin for running tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!-- Enable headless mode for JavaFX -->
+                        <java.awt.headless>true</java.awt.headless>
+                        <testfx.headless>true</testfx.headless>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
+
+            <!-- Maven Javadoc Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -114,3 +150,134 @@
         </plugins>
     </build>
 </project>
+
+
+
+        <!--        <?xml version="1.0" encoding="UTF-8"?>-->
+<!--<project xmlns="http://maven.apache.org/POM/4.0.0"-->
+<!--         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">-->
+<!--<modelVersion>4.0.0</modelVersion>-->
+
+<!--<groupId>com.example</groupId>-->
+<!--<artifactId>historian</artifactId>-->
+<!--<version>1.0-SNAPSHOT</version>-->
+<!--<name>historian</name>-->
+
+<!--<properties>-->
+<!--    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+<!--    <junit.version>5.10.0</junit.version>-->
+<!--</properties>-->
+
+<!--<dependencies>-->
+<!--    <dependency>-->
+<!--        <groupId>org.openjfx</groupId>-->
+<!--        <artifactId>javafx-controls</artifactId>-->
+<!--        <version>21</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.openjfx</groupId>-->
+<!--        <artifactId>javafx-fxml</artifactId>-->
+<!--        <version>21</version>-->
+<!--    </dependency>-->
+
+<!--    <dependency>-->
+<!--        <groupId>org.junit.jupiter</groupId>-->
+<!--        <artifactId>junit-jupiter-api</artifactId>-->
+<!--        <version>${junit.version}</version>-->
+<!--        <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.junit.jupiter</groupId>-->
+<!--        <artifactId>junit-jupiter-engine</artifactId>-->
+<!--        <version>${junit.version}</version>-->
+<!--        <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.xerial</groupId>-->
+<!--        <artifactId>sqlite-jdbc</artifactId>-->
+<!--        <version>3.36.0.3</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--        <version>3.0.1</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>junit</groupId>-->
+<!--        <artifactId>junit</artifactId>-->
+<!--        <version>4.13.2</version>-->
+<!--        <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.mockito</groupId>-->
+<!--        <artifactId>mockito-core</artifactId>-->
+<!--        <version>5.10.0</version> &lt;!&ndash; Add &ndash;&gt;-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.mockito</groupId>-->
+<!--        <artifactId>mockito-junit-jupiter</artifactId>-->
+<!--        <version>3.6.28</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.testfx</groupId>-->
+<!--        <artifactId>testfx-core</artifactId>-->
+<!--        <version>4.0.16-alpha</version>-->
+<!--        <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>org.testfx</groupId>-->
+<!--        <artifactId>testfx-junit5</artifactId>-->
+<!--        <version>4.0.16-alpha</version>-->
+<!--        <scope>test</scope>-->
+<!--    </dependency>-->
+<!--</dependencies>-->
+
+<!--<build>-->
+<!--    <plugins>-->
+<!--        <plugin>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-compiler-plugin</artifactId>-->
+<!--            <version>3.11.0</version>-->
+<!--            <configuration>-->
+<!--                <source>21</source>-->
+<!--                <target>21</target>-->
+<!--            </configuration>-->
+<!--        </plugin>-->
+<!--        <plugin>-->
+<!--            <groupId>org.openjfx</groupId>-->
+<!--            <artifactId>javafx-maven-plugin</artifactId>-->
+<!--            <version>0.0.8</version>-->
+<!--            <executions>-->
+<!--                <execution>-->
+<!--                    &lt;!&ndash; Default configuration for running with: mvn clean javafx:run &ndash;&gt;-->
+<!--                    <id>default-cli</id>-->
+<!--                    <configuration>-->
+<!--                        <mainClass>com.example.historian/com.example.historian.HistorianApplication</mainClass>-->
+<!--                        <launcher>app</launcher>-->
+<!--                        <jlinkZipName>app</jlinkZipName>-->
+<!--                        <jlinkImageName>app</jlinkImageName>-->
+<!--                        <noManPages>true</noManPages>-->
+<!--                        <stripDebug>true</stripDebug>-->
+<!--                        <noHeaderFiles>true</noHeaderFiles>-->
+<!--                    </configuration>-->
+<!--                </execution>-->
+<!--            </executions>-->
+<!--        </plugin>-->
+<!--        <plugin>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-surefire-plugin</artifactId>-->
+<!--            <version>3.2.5</version>-->
+<!--        </plugin>-->
+<!--        <plugin>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--            <version>3.4.0</version>-->
+<!--            <configuration>-->
+<!--                <destDir>javadoc</destDir>-->
+<!--                <reportOutputDirectory>${project.build.directory}/docs</reportOutputDirectory>-->
+<!--            </configuration>-->
+<!--        </plugin>-->
+<!--    </plugins>-->
+<!--</build>-->
+<!--</project>-->
