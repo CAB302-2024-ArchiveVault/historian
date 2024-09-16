@@ -21,6 +21,9 @@ public class GalleryTests {
 
     @BeforeAll
     public static void initializeToolKit() throws Exception {
+        // activate headless mode to avoid running tests with a graphical interface
+        System.setProperty("java.awt.headless", "true");
+
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.startup(latch::countDown);
