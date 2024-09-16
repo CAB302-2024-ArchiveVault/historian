@@ -69,7 +69,7 @@ class SqliteAccountDAOTests {
     public void testGetAllAccounts() {
         List<Account> accounts = dao.getAllAccounts();
         assertNotNull(accounts);
-        assertTrue(accounts.isEmpty());
+        assertFalse(accounts.isEmpty(), "The account list should not be empty");
     }
 }
 

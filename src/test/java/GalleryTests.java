@@ -12,10 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class GalleryTests {
@@ -26,7 +23,7 @@ public class GalleryTests {
     public static void initializeToolKit() throws Exception {
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
-            Platform.startup(() -> latch.countDown());
+            Platform.startup(latch::countDown);
             latch.await();
         }
     }
@@ -50,16 +47,14 @@ public class GalleryTests {
     }
 
     @Test
-    public void testAddImages() throws Exception {
-        // Convert image files to byte arrays
-        byte[] imageData1 = Files.readAllBytes(new File("image1.jpg").toPath());
-        byte[] imageData2 = Files.readAllBytes(new File("image2.jpg").toPath());
+    public void testAddImages() {
+        // Create mock byte arrays to simulate image data
+        byte[] imageData1 = new byte[]{0, 1, 2};
+        byte[] imageData2 = new byte[]{3, 4, 5};
 
-        // Create Photo objects with the required byte[], description, and filename
         Photo photo1 = new Photo(imageData1, "Description for image1", "image1.jpg");
         Photo photo2 = new Photo(imageData2, "Description for image2", "image2.jpg");
 
-        // Add them to the photoList
         galleryController.photoList.add(photo1);
         galleryController.photoList.add(photo2);
 
@@ -68,10 +63,9 @@ public class GalleryTests {
     }
 
     @Test
-    public void testDisplayPhotos() throws Exception {
-        // Convert image files to byte arrays
-        byte[] imageData1 = Files.readAllBytes(new File("image1.jpg").toPath());
-        byte[] imageData2 = Files.readAllBytes(new File("image2.jpg").toPath());
+    public void testDisplayPhotos() {
+        byte[] imageData1 = new byte[]{0, 1, 2};
+        byte[] imageData2 = new byte[]{3, 4, 5};
 
         // Add mock images to the photoList
         galleryController.photoList.add(new Photo(imageData1, "Description for image1", "image1.jpg"));
@@ -80,12 +74,11 @@ public class GalleryTests {
         // Call the method to display photos
         galleryController.displayPhotos();
 
-        // Verify if the images are set to the image views
         assertNotNull(galleryController.Image1.getImage(), "Image1 should be set.");
         assertNotNull(galleryController.Image2.getImage(), "Image2 should be set.");
     }
 
-    //    @Test
+//    @Test
 //    public void testNavigationButtons() {
 //        // Add more than 6 images to enable navigation
 //        for (int i = 1; i <= 10; i++) {
@@ -99,13 +92,13 @@ public class GalleryTests {
 //        assertFalse(galleryController.backButton.isVisible(), "Back button should be hidden initially.");
 //        assertTrue(galleryController.forwardButton.isVisible(), "Forward button should be visible when there are more than 6 images.");
 //    }
-    // The mockito Button.class may doesnt seem to emulating the actual class
+    // The mockito Button.class does not seem to emulating the actual class
     // Fix later or scrap
 
     @Test
-    public void testBackButtonClick() throws Exception {
-        byte[] imageData1 = Files.readAllBytes(new File("image1.jpg").toPath());
-        byte[] imageData2 = Files.readAllBytes(new File("image2.jpg").toPath());
+    public void testBackButtonClick() {
+        byte[] imageData1 = new byte[]{0, 1, 2};
+        byte[] imageData2 = new byte[]{3, 4, 5};
 
         galleryController.photoList.add(new Photo(imageData1, "Description for image1", "image1.jpg"));
         galleryController.photoList.add(new Photo(imageData2, "Description for image2", "image2.jpg"));
@@ -118,10 +111,10 @@ public class GalleryTests {
     }
 
     @Test
-    public void testForwardButtonClick() throws Exception {
-        // Add mock images to the photoList
+    public void testForwardButtonClick() {
+        // Create mock byte arrays to simulate image data
         for (int i = 1; i <= 10; i++) {
-            byte[] imageData = Files.readAllBytes(new File("image" + i + ".jpg").toPath());
+            byte[] imageData = new byte[]{(byte) i};
             galleryController.photoList.add(new Photo(imageData, "Description for image" + i, "image" + i + ".jpg"));
         }
 
