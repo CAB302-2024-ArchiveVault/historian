@@ -4,7 +4,6 @@ import com.example.historian.models.location.Location;
 import com.example.historian.models.tag.Tag;
 import javafx.scene.image.Image;
 
-import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -211,4 +210,5 @@ public class Photo {
 
     return new Photo(imageBytes, imageType, description);
   }
+
 }
