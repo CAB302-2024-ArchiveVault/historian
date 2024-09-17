@@ -23,5 +23,6 @@
         <Button fx:id="cancelButton" onAction="#oncancelButtonClick" text="Cancel" visible="false" managed="false"/>
     </HBox>
    <Label fx:id="date" />
+    <Button fx:id="deleteButton" onAction="#deletePhoto" text="Delete Photo" visible="false" managed="false"/>
 
 </VBox>

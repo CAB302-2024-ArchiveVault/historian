@@ -8,9 +8,7 @@ import com.example.historian.GalleryController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -26,11 +24,9 @@ import java.lang.Object;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
-import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import java.time.ZoneId;
-
-
+import java.util.Optional;
 
 
 public class IndividualPhoto {
@@ -53,6 +49,8 @@ public class IndividualPhoto {
     private Button cancelButton;
     @FXML
     private Button Back;
+    @FXML
+    private Button deleteButton;
     @FXML
     public ImageView imageDisplay;
 
@@ -118,7 +116,7 @@ public class IndividualPhoto {
         buttonUpdate();
     }
 
-    public void buttonUpdate() throws IOException {
+    public void buttonUpdate()  {
         myDatePicker.setVisible(editState);
         myDatePicker.setManaged(editState);
         saveButton.setVisible(editState);
@@ -129,12 +127,27 @@ public class IndividualPhoto {
         tagButton.setManaged(editState);
         cancelButton.setVisible(editState);
         cancelButton.setManaged(editState);
+        deleteButton.setVisible(editState);
+        deleteButton.setManaged(editState);
         backButton.setVisible(!editState);
         backButton.setManaged(!editState);
         editButton.setVisible(!editState);
         editButton.setManaged(!editState);
     }
-}
+    @FXML
+    private void deletePhoto() throws IOException
+    {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Photo");
+        alert.setContentText("Are you sure you want to delete the photo?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            photoDAO.removePhoto(photoDAO.getPhoto(clickedImageId));
+            StageManager.switchScene("gallery-view.fxml");
+        }
+    }
+    }
+
 
 
 
