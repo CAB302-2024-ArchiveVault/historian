@@ -7,10 +7,12 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.StageManager;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
@@ -22,37 +24,20 @@ import static com.example.historian.utils.StageManager.primaryStage;
 
 public class GalleryController {
   @FXML
+  public GridPane imageContainer;
+  @FXML
   public Button backButton;
   @FXML
   public Button forwardButton;
-  @FXML
-  public ImageView Image1;
-  @FXML
-  public ImageView Image2;
-  @FXML
-  public ImageView Image3;
-  @FXML
-  public ImageView Image4;
-  @FXML
-  public ImageView Image5;
-  @FXML
-  public ImageView Image6;
   @FXML
   public Text accountText;
   @FXML
   public Button logoutButton;
 
+  private int photosPerPage = 6;
+  private int photoPage = 0;
 
-  int image1Id;
-  int image2Id;
-  int image3Id;
-  int image4Id;
-  int image5Id;
-  int image6Id;
-
-  public int photoPage = 0;
   private AuthSingleton authSingleton;
-
   private IPhotoDAO photoDAO;
   public List<Photo> photoList;
 
@@ -115,45 +100,45 @@ public class GalleryController {
   public void displayPhotos() {
     List<Photo> photosToDisplay = new ArrayList<>();
 
-    for (int i = (photoPage * 6); i < Math.min((photoPage * 6) + 6, photoList.size()); i++) {
+    // Find all images to display
+    for (int i = (photoPage * photosPerPage); i < Math.min((photoPage * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
     }
-    int imageCount = photosToDisplay.size();
-    for (Photo photo : photosToDisplay) {
-      displayPhoto(imageCount, photo);
-      imageCount--;
+
+    // Render photos
+    imageContainer.getChildren().clear();
+    for (int i = 0; i < photosToDisplay.size(); i++) {
+      Photo photo = photosToDisplay.get(i);
+
+      // Create the imageview
+      ImageView imageView = new ImageView();
+      imageView.setFitHeight(110.0);
+      imageView.setFitWidth(135.0);
+      imageView.setPickOnBounds(true);
+      imageView.setPreserveRatio(true);
+      imageView.setId(String.valueOf(photo.getId()));
+      imageView.setOnMouseClicked(onImageClick());
+      imageView.setImage(photo.getImage());
+
+      // Set gridpane params
+      imageContainer.add(imageView, i % 3, i / 3);
     }
   }
 
-  protected void displayPhoto(int index, Photo photo) {
-    Image image = photo.getImage();
+  protected EventHandler<? super MouseEvent> onImageClick() {
+    return event -> {
+      // Get the source of the event (the clicked node)
+      ImageView clickedImage = (ImageView) event.getSource();
 
-    switch (index) {
-      case 1:
-        Image1.setImage(image);
-        image1Id = photo.getId();
-        break;
-      case 2:
-        Image2.setImage(image);
-        image2Id = photo.getId();
-        break;
-      case 3:
-        Image3.setImage(image);
-        image3Id = photo.getId();
-        break;
-      case 4:
-        Image4.setImage(image);
-        image4Id = photo.getId();
-        break;
-      case 5:
-        Image5.setImage(image);
-        image5Id = photo.getId();
-        break;
-      case 6:
-        Image6.setImage(image);
-        image6Id = photo.getId();
-        break;
-    }
+      // Get the ID of the clicked node
+      int id = Integer.parseInt(clickedImage.getId());
+      IndividualPhoto.clickedImageId = id;
+      try {
+        StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    };
   }
 
 
@@ -162,20 +147,9 @@ public class GalleryController {
     forwardButton.setVisible(photoList.size() > 6 && ((photoPage + 1) * 6) < photoList.size());
   }
 
-  protected void clearImageViewers() {
-    Image1.setImage(null);
-    Image2.setImage(null);
-    Image3.setImage(null);
-    Image4.setImage(null);
-    Image5.setImage(null);
-    Image6.setImage(null);
-  }
-
   @FXML
-
   public void onBackButtonClick() {
     photoPage--;
-    clearImageViewers();
     displayPhotos();
     buttonUpdate();
   }
@@ -183,7 +157,6 @@ public class GalleryController {
   @FXML
   public void onForwardButtonClick() {
     photoPage++;
-    clearImageViewers();
     displayPhotos();
     buttonUpdate();
   }
@@ -192,48 +165,4 @@ public class GalleryController {
   protected void onEditButtonClick() throws IOException {
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
-
-  @FXML
-  protected void onImage1Click() throws IOException
-  {
-      IndividualPhoto.clickedImageId = image1Id;
-      StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
-
-  @FXML
-  protected void onImage2Click() throws IOException
-  {
-    IndividualPhoto.clickedImageId = image2Id;
-    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
-
-  @FXML
-  protected void onImage3Click() throws IOException
-  {
-    IndividualPhoto.clickedImageId = image3Id;
-    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
-
-  @FXML
-  protected void onImage4Click() throws IOException
-  {
-    IndividualPhoto.clickedImageId = image4Id;
-    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
-
-  @FXML
-  protected void onImage5Click() throws IOException
-  {
-    IndividualPhoto.clickedImageId = image5Id;
-    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
-
-  @FXML
-  protected void onImage6Click() throws IOException
-  {
-    IndividualPhoto.clickedImageId = image6Id;
-    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
-
-
 }
