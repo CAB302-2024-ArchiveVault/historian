@@ -17,7 +17,7 @@
         <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" />
         <Button text="location" />
         <Button text="Tag" />
-        <Button text="Finish" />
+        <Button fx:id="finishButton" text="Finish" onAction="#onfinishButtonClick" />
         <Button fx:id="BackButton" onAction="#onBackButtonClick" text="Back" />
     </HBox>
    <Label fx:id="date" text="Label" />

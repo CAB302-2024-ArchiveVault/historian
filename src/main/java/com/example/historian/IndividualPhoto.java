@@ -1,6 +1,7 @@
 package com.example.historian;
 
 import com.example.historian.models.photo.IPhotoDAO;
+import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.StageManager;
 import com.example.historian.GalleryController;
@@ -43,20 +44,21 @@ public class IndividualPhoto {
     @FXML
     private Button Tag;
     @FXML
-    private Button Finish;
+    private Button finishButton;
     @FXML
     private Button Back;
     @FXML
     public ImageView imageDisplay;
 
-    public static Image clickedImage;
+    public Photo selectedPhoto;
     public static int clickedImageId;
     private IPhotoDAO photoDAO;
 
     @FXML
     public void initialize() throws IOException{
-        imageDisplay.setImage(clickedImage);
         photoDAO = new SqlitePhotoDAO();
+        selectedPhoto = photoDAO.getPhoto(clickedImageId);
+        imageDisplay.setImage(selectedPhoto.getImage());
 
         if(photoDAO.getPhoto(clickedImageId).getDate() != null){
             String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -69,16 +71,20 @@ public class IndividualPhoto {
         StageManager.switchScene("gallery-view.fxml");
     }
 
+    @FXML
     public void getDate(ActionEvent event) {
-
-        photoDAO.getPhoto(clickedImageId).setDate(Date.from(myDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
         LocalDate myDate = myDatePicker.getValue();
+        selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
         String myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         date.setText(myFormattedDate);
-
     }
 
+    @FXML
+    public void onfinishButtonClick() throws IOException {
+        photoDAO.updatePhoto(selectedPhoto);
+        StageManager.switchScene("gallery-view.fxml");
+    }
 }
 
 

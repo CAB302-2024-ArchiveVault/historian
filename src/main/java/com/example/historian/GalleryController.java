@@ -184,7 +184,6 @@ public class GalleryController {
   @FXML
   protected void onImage1Click() throws IOException
   {
-      IndividualPhoto.clickedImage = (Image1.getImage());
       IndividualPhoto.clickedImageId = image1Id;
       StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
@@ -192,7 +191,6 @@ public class GalleryController {
   @FXML
   protected void onImage2Click() throws IOException
   {
-    IndividualPhoto.clickedImage = (Image2.getImage());
     IndividualPhoto.clickedImageId = image2Id;
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
@@ -200,7 +198,6 @@ public class GalleryController {
   @FXML
   protected void onImage3Click() throws IOException
   {
-    IndividualPhoto.clickedImage = (Image3.getImage());
     IndividualPhoto.clickedImageId = image3Id;
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
@@ -208,7 +205,6 @@ public class GalleryController {
   @FXML
   protected void onImage4Click() throws IOException
   {
-    IndividualPhoto.clickedImage = (Image4.getImage());
     IndividualPhoto.clickedImageId = image4Id;
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
@@ -216,7 +212,6 @@ public class GalleryController {
   @FXML
   protected void onImage5Click() throws IOException
   {
-    IndividualPhoto.clickedImage = (Image5.getImage());
     IndividualPhoto.clickedImageId = image5Id;
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
@@ -224,7 +219,6 @@ public class GalleryController {
   @FXML
   protected void onImage6Click() throws IOException
   {
-    IndividualPhoto.clickedImage = (Image6.getImage());
     IndividualPhoto.clickedImageId = image6Id;
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
