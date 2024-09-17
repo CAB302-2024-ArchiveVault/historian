@@ -160,9 +160,4 @@ public class GalleryController {
     displayPhotos();
     buttonUpdate();
   }
-
-  @FXML
-  protected void onEditButtonClick() throws IOException {
-    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-  }
 }
