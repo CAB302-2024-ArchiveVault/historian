@@ -42,6 +42,14 @@ public class GalleryController {
   @FXML
   public Button logoutButton;
 
+
+  int image1Id;
+  int image2Id;
+  int image3Id;
+  int image4Id;
+  int image5Id;
+  int image6Id;
+
   public int photoPage = 0;
   private AuthSingleton authSingleton;
 
@@ -123,21 +131,27 @@ public class GalleryController {
     switch (index) {
       case 1:
         Image1.setImage(image);
+        image1Id = photo.getId();
         break;
       case 2:
         Image2.setImage(image);
+        image2Id = photo.getId();
         break;
       case 3:
         Image3.setImage(image);
+        image3Id = photo.getId();
         break;
       case 4:
         Image4.setImage(image);
+        image4Id = photo.getId();
         break;
       case 5:
         Image5.setImage(image);
+        image5Id = photo.getId();
         break;
       case 6:
         Image6.setImage(image);
+        image6Id = photo.getId();
         break;
     }
   }
@@ -178,4 +192,48 @@ public class GalleryController {
   protected void onEditButtonClick() throws IOException {
     StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
   }
+
+  @FXML
+  protected void onImage1Click() throws IOException
+  {
+      IndividualPhoto.clickedImageId = image1Id;
+      StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+  }
+
+  @FXML
+  protected void onImage2Click() throws IOException
+  {
+    IndividualPhoto.clickedImageId = image2Id;
+    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+  }
+
+  @FXML
+  protected void onImage3Click() throws IOException
+  {
+    IndividualPhoto.clickedImageId = image3Id;
+    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+  }
+
+  @FXML
+  protected void onImage4Click() throws IOException
+  {
+    IndividualPhoto.clickedImageId = image4Id;
+    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+  }
+
+  @FXML
+  protected void onImage5Click() throws IOException
+  {
+    IndividualPhoto.clickedImageId = image5Id;
+    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+  }
+
+  @FXML
+  protected void onImage6Click() throws IOException
+  {
+    IndividualPhoto.clickedImageId = image6Id;
+    StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+  }
+
+
 }
