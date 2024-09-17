@@ -22,7 +22,7 @@
         <!-- Temporary - display the current user -->
         <Text fx:id="accountText" />
     </HBox>
-   <GridPane prefHeight="240.0" prefWidth="400.0">
+   <GridPane fx:id="imageContainer" prefHeight="240.0" prefWidth="400.0">
      <columnConstraints>
          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -33,12 +33,6 @@
          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
      </rowConstraints>
       <children>
-         <ImageView fx:id="Image1" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#onImage1Click" />
-         <ImageView fx:id="Image2" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" onMouseClicked="#onImage2Click"/>
-         <ImageView fx:id="Image3" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" onMouseClicked="#onImage3Click"/>
-         <ImageView fx:id="Image4" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1" onMouseClicked="#onImage4Click"/>
-         <ImageView fx:id="Image5" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" onMouseClicked="#onImage5Click"/>
-         <ImageView fx:id="Image6" fitHeight="110.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1" onMouseClicked="#onImage6Click"/>
       </children>
    </GridPane>
    <HBox spacing="15.0">
