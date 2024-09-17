@@ -86,23 +86,17 @@ public class IndividualPhoto {
         LocalDate myDate = myDatePicker.getValue();
         selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-
-
-        //myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        //String stringDate = formatter.format(selectedPhoto.getDate());
-        //date.setText(stringDate);
-
-        //myFormattedDate = selectedPhoto.getDate().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     @FXML
-    public void onsaveButtonClick() throws IOException {
+    public void onsaveButtonClick() {
         photoDAO.updatePhoto(selectedPhoto);
         editState = false;
-        String stringDate = formatter.format(selectedPhoto.getDate());
-        date.setText(stringDate);
+        if (selectedPhoto.getDate() != null) {
+            String stringDate = formatter.format(selectedPhoto.getDate());
+            date.setText(stringDate);
+        }
         buttonUpdate();
-        //StageManager.switchScene("gallery-view.fxml");
     }
 
     @FXML
