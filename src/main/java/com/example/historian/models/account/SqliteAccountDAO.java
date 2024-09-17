@@ -22,8 +22,12 @@ public class SqliteAccountDAO implements IAccountDAO {
    */
   public SqliteAccountDAO() {
     connection = SqliteConnection.getInstance();
-//    createTable();
-//    insertSampleData();
+    createTable();
+
+    List<Account> currentAccounts = getAllAccounts();
+    if (currentAccounts.isEmpty() || getAccount("i_am_database_owner") == null) {
+      insertSampleData();
+    }
   }
 
   /**

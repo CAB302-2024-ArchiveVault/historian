@@ -3,6 +3,7 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
+import com.example.historian.utils.SqliteConnection;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -10,10 +11,13 @@ import javafx.scene.control.ButtonType;
 import com.example.historian.utils.StageManager;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Optional;
 
 public class DatabaseController {
     private AuthSingleton authSingleton;
+    private Connection connection;
 
     @FXML
     private Button exitButton;
@@ -26,6 +30,8 @@ public class DatabaseController {
 
     @FXML
     public void initialize() throws IOException {
+        connection = SqliteConnection.getInstance();
+
         authSingleton = AuthSingleton.getInstance();
         if (!authSingleton.checkAuthorised()) {
             StageManager.switchToHomepage();
@@ -60,11 +66,28 @@ public class DatabaseController {
         alert.setContentText("Are you sure you want to delete the database?");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-            // IF THEY CONFIRM DELETE
+            deleteDatabase();
             StageManager.switchScene("homepage-view.fxml");
         } else {
             // IF THEY CANCEL DELETE
             StageManager.switchScene("homepage-view.fxml");
+        }
+    }
+
+    private void deleteDatabase() {
+        try {
+            Statement statement = connection.createStatement();
+            String query = "PRAGMA foreign_keys = OFF;"
+                    + "DELETE FROM accounts;"
+                    + "DELETE FROM locations;"
+                    + "DELETE FROM photos;"
+                    + "DELETE FROM people;"
+                    + "DELETE FROM tags;"
+                    + "PRAGMA foreign_keys = ON;";
+            statement.execute(query);
+            System.out.println("HELLO");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
