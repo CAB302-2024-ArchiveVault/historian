@@ -13,6 +13,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
@@ -34,25 +35,27 @@ import java.time.ZoneId;
 
 
 public class IndividualPhoto {
-
     @FXML
     private Label date;
     @FXML
     private DatePicker myDatePicker;
     @FXML
-    private Button Location;
+    private Button locationButton;
     @FXML
-    private Button Tag;
+    private Button tagButton;
     @FXML
     private Button finishButton;
     @FXML
-    private Button Back;
+    private Button backButton;
     @FXML
     public ImageView imageDisplay;
 
     public Photo selectedPhoto;
     public static int clickedImageId;
     private IPhotoDAO photoDAO;
+    private Double xCoord;
+    private Double yCoord;
+    private Boolean tagModeOn = false;
 
     @FXML
     public void initialize() throws IOException{
@@ -64,7 +67,17 @@ public class IndividualPhoto {
             String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             date.setText(myFormattedDate);
         }
+        imageDisplay.setOnMouseClicked(this::handleImageViewClick);
     }
+
+    private void handleImageViewClick(MouseEvent event) {
+        xCoord = event.getX();
+        yCoord = event.getY();
+
+        System.out.println("Clicked at: (" + xCoord + ", " + yCoord + ")");
+    }
+
+
 
     @FXML
     protected void onBackButtonClick() throws IOException {
@@ -84,6 +97,27 @@ public class IndividualPhoto {
     public void onfinishButtonClick() throws IOException {
         photoDAO.updatePhoto(selectedPhoto);
         StageManager.switchScene("gallery-view.fxml");
+    }
+
+    private void disableButtonsTagModeOn() {
+        if(tagModeOn){
+            locationButton.setDisable(true);
+            backButton.setDisable(true);
+            tagButton.setText("Cancel");
+        }else {
+            locationButton.setDisable(false);
+            backButton.setDisable(false);
+            tagButton.setText("Tag");
+        }
+    }
+
+    @FXML
+    public void onTagButtonClick() throws IOException {
+        if (tagModeOn) {
+            // TODO: NEED TO CANCEL THE OPERATION
+        }
+        tagModeOn = !tagModeOn;
+        disableButtonsTagModeOn();
     }
 }
 
