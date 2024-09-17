@@ -4,35 +4,30 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.StageManager;
-import com.example.historian.GalleryController;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
-import java.lang.Object;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.layout.Region;
+
 import javafx.scene.control.DatePicker;
-import java.time.ZoneId;
+
 import java.util.Optional;
 
 
 public class IndividualPhoto {
 
     @FXML
-    private Label date;
+    private Label dateLabel;
+    @FXML
+    private Label locationLabel;
+    @FXML
+    private Label tagsLabel;
     @FXML
     private DatePicker myDatePicker;
     @FXML
@@ -72,7 +67,7 @@ public class IndividualPhoto {
         if(photoDAO.getPhoto(clickedImageId).getDate() != null){
             String stringDate = formatter.format(selectedPhoto.getDate());
             //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            date.setText(stringDate);
+            dateLabel.setText(stringDate);
         }
     }
 
@@ -94,8 +89,17 @@ public class IndividualPhoto {
         editState = false;
         if (selectedPhoto.getDate() != null) {
             String stringDate = formatter.format(selectedPhoto.getDate());
-            date.setText(stringDate);
+            dateLabel.setText(stringDate);
         }
+        if (selectedPhoto.getLocation() != null){
+            locationLabel.setText(selectedPhoto.getLocation().getLocationName());
+        }
+        // Code to be implemented later once its determined how to display the tags in the label
+        /*if (!selectedPhoto.getTagged().isEmpty())
+        {
+            tagLabel.setText(something in here);
+        }
+        */
         buttonUpdate();
     }
 

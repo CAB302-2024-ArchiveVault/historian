@@ -22,7 +22,11 @@
         <Button fx:id="backButton" onAction="#onbackButtonClick" text="Back" />
         <Button fx:id="cancelButton" onAction="#oncancelButtonClick" text="Cancel" visible="false" managed="false"/>
     </HBox>
-   <Label fx:id="date" />
+    <HBox alignment="CENTER" spacing="15.0">
+        <Label fx:id="dateLabel" />
+        <Label fx:id="tagsLabel" />
+        <Label fx:id="locationLabel" />
+    </HBox>
     <Button fx:id="deleteButton" onAction="#deletePhoto" text="Delete Photo" visible="false" managed="false"/>
 
 </VBox>
