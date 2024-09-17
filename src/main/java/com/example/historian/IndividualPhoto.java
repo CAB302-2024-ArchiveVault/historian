@@ -40,11 +40,17 @@ public class IndividualPhoto {
     @FXML
     private DatePicker myDatePicker;
     @FXML
-    private Button Location;
+    private Button locationButton;
     @FXML
-    private Button Tag;
+    private Button editButton;
     @FXML
-    private Button finishButton;
+    private Button backButton;
+    @FXML
+    private Button tagButton;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button cancelButton;
     @FXML
     private Button Back;
     @FXML
@@ -54,6 +60,11 @@ public class IndividualPhoto {
     public static int clickedImageId;
     private IPhotoDAO photoDAO;
 
+    private boolean editState = false;
+
+    SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
+
+
     @FXML
     public void initialize() throws IOException{
         photoDAO = new SqlitePhotoDAO();
@@ -61,13 +72,14 @@ public class IndividualPhoto {
         imageDisplay.setImage(selectedPhoto.getImage());
 
         if(photoDAO.getPhoto(clickedImageId).getDate() != null){
-            String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            date.setText(myFormattedDate);
+            String stringDate = formatter.format(selectedPhoto.getDate());
+            //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            date.setText(stringDate);
         }
     }
 
     @FXML
-    protected void onBackButtonClick() throws IOException {
+    protected void onbackButtonClick() throws IOException {
         StageManager.switchScene("gallery-view.fxml");
     }
 
@@ -76,14 +88,51 @@ public class IndividualPhoto {
         LocalDate myDate = myDatePicker.getValue();
         selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        String myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        date.setText(myFormattedDate);
+
+
+        //myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        //String stringDate = formatter.format(selectedPhoto.getDate());
+        //date.setText(stringDate);
+
+        //myFormattedDate = selectedPhoto.getDate().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     @FXML
-    public void onfinishButtonClick() throws IOException {
+    public void onsaveButtonClick() throws IOException {
         photoDAO.updatePhoto(selectedPhoto);
-        StageManager.switchScene("gallery-view.fxml");
+        editState = false;
+        String stringDate = formatter.format(selectedPhoto.getDate());
+        date.setText(stringDate);
+        buttonUpdate();
+        //StageManager.switchScene("gallery-view.fxml");
+    }
+
+    @FXML
+    public void oneditButtonClick() throws IOException {
+        editState = true;
+        buttonUpdate();
+    }
+    @FXML
+    public void oncancelButtonClick() throws IOException {
+        editState = false;
+        buttonUpdate();
+    }
+
+    public void buttonUpdate() throws IOException {
+        myDatePicker.setVisible(editState);
+        myDatePicker.setManaged(editState);
+        saveButton.setVisible(editState);
+        saveButton.setManaged(editState);
+        locationButton.setVisible(editState);
+        locationButton.setManaged(editState);
+        tagButton.setVisible(editState);
+        tagButton.setManaged(editState);
+        cancelButton.setVisible(editState);
+        cancelButton.setManaged(editState);
+        backButton.setVisible(!editState);
+        backButton.setManaged(!editState);
+        editButton.setVisible(!editState);
+        editButton.setManaged(!editState);
     }
 }
 

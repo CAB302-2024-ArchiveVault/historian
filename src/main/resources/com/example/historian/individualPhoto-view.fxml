@@ -14,12 +14,14 @@
     </padding>
    <ImageView fx:id="imageDisplay" fitHeight="491.0" fitWidth="436.0" pickOnBounds="true" preserveRatio="true" />
     <HBox alignment="CENTER" spacing="15.0">
-        <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" />
-        <Button text="location" />
-        <Button text="Tag" />
-        <Button fx:id="finishButton" text="Finish" onAction="#onfinishButtonClick" />
-        <Button fx:id="BackButton" onAction="#onBackButtonClick" text="Back" />
+        <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" visible ="false" managed = "false" />
+        <Button fx:id="locationButton" text="Location" visible="false" managed="false"/>
+        <Button fx:id="tagButton" text="Tag" visible="false" managed="false"/>
+        <Button fx:id="saveButton" text="Save" onAction="#onsaveButtonClick" visible="false" managed="false"/>
+        <Button fx:id="editButton" text="Edit" onAction="#oneditButtonClick" />
+        <Button fx:id="backButton" onAction="#onbackButtonClick" text="Back" />
+        <Button fx:id="cancelButton" onAction="#oncancelButtonClick" text="Cancel" visible="false" managed="false"/>
     </HBox>
-   <Label fx:id="date" text="Label" />
+   <Label fx:id="date" />
 
 </VBox>
