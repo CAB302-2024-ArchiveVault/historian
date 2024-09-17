@@ -3,7 +3,6 @@ module com.example.historian {
   requires javafx.fxml;
   requires java.sql;
   requires java.desktop;
-  requires junit;
   requires org.xerial.sqlitejdbc;
 
 

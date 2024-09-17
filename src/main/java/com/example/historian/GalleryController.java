@@ -2,6 +2,7 @@ package com.example.historian;
 
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
@@ -38,6 +39,9 @@ public class GalleryController {
   public ImageView Image6;
   @FXML
   public Text accountText;
+  @FXML
+  public Button logoutButton;
+
 
   int image1Id;
   int image2Id;
@@ -50,7 +54,7 @@ public class GalleryController {
   private AuthSingleton authSingleton;
 
   private IPhotoDAO photoDAO;
-  private List<Photo> photoList;
+  public List<Photo> photoList;
 
 
   @FXML
@@ -63,6 +67,9 @@ public class GalleryController {
 
     Account authorisedAccount = authSingleton.getAccount();
     accountText.setText(authorisedAccount.getUsername());
+    if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
+      logoutButton.setText("Back");
+    }
 
     // Get the photo DAO
     photoDAO = new SqlitePhotoDAO();
@@ -73,8 +80,13 @@ public class GalleryController {
 
   @FXML
   protected void onLogoutButtonClick() throws IOException {
-    authSingleton.signOut();
-    StageManager.switchToHomepage();
+    Account authorisedAccount = authSingleton.getAccount();
+    if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
+      StageManager.switchScene("admin-options-view.fxml");
+    } else {
+      authSingleton.signOut();
+      StageManager.switchToHomepage();
+    }
   }
 
   @FXML
