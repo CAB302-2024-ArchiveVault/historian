@@ -1,5 +1,8 @@
 package com.example.historian;
 
+import com.example.historian.models.photo.IPhotoDAO;
+import com.example.historian.models.photo.Photo;
+import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.StageManager;
 import com.example.historian.GalleryController;
 import javafx.fxml.FXML;
@@ -12,22 +15,28 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.lang.Object;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
+import java.time.ZoneId;
+
 
 
 
 public class IndividualPhoto {
 
     @FXML
-    private Label Date;
+    private Label date;
     @FXML
     private DatePicker myDatePicker;
     @FXML
@@ -35,23 +44,46 @@ public class IndividualPhoto {
     @FXML
     private Button Tag;
     @FXML
-    private Button Finish;
+    private Button finishButton;
     @FXML
     private Button Back;
     @FXML
-    private ImageView imageDisplay;
+    public ImageView imageDisplay;
 
+    public Photo selectedPhoto;
+    public static int clickedImageId;
+    private IPhotoDAO photoDAO;
+
+    @FXML
+    public void initialize() throws IOException{
+        photoDAO = new SqlitePhotoDAO();
+        selectedPhoto = photoDAO.getPhoto(clickedImageId);
+        imageDisplay.setImage(selectedPhoto.getImage());
+
+        if(photoDAO.getPhoto(clickedImageId).getDate() != null){
+            String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            date.setText(myFormattedDate);
+        }
+    }
 
     @FXML
     protected void onBackButtonClick() throws IOException {
         StageManager.switchScene("gallery-view.fxml");
     }
 
+    @FXML
     public void getDate(ActionEvent event) {
-
         LocalDate myDate = myDatePicker.getValue();
+        selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
         String myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        Date.setText(myFormattedDate);
+        date.setText(myFormattedDate);
+    }
+
+    @FXML
+    public void onfinishButtonClick() throws IOException {
+        photoDAO.updatePhoto(selectedPhoto);
+        StageManager.switchScene("gallery-view.fxml");
     }
 }
 
