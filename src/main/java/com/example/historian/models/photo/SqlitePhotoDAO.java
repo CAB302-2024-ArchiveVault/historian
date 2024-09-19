@@ -3,6 +3,9 @@ package com.example.historian.models.photo;
 import com.example.historian.models.location.ILocationDAO;
 import com.example.historian.models.location.Location;
 import com.example.historian.models.location.SqliteLocationDAO;
+import com.example.historian.models.tag.ITagDAO;
+import com.example.historian.models.tag.SqliteTagDAO;
+import com.example.historian.models.tag.Tag;
 import com.example.historian.utils.SqliteConnection;
 import com.example.historian.utils.SqliteDate;
 
@@ -92,12 +95,14 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       }
     }
 
-    // TODO: Get tags
+    ITagDAO tagDAO = new SqliteTagDAO();
+    List<Tag> tags = tagDAO.getTagsForPhoto(id);
 
     Photo photo = new Photo(imageStream, imageType, description);
     photo.setId(id);
     photo.setLocation(location);
     photo.setDate(date);
+    tags.forEach(photo::addTagged);
 
     return photo;
   }

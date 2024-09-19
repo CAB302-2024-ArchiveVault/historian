@@ -11,6 +11,7 @@ import com.example.historian.models.tag.SqliteTagDAO;
 import com.example.historian.models.tag.Tag;
 import com.example.historian.utils.StageManager;
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -23,14 +24,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.event.ActionEvent;
 
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javafx.scene.control.DatePicker;
+
+import java.util.Optional;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -41,17 +45,26 @@ public class IndividualPhoto {
     @FXML
     private Pane imagePane;
     @FXML
-    private Label date;
+    private Label dateLabel;
+    @FXML
+    private Label locationLabel;
+    @FXML
+    private Label tagsLabel;
     @FXML
     private DatePicker myDatePicker;
     @FXML
     private Button locationButton;
     @FXML
     private Button tagButton;
-    @FXML
-    private Button finishButton;
+    private Button editButton;
     @FXML
     private Button backButton;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Button deleteButton;
     @FXML
     public ImageView imageDisplay;
     @FXML
@@ -73,6 +86,11 @@ public class IndividualPhoto {
     private ITagDAO tagDAO;
     private List<Tag> tags;
 
+    private boolean editState = false;
+
+    SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
+
+
     @FXML
     public void initialize() throws IOException{
         photoDAO = new SqlitePhotoDAO();
@@ -83,8 +101,9 @@ public class IndividualPhoto {
         imageDisplay.setImage(selectedPhoto.getImage());
 
         if(photoDAO.getPhoto(clickedImageId).getDate() != null){
-            String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            date.setText(myFormattedDate);
+            String stringDate = formatter.format(selectedPhoto.getDate());
+            //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            dateLabel.setText(stringDate);
         }
         imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
@@ -112,7 +131,7 @@ public class IndividualPhoto {
     }
 
     @FXML
-    protected void onBackButtonClick() throws IOException {
+    protected void onbackButtonClick() throws IOException {
         StageManager.switchScene("gallery-view.fxml");
     }
 
@@ -121,14 +140,68 @@ public class IndividualPhoto {
         LocalDate myDate = myDatePicker.getValue();
         selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        String myFormattedDate = myDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        date.setText(myFormattedDate);
     }
 
     @FXML
-    public void onfinishButtonClick() throws IOException {
+    public void onsaveButtonClick() {
         photoDAO.updatePhoto(selectedPhoto);
-        StageManager.switchScene("gallery-view.fxml");
+        editState = false;
+        if (selectedPhoto.getDate() != null) {
+            String stringDate = formatter.format(selectedPhoto.getDate());
+            dateLabel.setText(stringDate);
+        }
+        if (selectedPhoto.getLocation() != null){
+            locationLabel.setText(selectedPhoto.getLocation().getLocationName());
+        }
+        // Code to be implemented later once its determined how to display the tags in the label
+        /*if (!selectedPhoto.getTagged().isEmpty())
+        {
+            tagLabel.setText(something in here);
+        }
+        */
+        buttonUpdate();
+    }
+
+    @FXML
+    public void oneditButtonClick() throws IOException {
+        editState = true;
+        buttonUpdate();
+    }
+    @FXML
+    public void oncancelButtonClick() throws IOException {
+        editState = false;
+        buttonUpdate();
+    }
+
+    public void buttonUpdate()  {
+        myDatePicker.setVisible(editState);
+        myDatePicker.setManaged(editState);
+        saveButton.setVisible(editState);
+        saveButton.setManaged(editState);
+        locationButton.setVisible(editState);
+        locationButton.setManaged(editState);
+        tagButton.setVisible(editState);
+        tagButton.setManaged(editState);
+        cancelButton.setVisible(editState);
+        cancelButton.setManaged(editState);
+        deleteButton.setVisible(editState);
+        deleteButton.setManaged(editState);
+        backButton.setVisible(!editState);
+        backButton.setManaged(!editState);
+        editButton.setVisible(!editState);
+        editButton.setManaged(!editState);
+    }
+    @FXML
+    private void deletePhoto() throws IOException
+    {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Photo");
+        alert.setContentText("Are you sure you want to delete the photo?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            photoDAO.removePhoto(photoDAO.getPhoto(clickedImageId));
+            StageManager.switchScene("gallery-view.fxml");
+        }
     }
 
     private void disableButtonsTagModeOn() {
