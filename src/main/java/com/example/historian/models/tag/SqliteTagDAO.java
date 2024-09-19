@@ -162,4 +162,20 @@ public class SqliteTagDAO implements ITagDAO {
     }
     return tags;
   }
+
+  @Override
+  public List<Tag> getTagsForPhoto(int photoId) {
+    List<Tag> tags = new ArrayList<>();
+    try {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM tags WHERE photoId = ?;");
+      statement.setInt(1, photoId);
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        tags.add(createFromResultSet(resultSet));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return tags;
+  }
 }
