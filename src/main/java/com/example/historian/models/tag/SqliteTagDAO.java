@@ -28,7 +28,6 @@ public class SqliteTagDAO implements ITagDAO {
   public SqliteTagDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
-    insertSampleData();
   }
 
   /**
@@ -167,7 +166,7 @@ public class SqliteTagDAO implements ITagDAO {
   public List<Tag> getTagsForPhoto(int photoId) {
     List<Tag> tags = new ArrayList<>();
     try {
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM tags WHERE photoId = ?;");
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM tags WHERE photoId = ?");
       statement.setInt(1, photoId);
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
