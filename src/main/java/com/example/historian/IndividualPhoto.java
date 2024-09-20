@@ -82,6 +82,7 @@ public class IndividualPhoto {
     private Double xCoord;
     private Double yCoord;
     private Boolean tagModeOn = false;
+    private Boolean viewTagsOn = false;
     private IPersonDAO personDAO;
     private ITagDAO tagDAO;
     private List<Tag> tags;
@@ -110,22 +111,34 @@ public class IndividualPhoto {
     }
 
     private void handleImageViewClick(MouseEvent event) {
-        if(!tagModeOn) { return; }
-        removeAllCircles();
-        xCoord = event.getX();
-        yCoord = event.getY();
+        if(!tagModeOn) {
+            viewTagsOn = !viewTagsOn;
+            viewTagMode();
+        } else {
+            removeAllCircles();
+            xCoord = event.getX();
+            yCoord = event.getY();
 
-        Circle circle = new Circle(xCoord, yCoord, 5, Color.BLUE);
-        circle.setStroke(Color.BLACK);
-        circle.setStrokeWidth(2);
-        imagePane.getChildren().add(circle);
+            Circle circle = new Circle(xCoord, yCoord, 5, Color.BLUE);
+            circle.setStroke(Color.BLACK);
+            circle.setStrokeWidth(2);
+            imagePane.getChildren().add(circle);
 
-        setTagOptionsVisible(true);
-        firstNameTextField.setPromptText("First Name");
-        lastNameTextField.setPromptText("Last Name");
-        firstNameTextField.setText("First Name");
-        lastNameTextField.setText("");
-        firstNameTextField.requestFocus();
+            setTagOptionsVisible(true);
+            firstNameTextField.setPromptText("First Name");
+            lastNameTextField.setPromptText("Last Name");
+            firstNameTextField.setText("First Name");
+            lastNameTextField.setText("");
+            firstNameTextField.requestFocus();
+        }
+    }
+
+    private void viewTagMode() {
+        if (viewTagsOn) {
+            renderAllTags(false);
+        } else {
+            deleteAllRenderedTags();
+        }
     }
 
     @FXML
@@ -144,6 +157,7 @@ public class IndividualPhoto {
     public void onSaveButtonClick() {
         selectedPhoto.setTagged(tags);
         photoDAO.updatePhoto(selectedPhoto);
+
         editState = false;
         if (selectedPhoto.getDate() != null) {
             String stringDate = formatter.format(selectedPhoto.getDate());
@@ -189,6 +203,8 @@ public class IndividualPhoto {
         backButton.setManaged(!editState);
         editButton.setVisible(!editState);
         editButton.setManaged(!editState);
+        viewTagsOn = false;
+        viewTagMode();
     }
     @FXML
     private void deletePhoto() throws IOException
@@ -206,7 +222,7 @@ public class IndividualPhoto {
     @FXML
     public void onTagButtonClick() throws IOException {
         tagModeOn = true;
-        renderAllTags();
+        renderAllTags(true);
         setTagModeVisible();
     }
 
@@ -219,7 +235,7 @@ public class IndividualPhoto {
 
         Tag tag = new Tag(clickedImageId, person, xCoord.intValue(), yCoord.intValue());
         tags.add(tag);
-        renderTag(tag);
+        renderTag(tag, true);
 
         setTagOptionsVisible(false);
         removeAllCircles();
@@ -257,7 +273,7 @@ public class IndividualPhoto {
         imagePane.getChildren().removeIf(node -> node instanceof Polygon);
     }
 
-    private void renderTag(Tag tag) {
+    private void renderTag(Tag tag, Boolean withX) {
         StackPane tagPane = new StackPane();
 
         int[] coordinates = tag.getCoordinates();
@@ -306,7 +322,9 @@ public class IndividualPhoto {
             tags.remove(tag);
         });
 
-        imagePane.getChildren().add(closeButton);
+        if (withX) {
+            imagePane.getChildren().add(closeButton);
+        }
 
         label.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
             tagPane.setLayoutX(x - newBounds.getWidth() / 2);
@@ -317,10 +335,10 @@ public class IndividualPhoto {
         });
     }
 
-    private void renderAllTags() {
+    private void renderAllTags(Boolean withX) {
         deleteAllRenderedTags();
         for (Tag tag : tags) {
-            renderTag(tag);
+            renderTag(tag, withX);
         }
     }
 
