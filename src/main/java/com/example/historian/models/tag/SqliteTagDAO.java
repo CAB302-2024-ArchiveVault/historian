@@ -13,7 +13,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The SqliteTagDAO class provides methods for performing CRUD operations on Tag objects
@@ -118,6 +120,30 @@ public class SqliteTagDAO implements ITagDAO {
       }
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void updatePhotoTags(List<Tag> tags, int photoId) {
+    List<Tag> currentTags = getTagsForPhoto(photoId);
+    Set<Tag> tagsSet = new HashSet<Tag>(tags);
+    Set<Tag> currentTagsSet = new HashSet<Tag>(currentTags);
+
+    Set<Tag> tagsToBeAdded = new HashSet<Tag>(tagsSet);
+    Set<Tag> tagsToBeRemoved = new HashSet<Tag>(currentTagsSet);
+
+    tagsToBeAdded.removeAll(currentTagsSet);
+    tagsToBeRemoved.removeAll(tagsSet);
+
+    for (Tag tag : tagsToBeAdded) {
+      if (tag.getPerson().getId() < 0) {}
+      SqlitePersonDAO personDAO = new SqlitePersonDAO();
+      int personId = personDAO.addPerson(tag.getPerson());
+      tag.getPerson().setId(personId);
+      addTag(tag);
+    }
+    for (Tag tag : tagsToBeRemoved) {
+      removeTag(tag);
     }
   }
 

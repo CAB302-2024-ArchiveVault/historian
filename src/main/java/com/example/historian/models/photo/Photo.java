@@ -127,6 +127,8 @@ public class Photo {
     this.tagged.add(tag);
   }
 
+  public void setTagged(List<Tag> tagged) {this.tagged = tagged;}
+
   /**
    * Returns the image data as a byte array.
    *

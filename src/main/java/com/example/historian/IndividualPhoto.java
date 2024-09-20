@@ -28,17 +28,14 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javafx.scene.control.DatePicker;
 
 import java.util.Optional;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.util.Duration;
 
 
 public class IndividualPhoto {
@@ -56,6 +53,7 @@ public class IndividualPhoto {
     private Button locationButton;
     @FXML
     private Button tagButton;
+    @FXML
     private Button editButton;
     @FXML
     private Button backButton;
@@ -69,6 +67,8 @@ public class IndividualPhoto {
     public ImageView imageDisplay;
     @FXML
     public HBox editOptionsHBox;
+    @FXML
+    public HBox tagModeHBox;
     @FXML
     public HBox tagOptionsHBox;
     @FXML
@@ -96,7 +96,6 @@ public class IndividualPhoto {
         photoDAO = new SqlitePhotoDAO();
         personDAO = new SqlitePersonDAO();
         tagDAO = new SqliteTagDAO();
-        tags = new ArrayList<Tag>();
         selectedPhoto = photoDAO.getPhoto(clickedImageId);
         imageDisplay.setImage(selectedPhoto.getImage());
 
@@ -107,8 +106,7 @@ public class IndividualPhoto {
         }
         imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
-        // TODO: NEED TO GET ALL TAGS ASSOCIATED WITH PHOTO AND SAVE INTO 'tags'
-        // TODO: THEN CALL renderAllTags()
+        tags = selectedPhoto.getTagged();
     }
 
     private void handleImageViewClick(MouseEvent event) {
@@ -131,7 +129,7 @@ public class IndividualPhoto {
     }
 
     @FXML
-    protected void onbackButtonClick() throws IOException {
+    protected void onBackButtonClick() throws IOException {
         StageManager.switchScene("gallery-view.fxml");
     }
 
@@ -143,7 +141,8 @@ public class IndividualPhoto {
     }
 
     @FXML
-    public void onsaveButtonClick() {
+    public void onSaveButtonClick() {
+        selectedPhoto.setTagged(tags);
         photoDAO.updatePhoto(selectedPhoto);
         editState = false;
         if (selectedPhoto.getDate() != null) {
@@ -163,12 +162,12 @@ public class IndividualPhoto {
     }
 
     @FXML
-    public void oneditButtonClick() throws IOException {
+    public void onEditButtonClick() throws IOException {
         editState = true;
         buttonUpdate();
     }
     @FXML
-    public void oncancelButtonClick() throws IOException {
+    public void onCancelButtonClick() throws IOException {
         editState = false;
         buttonUpdate();
     }
@@ -204,16 +203,11 @@ public class IndividualPhoto {
         }
     }
 
-    private void disableButtonsTagModeOn() {
-        if(tagModeOn){
-            locationButton.setDisable(true);
-            backButton.setDisable(true);
-            tagButton.setText("Cancel");
-        }else {
-            locationButton.setDisable(false);
-            backButton.setDisable(false);
-            tagButton.setText("Tag");
-        }
+    @FXML
+    public void onTagButtonClick() throws IOException {
+        tagModeOn = true;
+        renderAllTags();
+        setTagModeVisible();
     }
 
     @FXML
@@ -222,11 +216,9 @@ public class IndividualPhoto {
         String lastName = lastNameTextField.getText();
 
         Person person = new Person(firstName, lastName);
-        personDAO.addPerson(person);
 
         Tag tag = new Tag(clickedImageId, person, xCoord.intValue(), yCoord.intValue());
         tags.add(tag);
-        tagDAO.addTag(tag);
         renderTag(tag);
 
         setTagOptionsVisible(false);
@@ -234,20 +226,30 @@ public class IndividualPhoto {
     }
 
     @FXML
+    public void onTagBackButtonClick() throws IOException {
+        tagModeOn = false;
+        setTagModeVisible();
+        deleteAllRenderedTags();
+    }
+
+    @FXML
     public void onTagCancelButtonClick() throws IOException {
-        // TODO: NEED TO CANCEL ALL TAG MODIFICATIONS
-        // Could do this by using a copy of the tag list from the photo object.
-        // Then if save is clicked set the photo tag list to the copied one.
-        // If cancel is clicked do not do anything.
         setTagOptionsVisible(false);
         removeAllCircles();
     }
 
-    private void setTagOptionsVisible(Boolean isTrue) {
-        editOptionsHBox.setVisible(!isTrue);
-        editOptionsHBox.setManaged(!isTrue);
-        tagOptionsHBox.setVisible(isTrue);
-        tagOptionsHBox.setManaged(isTrue);
+    private void setTagModeVisible() {
+        editOptionsHBox.setVisible(!tagModeOn);
+        editOptionsHBox.setManaged(!tagModeOn);
+        tagModeHBox.setVisible(tagModeOn);
+        tagModeHBox.setManaged(tagModeOn);
+    }
+
+    private void setTagOptionsVisible(Boolean visible) {
+        tagModeHBox.setVisible(!visible);
+        tagModeHBox.setManaged(!visible);
+        tagOptionsHBox.setVisible(visible);
+        tagOptionsHBox.setManaged(visible);
     }
 
     private void deleteAllRenderedTags() {
@@ -299,7 +301,7 @@ public class IndividualPhoto {
         StackPane closeButton = new StackPane(circle, closeText);
 
         closeButton.setOnMouseClicked(e -> {
-            // TODO: THIS FUNCTION IS CALLED WHEN X BUTTON IS CLICKED
+            // THIS FUNCTION IS CALLED WHEN X BUTTON IS CLICKED
             imagePane.getChildren().removeAll(tagPane, triangle, closeButton);
             tags.remove(tag);
         });
@@ -326,18 +328,6 @@ public class IndividualPhoto {
         imagePane.getChildren().removeIf(node -> node instanceof Circle);
     }
 
-    @FXML
-    public void onTagButtonClick() throws IOException {
-        if (tagModeOn) {
-            // TODO: THIS IS WHERE TAG MODE IS EXITED
-            deleteAllRenderedTags();
-        } else {
-            // TODO: THIS IS WHERE TAG MODE IS ENTERED
-            renderAllTags();
-        }
-        tagModeOn = !tagModeOn;
-        disableButtonsTagModeOn();
-    }
 }
 
 

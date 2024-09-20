@@ -102,7 +102,12 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     photo.setId(id);
     photo.setLocation(location);
     photo.setDate(date);
-    tags.forEach(photo::addTagged);
+    photo.setTagged(tags);
+
+    System.out.println("TAGS BELOW");
+    for (Tag tag : photo.getTagged()) {
+      System.out.println("Tag ID: " + tag.getId());
+    }
 
     return photo;
   }
@@ -161,6 +166,11 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       statement.setString(5, photo.getImageType());
       statement.setInt(6, photo.getId());
       statement.executeUpdate();
+
+      if (photo.getTagged() != null) {
+        ITagDAO tagDAO = new SqliteTagDAO();
+        tagDAO.updatePhotoTags(photo.getTagged(), photo.getId());
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
