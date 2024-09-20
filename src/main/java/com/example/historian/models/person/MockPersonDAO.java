@@ -18,10 +18,11 @@ public class MockPersonDAO implements IPersonDAO {
   }
 
   @Override
-  public void addPerson(Person person) {
+  public int addPerson(Person person) {
     person.setId(autoIncrementId);
     autoIncrementId++;
     people.add(person);
+    return autoIncrementId;
   }
 
   @Override

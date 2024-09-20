@@ -21,6 +21,8 @@ public interface ITagDAO {
    */
   public void removeTag(Tag tag);
 
+  public void updatePhotoTags(List<Tag> tags, int photoId);
+
   /**
    * Retrieves a tag by its ID.
    *
@@ -35,4 +37,11 @@ public interface ITagDAO {
    * @return a list of all Tag objects
    */
   public List<Tag> getAllTags();
+
+  /**
+   * Retrieves all tags for a particular photo
+   * @param photoId the ID of the photo to retrieve tags for
+   * @return a list of tags for the photo with the specified ID.
+   */
+  public List<Tag> getTagsForPhoto(int photoId);
 }

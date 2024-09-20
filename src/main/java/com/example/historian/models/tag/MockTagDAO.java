@@ -30,6 +30,11 @@ public class MockTagDAO implements ITagDAO {
   }
 
   @Override
+  public void updatePhotoTags(List<Tag> tags, int photoId) {
+
+  }
+
+  @Override
   public Tag getTag(int id) {
     for (Tag tag : tags) {
       if (tag.getId() == id) {
@@ -42,5 +47,16 @@ public class MockTagDAO implements ITagDAO {
   @Override
   public List<Tag> getAllTags() {
     return new ArrayList<>(tags);
+  }
+
+  @Override
+  public List<Tag> getTagsForPhoto(int photoId) {
+    List<Tag> filteredTags = new ArrayList<>();
+    for (Tag tag : tags) {
+      if (tag.getPhotoId() == photoId) {
+        filteredTags.add(tag);
+      }
+    }
+    return filteredTags;
   }
 }

@@ -12,7 +12,7 @@ public interface IPersonDAO {
    *
    * @param person the Person object to be added
    */
-  public void addPerson(Person person);
+  public int addPerson(Person person);
 
   /**
    * Removes a person from the data store.

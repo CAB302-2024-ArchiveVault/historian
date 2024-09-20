@@ -7,19 +7,40 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 
+<?import javafx.scene.control.TextField?>
 <VBox alignment="TOP_CENTER" fillWidth="false" spacing="15.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.historian.IndividualPhoto">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-   <ImageView fx:id="imageDisplay" fitHeight="491.0" fitWidth="436.0" pickOnBounds="true" preserveRatio="true" />
-    <HBox alignment="CENTER" spacing="15.0">
-        <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" />
-        <Button text="location" />
-        <Button text="Tag" />
-        <Button fx:id="finishButton" text="Finish" onAction="#onfinishButtonClick" />
-        <Button fx:id="BackButton" onAction="#onBackButtonClick" text="Back" />
+    <Pane fx:id="imagePane">
+        <ImageView fx:id="imageDisplay" fitHeight="491.0" fitWidth="436.0" pickOnBounds="true" preserveRatio="true" />
+    </Pane>
+    <HBox fx:id="editOptionsHBox" alignment="CENTER" spacing="15.0">
+        <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" visible ="false" managed = "false" />
+        <Button fx:id="locationButton" text="Location" visible="false" managed="false"/>
+        <Button fx:id="tagButton" text="Tag" onAction="#onTagButtonClick" visible="false" managed="false"/>
+        <Button fx:id="saveButton" text="Save" onAction="#onSaveButtonClick" visible="false" managed="false"/>
+        <Button fx:id="editButton" text="Edit" onAction="#onEditButtonClick" />
+        <Button fx:id="backButton" onAction="#onBackButtonClick" text="Back" />
+        <Button fx:id="cancelButton" onAction="#onCancelButtonClick" text="Cancel" visible="false" managed="false"/>
     </HBox>
-   <Label fx:id="date" text="Label" />
+    <HBox fx:id="tagOptionsHBox" alignment="CENTER" spacing="15.0" visible="false" managed="false">
+        <TextField fx:id="firstNameTextField" text="" maxWidth="100"/>
+        <TextField fx:id="lastNameTextField" text="" maxWidth="100"/>
+        <Button fx:id="tagSaveButton" text="Save" onAction="#onTagSaveButtonClick"/>
+        <Button fx:id="tagCancelButton" text="Cancel" onAction="#onTagCancelButtonClick"/>
+    </HBox>
+    <HBox fx:id="tagModeHBox" alignment="CENTER" spacing="15.0" visible="false" managed="false">
+        <Label text="Click a person on the image to tag." />
+        <Button fx:id="tagBackButton" text="Back" onAction="#onTagBackButtonClick"/>
+    </HBox>
+    <HBox alignment="CENTER" spacing="15.0">
+        <Label fx:id="dateLabel" />
+        <Label fx:id="tagsLabel" />
+        <Label fx:id="locationLabel" />
+    </HBox>
+    <Button fx:id="deleteButton" onAction="#deletePhoto" text="Delete Photo" visible="false" managed="false"/>
 
 </VBox>

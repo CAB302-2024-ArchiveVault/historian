@@ -23,7 +23,7 @@ public class SqlitePersonDAO implements IPersonDAO {
   public SqlitePersonDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
-    insertSampleData();
+//    insertSampleData();
   }
 
   /**
@@ -81,7 +81,7 @@ public class SqlitePersonDAO implements IPersonDAO {
 
 
   @Override
-  public void addPerson(Person person) {
+  public int addPerson(Person person) {
     try {
       PreparedStatement statement = connection.prepareStatement("INSERT INTO people (firstName, lastName) VALUES (?, ?)");
       statement.setString(1, person.getFirstName());
@@ -92,10 +92,12 @@ public class SqlitePersonDAO implements IPersonDAO {
       ResultSet generatedKeys = statement.getGeneratedKeys();
       if (generatedKeys.next()) {
         person.setId(generatedKeys.getInt(1));
+        return person.getId();
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return -1;
   }
 
   @Override
