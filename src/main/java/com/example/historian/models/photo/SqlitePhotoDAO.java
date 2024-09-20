@@ -104,11 +104,6 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     photo.setDate(date);
     photo.setTagged(tags);
 
-    System.out.println("TAGS BELOW");
-    for (Tag tag : photo.getTagged()) {
-      System.out.println("Tag ID: " + tag.getId());
-    }
-
     return photo;
   }
 
