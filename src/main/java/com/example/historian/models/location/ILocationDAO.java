@@ -12,7 +12,7 @@ public interface ILocationDAO {
    *
    * @param location the Location object to be added
    */
-  public void addLocation(Location location);
+  public int addLocation(Location location);
 
   /**
    * Removes a location from the data store.

@@ -154,6 +154,11 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       if (photo.getLocationId() != null) {
         statement.setInt(3, photo.getLocationId());
       } else {
+        if (photo.getLocation() != null) {
+          SqliteLocationDAO locationDAO = new SqliteLocationDAO();
+          int id = locationDAO.addLocation(photo.getLocation());
+          statement.setInt(3, id);
+        }
         statement.setNull(3, Types.INTEGER);
       }
 
