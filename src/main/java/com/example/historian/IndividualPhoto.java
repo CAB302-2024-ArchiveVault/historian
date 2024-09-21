@@ -1,5 +1,7 @@
 package com.example.historian;
 
+import com.example.historian.models.location.ILocationDAO;
+import com.example.historian.models.location.Location;
 import com.example.historian.models.person.IPersonDAO;
 import com.example.historian.models.person.Person;
 import com.example.historian.models.person.SqlitePersonDAO;
@@ -43,6 +45,8 @@ public class IndividualPhoto {
     private Pane imagePane;
     @FXML
     private Label dateLabel;
+    @FXML
+    private TextField locationTextField;
     @FXML
     private Label locationLabel;
     @FXML
@@ -105,6 +109,11 @@ public class IndividualPhoto {
             //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             dateLabel.setText(stringDate);
         }
+
+        if(photoDAO.getPhoto(clickedImageId).getLocation() != null){
+            String stringLocation = formatter.format(selectedPhoto.getLocation());
+            locationLabel.setText(stringLocation);
+        }
         imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
         tags = selectedPhoto.getTagged();
@@ -152,6 +161,12 @@ public class IndividualPhoto {
         selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
     }
+    @FXML
+    public void getLocation(){
+        String newLocationName = locationTextField.getText();
+        Location newLocation = new Location(newLocationName);
+        selectedPhoto.setLocation(newLocation);
+    }
 
     @FXML
     public void onSaveButtonClick() {
@@ -164,7 +179,9 @@ public class IndividualPhoto {
             dateLabel.setText(stringDate);
         }
         if (selectedPhoto.getLocation() != null){
-            locationLabel.setText(selectedPhoto.getLocation().getLocationName());
+            String stringLocation = formatter.format(selectedPhoto.getLocation());
+            locationLabel.setText(stringLocation);
+
         }
         // Code to be implemented later once its determined how to display the tags in the label
         /*if (!selectedPhoto.getTagged().isEmpty())
@@ -191,8 +208,8 @@ public class IndividualPhoto {
         myDatePicker.setManaged(editState);
         saveButton.setVisible(editState);
         saveButton.setManaged(editState);
-        locationButton.setVisible(editState);
-        locationButton.setManaged(editState);
+        locationTextField.setVisible(editState);
+        locationTextField.setManaged(editState);
         tagButton.setVisible(editState);
         tagButton.setManaged(editState);
         cancelButton.setVisible(editState);
