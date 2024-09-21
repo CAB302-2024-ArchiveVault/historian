@@ -2,10 +2,7 @@ package com.example.historian.models.location;
 
 import com.example.historian.utils.SqliteConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class SqliteLocationDAO implements ILocationDAO {
   public SqliteLocationDAO() {
     connection = SqliteConnection.getInstance();
     createTable();
-    insertSampleData();
+    //insertSampleData();
   }
 
   /**
@@ -93,7 +90,7 @@ public class SqliteLocationDAO implements ILocationDAO {
   @Override
   public void removeLocation(Location location) {
     try {
-      PreparedStatement statement = connection.prepareStatement("DELET FROM locations WHERE id = ?");
+      PreparedStatement statement = connection.prepareStatement("DELETE FROM locations WHERE id = ?");
       statement.setInt(1, location.getId());
       statement.executeUpdate();
     } catch (Exception e) {
