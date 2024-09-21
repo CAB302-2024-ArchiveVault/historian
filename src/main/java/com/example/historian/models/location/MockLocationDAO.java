@@ -18,10 +18,11 @@ public class MockLocationDAO implements ILocationDAO {
   }
 
   @Override
-  public void addLocation(Location location) {
+  public int addLocation(Location location) {
     location.setId(autoIncrementId);
     autoIncrementId++;
     locations.add(location);
+    return location.getId();
   }
 
   @Override

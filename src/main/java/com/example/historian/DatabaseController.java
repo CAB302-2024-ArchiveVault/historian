@@ -70,7 +70,6 @@ public class DatabaseController {
             StageManager.switchScene("homepage-view.fxml");
         } else {
             // IF THEY CANCEL DELETE
-            StageManager.switchScene("homepage-view.fxml");
         }
     }
 
@@ -83,6 +82,11 @@ public class DatabaseController {
                     + "DELETE FROM photos;"
                     + "DELETE FROM people;"
                     + "DELETE FROM tags;"
+                    + "DROP TABLE IF EXISTS accounts;"
+                    + "DROP TABLE IF EXISTS locations;"
+                    + "DROP TABLE IF EXISTS photos;"
+                    + "DROP TABLE IF EXISTS people;"
+                    + "DROP TABLE IF EXISTS tags;"
                     + "PRAGMA foreign_keys = ON;";
             statement.execute(query);
             System.out.println("HELLO");

@@ -74,7 +74,7 @@ public class SqliteLocationDAO implements ILocationDAO {
   }
 
   @Override
-  public void addLocation(Location location) {
+  public int addLocation(Location location) {
     try {
       PreparedStatement statement = connection.prepareStatement("INSERT INTO locations (locationName) VALUES (?)");
       statement.setString(1, location.getLocationName());
@@ -84,10 +84,12 @@ public class SqliteLocationDAO implements ILocationDAO {
       ResultSet generatedKeys = statement.getGeneratedKeys();
       if (generatedKeys.next()) {
         location.setId(generatedKeys.getInt(1));
+        return location.getId();
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return -1;
   }
 
   @Override
