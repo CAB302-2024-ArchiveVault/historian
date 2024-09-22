@@ -2,6 +2,7 @@ package com.example.historian;
 
 import com.example.historian.models.location.ILocationDAO;
 import com.example.historian.models.location.Location;
+import com.example.historian.models.location.SqliteLocationDAO;
 import com.example.historian.models.person.IPersonDAO;
 import com.example.historian.models.person.Person;
 import com.example.historian.models.person.SqlitePersonDAO;
@@ -90,6 +91,7 @@ public class IndividualPhoto {
     private IPersonDAO personDAO;
     private ITagDAO tagDAO;
     private List<Tag> tags;
+    private ILocationDAO locationDAO;
 
     private boolean editState = false;
 
@@ -101,6 +103,7 @@ public class IndividualPhoto {
         photoDAO = new SqlitePhotoDAO();
         personDAO = new SqlitePersonDAO();
         tagDAO = new SqliteTagDAO();
+        locationDAO = new SqliteLocationDAO();
         selectedPhoto = photoDAO.getPhoto(clickedImageId);
         imageDisplay.setImage(selectedPhoto.getImage());
 
@@ -111,8 +114,8 @@ public class IndividualPhoto {
         }
 
         if(photoDAO.getPhoto(clickedImageId).getLocation() != null){
-            String stringLocation = formatter.format(selectedPhoto.getLocation());
-            locationLabel.setText(stringLocation);
+            //String stringLocation = formatter.format(selectedPhoto.getLocation());
+            locationLabel.setText(selectedPhoto.getLocation().getLocationName());
         }
         imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
@@ -165,12 +168,15 @@ public class IndividualPhoto {
     public void getLocation(){
         String newLocationName = locationTextField.getText();
         Location newLocation = new Location(newLocationName);
+        locationDAO.addLocation(newLocation);
         selectedPhoto.setLocation(newLocation);
+
     }
 
     @FXML
     public void onSaveButtonClick() {
         selectedPhoto.setTagged(tags);
+        getLocation();
         photoDAO.updatePhoto(selectedPhoto);
 
         editState = false;
@@ -179,8 +185,8 @@ public class IndividualPhoto {
             dateLabel.setText(stringDate);
         }
         if (selectedPhoto.getLocation() != null){
-            String stringLocation = formatter.format(selectedPhoto.getLocation());
-            locationLabel.setText(stringLocation);
+            //String stringLocation = formatter.format(selectedPhoto.getLocation());
+            locationLabel.setText(selectedPhoto.getLocation().getLocationName());
 
         }
         // Code to be implemented later once its determined how to display the tags in the label

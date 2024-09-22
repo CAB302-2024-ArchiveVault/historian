@@ -19,7 +19,7 @@
     </Pane>
     <HBox fx:id="editOptionsHBox" alignment="CENTER" spacing="15.0">
         <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" visible ="false" managed = "false" />
-        <TextField fx:id="locationTextField" onAction="#getLocation"  visible="false" managed ="false" prefHeight="26.0" prefWidth="64.0" promptText="Location" />
+        <TextField fx:id="locationTextField" visible="false" managed ="false" prefHeight="26.0" prefWidth="64.0" promptText="Location" />
         <Button fx:id="tagButton" text="Tag" onAction="#onTagButtonClick" visible="false" managed="false"/>
         <Button fx:id="saveButton" text="Save" onAction="#onSaveButtonClick" visible="false" managed="false"/>
         <Button fx:id="editButton" text="Edit" onAction="#onEditButtonClick" />
