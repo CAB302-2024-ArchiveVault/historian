@@ -8,7 +8,7 @@ public class PersonTest {
 
     @BeforeEach
     public void setup() {
-        person = new Person("testFirstname", "testLastName");
+        person = new Person("testFirstName", "testLastName");
     }
 
     @Test
@@ -20,7 +20,7 @@ public class PersonTest {
     @Test
     public void testGetFirstName(){
         person.getFirstName();
-        assertEquals("testFirstname", person.getFirstName());
+        assertEquals("testFirstName", person.getFirstName());
     }
 
     @Test
@@ -32,7 +32,7 @@ public class PersonTest {
     @Test
     public void testFullName(){
         person.getFullName();
-        assertEquals("testFirstname testLastName", person.getFullName());
+        assertEquals("testFirstName testLastName", person.getFullName());
     }
 }
 
