@@ -22,7 +22,4 @@ public class LocationTest {
         location.getLocationName();
         assertEquals("testLocation", location.getLocationName());
     }
-
-
-
 }

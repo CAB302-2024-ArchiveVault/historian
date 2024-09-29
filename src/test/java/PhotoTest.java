@@ -44,6 +44,5 @@ public class PhotoTest{
         assertEquals("this is a image", photo.getDescription());
 
     }
-
 }
 

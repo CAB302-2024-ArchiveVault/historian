@@ -14,7 +14,6 @@ public class TagTest {
         tag = new Tag(4, new Person("testFirstName", "testLastName"), 50, 72);
     }
 
-
     @Test
     public void testGetId() {
         tag.setId(100);
