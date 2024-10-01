@@ -176,7 +176,9 @@ public class IndividualPhoto {
     @FXML
     public void onSaveButtonClick() {
         selectedPhoto.setTagged(tags);
-        getLocation();
+        if (!locationTextField.getText().isEmpty()) {
+            getLocation();
+        }
         photoDAO.updatePhoto(selectedPhoto);
 
         editState = false;
