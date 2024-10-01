@@ -108,7 +108,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   }
 
   @Override
-  public void addPhoto(Photo photo) {
+  public int addPhoto(Photo photo) {
     try {
       PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType) VALUES (?, ?, ?, ?, ?)");
 
@@ -134,9 +134,11 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       if (generatedKeys.next()) {
         photo.setId(generatedKeys.getInt(1));
       }
+      return photo.getId();
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return -1;
   }
 
   @Override

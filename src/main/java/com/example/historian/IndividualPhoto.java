@@ -12,6 +12,7 @@ import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.models.tag.ITagDAO;
 import com.example.historian.models.tag.SqliteTagDAO;
 import com.example.historian.models.tag.Tag;
+import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -81,8 +82,9 @@ public class IndividualPhoto {
     @FXML
     public TextField lastNameTextField;
 
+    private GallerySingleton gallerySingleton;
+
     public Photo selectedPhoto;
-    public static int clickedImageId;
     private IPhotoDAO photoDAO;
     private Double xCoord;
     private Double yCoord;
@@ -100,20 +102,24 @@ public class IndividualPhoto {
 
     @FXML
     public void initialize() throws IOException{
+        gallerySingleton = GallerySingleton.getInstance();
+        GallerySingleton.PhotoQueueItem photoQueueItem = gallerySingleton.popFromPhotoQueue();
+        editState = photoQueueItem.openToEditMode();
+
         photoDAO = new SqlitePhotoDAO();
         personDAO = new SqlitePersonDAO();
         tagDAO = new SqliteTagDAO();
         locationDAO = new SqliteLocationDAO();
-        selectedPhoto = photoDAO.getPhoto(clickedImageId);
+        selectedPhoto = photoDAO.getPhoto(photoQueueItem.photoId());
         imageDisplay.setImage(selectedPhoto.getImage());
 
-        if(photoDAO.getPhoto(clickedImageId).getDate() != null){
+        if(photoDAO.getPhoto(selectedPhoto.getId()).getDate() != null){
             String stringDate = formatter.format(selectedPhoto.getDate());
             //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             dateLabel.setText(stringDate);
         }
 
-        if(photoDAO.getPhoto(clickedImageId).getLocation() != null){
+        if(photoDAO.getPhoto(selectedPhoto.getId()).getLocation() != null){
             //String stringLocation = formatter.format(selectedPhoto.getLocation());
             locationLabel.setText(selectedPhoto.getLocation().getLocationName());
         }
@@ -237,7 +243,7 @@ public class IndividualPhoto {
         alert.setContentText("Are you sure you want to delete the photo?");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-            photoDAO.removePhoto(photoDAO.getPhoto(clickedImageId));
+            photoDAO.removePhoto(photoDAO.getPhoto(selectedPhoto.getId()));
             StageManager.switchScene("gallery-view.fxml");
         }
     }
@@ -256,7 +262,7 @@ public class IndividualPhoto {
 
         Person person = new Person(firstName, lastName);
 
-        Tag tag = new Tag(clickedImageId, person, xCoord.intValue(), yCoord.intValue());
+        Tag tag = new Tag(selectedPhoto.getId(), person, xCoord.intValue(), yCoord.intValue());
         tags.add(tag);
         renderTag(tag, true);
 

@@ -18,10 +18,11 @@ public class MockPhotoDAO implements IPhotoDAO {
   }
 
   @Override
-  public void addPhoto(Photo photo) {
+  public int addPhoto(Photo photo) {
     photo.setId(autoIncrementId);
     autoIncrementId++;
     photos.add(photo);
+    return autoIncrementId;
   }
 
   @Override

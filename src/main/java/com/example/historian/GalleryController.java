@@ -6,6 +6,7 @@ import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
+import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -35,9 +36,9 @@ public class GalleryController {
   public Button logoutButton;
 
   private int photosPerPage = 6;
-  private int photoPage = 0;
 
   private AuthSingleton authSingleton;
+  private GallerySingleton gallerySingleton;
   private IPhotoDAO photoDAO;
   public List<Photo> photoList;
 
@@ -49,6 +50,9 @@ public class GalleryController {
     if (!authSingleton.checkAuthorised()) {
       StageManager.switchToHomepage();
     }
+
+    // Get the gallery singleton
+    gallerySingleton = GallerySingleton.getInstance();
 
     Account authorisedAccount = authSingleton.getAccount();
     accountText.setText(authorisedAccount.getUsername());
@@ -83,25 +87,38 @@ public class GalleryController {
     if (selectedFiles != null) {
       for (File selectedFile : selectedFiles) {
         try {
-          photoDAO.addPhoto(Photo.fromFile(selectedFile, "Temporary description!"));
+          int photoId = photoDAO.addPhoto(Photo.fromFile(selectedFile, ""));
+          gallerySingleton.addToPhotoQueue(new GallerySingleton.PhotoQueueItem(photoId, true));
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
     }
+
+    // Update the display
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
     buttonUpdate();
+
+    // Check whether the individual photo view needs to be opened
+    checkToDisplayIndividualPhoto();
   }
 
-  //Potentially redundant function, creates a second list to display images, used to avoid indexing issues
-
+  private void checkToDisplayIndividualPhoto() {
+    if (!gallerySingleton.isPhotoQueueEmpty()) {
+      try {
+        StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
   public void displayPhotos() {
     List<Photo> photosToDisplay = new ArrayList<>();
 
     // Find all images to display
-    for (int i = (photoPage * photosPerPage); i < Math.min((photoPage * photosPerPage) + photosPerPage, photoList.size()); i++) {
+    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
     }
 
@@ -130,33 +147,30 @@ public class GalleryController {
       // Get the source of the event (the clicked node)
       ImageView clickedImage = (ImageView) event.getSource();
 
-      // Get the ID of the clicked node
-      int id = Integer.parseInt(clickedImage.getId());
-      IndividualPhoto.clickedImageId = id;
-      try {
-        StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      // Add this image to the photo queue, then open the individual photo page
+      gallerySingleton.addToPhotoQueue(
+          new GallerySingleton.PhotoQueueItem(Integer.parseInt(clickedImage.getId()), false)
+      );
+      checkToDisplayIndividualPhoto();
     };
   }
 
 
   public void buttonUpdate() {
-    backButton.setVisible(photoPage > 0);
-    forwardButton.setVisible(photoList.size() > 6 && ((photoPage + 1) * 6) < photoList.size());
+    backButton.setVisible(gallerySingleton.getCurrentPage() > 0);
+    forwardButton.setVisible(photoList.size() > 6 && ((gallerySingleton.getCurrentPage() + 1) * 6) < photoList.size());
   }
 
   @FXML
   public void onBackButtonClick() {
-    photoPage--;
+    gallerySingleton.setCurrentPage(gallerySingleton.getCurrentPage() - 1);
     displayPhotos();
     buttonUpdate();
   }
 
   @FXML
   public void onForwardButtonClick() {
-    photoPage++;
+    gallerySingleton.setCurrentPage(gallerySingleton.getCurrentPage() + 1);
     displayPhotos();
     buttonUpdate();
   }
