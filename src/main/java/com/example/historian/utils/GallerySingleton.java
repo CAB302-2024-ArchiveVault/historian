@@ -38,7 +38,6 @@ public class GallerySingleton {
   }
 
   public void addToPhotoQueue(PhotoQueueItem item) {
-    System.out.println(item);
     this.photoQueue.add(item);
   }
 
