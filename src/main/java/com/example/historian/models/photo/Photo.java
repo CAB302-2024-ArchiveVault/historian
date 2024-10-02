@@ -25,13 +25,13 @@ public class Photo {
 
   /**
    * Constructs a Photo object with the specified image data, image type, and description.
-   * 
+   * <p>
    * Because there are so many different permutations of arguments that can
    * be passed into the constructor I have just decided to keep it at requiring
    * an image where other metadata can be added after creation.
    *
-   * @param image the image data as a byte array
-   * @param imageType the type of the image (e.g., "jpg", "png")
+   * @param image       the image data as a byte array
+   * @param imageType   the type of the image (e.g., "jpg", "png")
    * @param description the description of the photo
    */
   public Photo(byte[] image, String imageType, String description) {
@@ -127,7 +127,9 @@ public class Photo {
     this.tagged.add(tag);
   }
 
-  public void setTagged(List<Tag> tagged) {this.tagged = tagged;}
+  public void setTagged(List<Tag> tagged) {
+    this.tagged = tagged;
+  }
 
   /**
    * Returns the image data as a byte array.
@@ -189,9 +191,23 @@ public class Photo {
   }
 
   /**
+   * Returns true if this photo has the minimum fields required to save, which is at least one of the following:
+   * - A description
+   * - A date
+   * - A location
+   * - At least one tagged person
+   */
+  public boolean hasMinimumFields() {
+    return !(getDescription() == null || getDescription().isEmpty() || getDescription().isBlank())
+            || getLocationId() != null
+            || getDate() != null
+            || !getTagged().isEmpty();
+  }
+
+  /**
    * Creates a Photo object from a file.
    *
-   * @param file the file containing the image data
+   * @param file        the file containing the image data
    * @param description the description of the photo
    * @return a Photo object
    * @throws Exception if an error occurs while reading the file
@@ -212,5 +228,4 @@ public class Photo {
 
     return new Photo(imageBytes, imageType, description);
   }
-
 }

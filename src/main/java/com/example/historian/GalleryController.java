@@ -107,7 +107,7 @@ public class GalleryController {
   private void checkToDisplayIndividualPhoto() {
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       try {
-        StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+        StageManager.switchScene("individualPhoto-view.fxml", 500, 800);
       } catch (Exception e) {
         e.printStackTrace();
       }

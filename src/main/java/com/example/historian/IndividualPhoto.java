@@ -8,11 +8,9 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.models.tag.Tag;
-import com.example.historian.utils.GallerySingleton;
-import com.example.historian.utils.StageManager;
+import com.example.historian.utils.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -69,6 +67,8 @@ public class IndividualPhoto {
   private VBox imageInfo;
   @FXML
   private VBox editOptions;
+  @FXML
+  private HBox pageNavigation;
 
   // Global data handlers
   private GallerySingleton gallerySingleton;
@@ -199,6 +199,7 @@ public class IndividualPhoto {
   @FXML
   public void getLocation() {
     String newLocationName = locationTextField.getText();
+    if (newLocationName.isBlank() || newLocationName.isEmpty()) return;
     Location newLocation = new Location(newLocationName);
     locationDAO.addLocation(newLocation);
     selectedPhoto.setLocation(newLocation);
@@ -206,9 +207,21 @@ public class IndividualPhoto {
 
   @FXML
   public void onSaveButtonClick() {
+
     selectedPhoto.setTagged(tempTags);
     getLocation();
     photoDAO.updatePhoto(selectedPhoto);
+
+    // Check if the photo contains minimum necessary fields
+    if (!selectedPhoto.hasMinimumFields()) {
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("Unable to Save");
+      alert.setWidth(400);
+      alert.setHeight(400);
+      alert.setContentText("This photo cannot be saved because it does not have a date, description, location or any tagged people. Please add at least one of those to save this photo.");
+      alert.show();
+      return;
+    }
 
     loadPhoto(this.selectedPhoto.getId(), false);
   }
@@ -227,8 +240,11 @@ public class IndividualPhoto {
   private void setPageEditMode(boolean isEditMode) {
     editOptions.setVisible(isEditMode);
     editOptions.setManaged(isEditMode);
+
     imageInfo.setVisible(!isEditMode);
     imageInfo.setManaged(!isEditMode);
+    pageNavigation.setVisible(!isEditMode);
+    pageNavigation.setManaged(!isEditMode);
   }
 
 
