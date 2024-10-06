@@ -42,8 +42,13 @@ import java.util.Optional;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import jdk.jfr.Description;
 
 public class IndividualPhoto {
+    @FXML
+    public TextField descriptionTextField1;
+    @FXML
+    public Label descriptionLabel;
     @FXML
     private Pane imagePane;
     @FXML
@@ -57,7 +62,7 @@ public class IndividualPhoto {
     @FXML
     private DatePicker myDatePicker;
     @FXML
-    private Button locationButton;
+    private TextField photoDescription;
     @FXML
     private Button tagButton;
     @FXML
@@ -126,6 +131,10 @@ public class IndividualPhoto {
             //String stringLocation = formatter.format(selectedPhoto.getLocation());
             locationLabel.setText(selectedPhoto.getLocation().getLocationName());
         }
+
+        if(photoDAO.getPhoto(clickedImageId).getDescription() != null){
+            descriptionLabel.setText(selectedPhoto.getDescription());
+        }
         imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
         tags = selectedPhoto.getTagged();
@@ -181,11 +190,17 @@ public class IndividualPhoto {
         selectedPhoto.setLocation(newLocation);
 
     }
+    @FXML
+    public void getDescription(){
+        String newDescription = descriptionTextField1.getText();
+        selectedPhoto.setDescription(newDescription);
+    }
 
     @FXML
     public void onSaveButtonClick() {
         selectedPhoto.setTagged(tags);
         getLocation();
+        getDescription();
         photoDAO.updatePhoto(selectedPhoto);
 
         editState = false;
@@ -196,7 +211,9 @@ public class IndividualPhoto {
         if (selectedPhoto.getLocation() != null){
             //String stringLocation = formatter.format(selectedPhoto.getLocation());
             locationLabel.setText(selectedPhoto.getLocation().getLocationName());
-
+        }
+        if (selectedPhoto.getDescription() != null){
+            descriptionLabel.setText(selectedPhoto.getDescription());
         }
         // Code to be implemented later once its determined how to display the tags in the label
         /*if (!selectedPhoto.getTagged().isEmpty())
@@ -225,6 +242,8 @@ public class IndividualPhoto {
         saveButton.setManaged(editState);
         locationTextField.setVisible(editState);
         locationTextField.setManaged(editState);
+        descriptionTextField1.setVisible(editState);
+        descriptionTextField1.setManaged(editState);
         tagButton.setVisible(editState);
         tagButton.setManaged(editState);
         cancelButton.setVisible(editState);
