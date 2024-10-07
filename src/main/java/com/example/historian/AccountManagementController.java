@@ -30,6 +30,14 @@ public class AccountManagementController {
     @FXML
     private ComboBox<AccountPrivilege> privilegeComboBox;
 
+
+    private static Account currentUser;
+
+    public static Account getCurrentUser() {
+        return currentUser;
+    }
+
+
     public AccountManagementController() {
         accountDAO = new SqliteAccountDAO();
     }

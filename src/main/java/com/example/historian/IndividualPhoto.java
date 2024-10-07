@@ -1,5 +1,11 @@
 package com.example.historian;
 
+import com.example.historian.auth.AuthSingleton;
+import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountPrivilege;
+import com.example.historian.models.location.ILocationDAO;
+import com.example.historian.models.location.Location;
+import com.example.historian.models.location.SqliteLocationDAO;
 import com.example.historian.models.person.IPersonDAO;
 import com.example.historian.models.person.Person;
 import com.example.historian.models.person.SqlitePersonDAO;
@@ -37,12 +43,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
-
 public class IndividualPhoto {
     @FXML
     private Pane imagePane;
     @FXML
     private Label dateLabel;
+    @FXML
+    private TextField locationTextField;
     @FXML
     private Label locationLabel;
     @FXML
@@ -86,6 +93,7 @@ public class IndividualPhoto {
     private IPersonDAO personDAO;
     private ITagDAO tagDAO;
     private List<Tag> tags;
+    private ILocationDAO locationDAO;
 
     private boolean editState = false;
 
@@ -97,13 +105,26 @@ public class IndividualPhoto {
         photoDAO = new SqlitePhotoDAO();
         personDAO = new SqlitePersonDAO();
         tagDAO = new SqliteTagDAO();
+        locationDAO = new SqliteLocationDAO();
         selectedPhoto = photoDAO.getPhoto(clickedImageId);
         imageDisplay.setImage(selectedPhoto.getImage());
+
+        Account currentUser = AuthSingleton.getInstance().getAccount();
+        if (currentUser != null && currentUser.getAccountPrivilege() == AccountPrivilege.MEMBER) {
+            // Hide the Edit button for members
+            editButton.setVisible(false);
+            editButton.setManaged(false);
+        }
 
         if(photoDAO.getPhoto(clickedImageId).getDate() != null){
             String stringDate = formatter.format(selectedPhoto.getDate());
             //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             dateLabel.setText(stringDate);
+        }
+
+        if(photoDAO.getPhoto(clickedImageId).getLocation() != null){
+            //String stringLocation = formatter.format(selectedPhoto.getLocation());
+            locationLabel.setText(selectedPhoto.getLocation().getLocationName());
         }
         imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
@@ -152,10 +173,19 @@ public class IndividualPhoto {
         selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
     }
+    @FXML
+    public void getLocation(){
+        String newLocationName = locationTextField.getText();
+        Location newLocation = new Location(newLocationName);
+        locationDAO.addLocation(newLocation);
+        selectedPhoto.setLocation(newLocation);
+
+    }
 
     @FXML
     public void onSaveButtonClick() {
         selectedPhoto.setTagged(tags);
+        getLocation();
         photoDAO.updatePhoto(selectedPhoto);
         selectedPhoto = photoDAO.getPhoto(clickedImageId);
         tags = selectedPhoto.getTagged();
@@ -166,7 +196,9 @@ public class IndividualPhoto {
             dateLabel.setText(stringDate);
         }
         if (selectedPhoto.getLocation() != null){
+            //String stringLocation = formatter.format(selectedPhoto.getLocation());
             locationLabel.setText(selectedPhoto.getLocation().getLocationName());
+
         }
         // Code to be implemented later once its determined how to display the tags in the label
         /*if (!selectedPhoto.getTagged().isEmpty())
@@ -193,8 +225,8 @@ public class IndividualPhoto {
         myDatePicker.setManaged(editState);
         saveButton.setVisible(editState);
         saveButton.setManaged(editState);
-        locationButton.setVisible(editState);
-        locationButton.setManaged(editState);
+        locationTextField.setVisible(editState);
+        locationTextField.setManaged(editState);
         tagButton.setVisible(editState);
         tagButton.setManaged(editState);
         cancelButton.setVisible(editState);
