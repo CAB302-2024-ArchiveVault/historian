@@ -157,6 +157,8 @@ public class IndividualPhoto {
     public void onSaveButtonClick() {
         selectedPhoto.setTagged(tags);
         photoDAO.updatePhoto(selectedPhoto);
+        selectedPhoto = photoDAO.getPhoto(clickedImageId);
+        tags = selectedPhoto.getTagged();
 
         editState = false;
         if (selectedPhoto.getDate() != null) {

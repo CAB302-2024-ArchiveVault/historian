@@ -136,10 +136,11 @@ public class SqliteTagDAO implements ITagDAO {
     tagsToBeRemoved.removeAll(tagsSet);
 
     for (Tag tag : tagsToBeAdded) {
-      if (tag.getPerson().getId() < 0) {}
-      SqlitePersonDAO personDAO = new SqlitePersonDAO();
-      int personId = personDAO.addPerson(tag.getPerson());
-      tag.getPerson().setId(personId);
+      if (tag.getPerson().getId() < 0) {
+        SqlitePersonDAO personDAO = new SqlitePersonDAO();
+        int personId = personDAO.addPerson(tag.getPerson());
+        tag.getPerson().setId(personId);
+      }
       addTag(tag);
     }
     for (Tag tag : tagsToBeRemoved) {

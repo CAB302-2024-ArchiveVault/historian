@@ -35,7 +35,7 @@ public class SqliteLocationDAO implements ILocationDAO {
               + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
               + "locationName VARCHAR NOT NULL"
               + ")";
-      statement.executeQuery(query);
+      statement.execute(query);
     } catch (Exception e) {
       e.printStackTrace();
     }

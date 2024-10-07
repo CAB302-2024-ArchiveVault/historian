@@ -12,6 +12,7 @@ import com.example.historian.utils.StageManager;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
@@ -59,7 +60,7 @@ public class DatabaseController {
     }
 
     @FXML
-    protected void onDeleteDatabaseClick() throws IOException {
+    protected void onDeleteDatabaseClick() throws IOException, SQLException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Database Deletion Confirmation");
         alert.setHeaderText("Warning! You are about to delete the database. This will erase all data.");
@@ -73,25 +74,29 @@ public class DatabaseController {
         }
     }
 
-    private void deleteDatabase() {
+    private void deleteDatabase() throws SQLException {
+        // Set autoCommit to false to manually manage transactions
         try {
+            connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
-            String query = "PRAGMA foreign_keys = OFF;"
-                    + "DELETE FROM accounts;"
-                    + "DELETE FROM locations;"
-                    + "DELETE FROM photos;"
-                    + "DELETE FROM people;"
-                    + "DELETE FROM tags;"
-                    + "DROP TABLE IF EXISTS accounts;"
-                    + "DROP TABLE IF EXISTS locations;"
-                    + "DROP TABLE IF EXISTS photos;"
-                    + "DROP TABLE IF EXISTS people;"
-                    + "DROP TABLE IF EXISTS tags;"
-                    + "PRAGMA foreign_keys = ON;";
-            statement.execute(query);
-            System.out.println("HELLO");
-        } catch (Exception e) {
+            statement.execute("PRAGMA busy_timeout = 5000;");
+            statement.execute("PRAGMA foreign_keys = OFF;");
+
+            // Delete records first
+            statement.execute("DELETE FROM photos;");
+            statement.execute("DELETE FROM locations;");
+            statement.execute("DELETE FROM people;");
+            statement.execute("DELETE FROM tags;");
+
+            // Commit the deletion operation
+            connection.commit();
+
+            statement.execute("PRAGMA foreign_keys = ON;");
+        } catch (SQLException e) {
+            connection.rollback();
             e.printStackTrace();
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 }
