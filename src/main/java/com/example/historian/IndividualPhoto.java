@@ -187,6 +187,8 @@ public class IndividualPhoto {
         selectedPhoto.setTagged(tags);
         getLocation();
         photoDAO.updatePhoto(selectedPhoto);
+        selectedPhoto = photoDAO.getPhoto(clickedImageId);
+        tags = selectedPhoto.getTagged();
 
         editState = false;
         if (selectedPhoto.getDate() != null) {
