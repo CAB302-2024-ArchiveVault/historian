@@ -43,9 +43,24 @@ public class SqlitePhotoDAO implements IPhotoDAO {
               + "locationId VARCHAR,"
               + "image BLOB NOT NULL,"
               + "imageType VARCHAR NOT NULL,"
+              + "uploaderAccountId INTEGER NOT NULL,"  //
               + "FOREIGN KEY(locationId) REFERENCES location(id)"
               + ")";
       statement.execute(query);
+
+      //
+      // Add the uploaderAccountId column if it doesn't exist
+      String alterTableQuery = "ALTER TABLE photos ADD COLUMN uploaderAccountId INTEGER";
+      try {
+        statement.execute(alterTableQuery);
+      } catch (SQLException e) {
+        // Ignore if the column already exists
+        if (!e.getMessage().contains("duplicate column name")) {
+          throw e;
+        }
+      }
+      //
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -80,6 +95,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     String description = resultSet.getString("description");
     byte[] imageStream = resultSet.getBytes("image");
     String imageType = resultSet.getString("imageType");
+    int uploaderAccountId = resultSet.getInt("uploaderAccountId");  //
 
     // Get nullable values
     String dateString = resultSet.getObject("date") != null ? resultSet.getString("date") : null;
@@ -98,7 +114,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     ITagDAO tagDAO = new SqliteTagDAO();
     List<Tag> tags = tagDAO.getTagsForPhoto(id);
 
-    Photo photo = new Photo(imageStream, imageType, description);
+    Photo photo = new Photo(imageStream, imageType, description, uploaderAccountId);    //
     photo.setId(id);
     photo.setLocation(location);
     photo.setDate(date);
@@ -110,7 +126,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   @Override
   public void addPhoto(Photo photo) {
     try {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType) VALUES (?, ?, ?, ?, ?)");
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType, uploaderAccountId) VALUES (?, ?, ?, ?, ?, ?)");
 
       if (photo.getDate() != null) {
         statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
@@ -127,6 +143,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
 
       statement.setBytes(4, photo.getImageAsBytes());
       statement.setString(5, photo.getImageType());
+      statement.setInt(6, photo.getUploaderAccountId());  //
       statement.executeUpdate();
 
       // Set the ID of the new photo

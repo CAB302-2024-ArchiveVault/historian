@@ -80,10 +80,19 @@ public class GalleryController {
     fileChooser.setTitle("Choose photo/s to upload");
     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
     List<File> selectedFiles = fileChooser.showOpenMultipleDialog(primaryStage);
+
+    // Get the current authenticated user
+    Account currentUser = AuthSingleton.getInstance().getAccount();
+    int uploaderAccountId = currentUser != null ? currentUser.getId() : -1;  // Assign uploader's account ID
+
+
     if (selectedFiles != null) {
       for (File selectedFile : selectedFiles) {
         try {
+          //Photo newPhoto = Photo.fromFile(selectedFile, "Temporary description!", uploaderAccountId);
           photoDAO.addPhoto(Photo.fromFile(selectedFile, "Temporary description!"));
+          //photoDAO.addPhoto(newPhoto);
+
         } catch (Exception e) {
           e.printStackTrace();
         }
