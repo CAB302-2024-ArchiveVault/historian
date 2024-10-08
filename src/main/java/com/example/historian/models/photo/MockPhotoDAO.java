@@ -1,6 +1,7 @@
 package com.example.historian.models.photo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,6 +52,11 @@ public class MockPhotoDAO implements IPhotoDAO {
 
   @Override
   public List<Photo> getAllPhotos() {
+    return new ArrayList<>(photos);
+  }
+
+  @Override
+  public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person) {
     return new ArrayList<>(photos);
   }
 }

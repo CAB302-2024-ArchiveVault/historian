@@ -1,5 +1,8 @@
 package com.example.historian;
 
+import com.example.historian.auth.AuthSingleton;
+import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.location.ILocationDAO;
 import com.example.historian.models.location.Location;
 import com.example.historian.models.location.SqliteLocationDAO;
@@ -39,7 +42,6 @@ import java.util.Optional;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-
 
 public class IndividualPhoto {
     @FXML
@@ -106,6 +108,13 @@ public class IndividualPhoto {
         locationDAO = new SqliteLocationDAO();
         selectedPhoto = photoDAO.getPhoto(clickedImageId);
         imageDisplay.setImage(selectedPhoto.getImage());
+
+        Account currentUser = AuthSingleton.getInstance().getAccount();
+        if (currentUser != null && currentUser.getAccountPrivilege() == AccountPrivilege.MEMBER) {
+            // Hide the Edit button for members
+            editButton.setVisible(false);
+            editButton.setManaged(false);
+        }
 
         if(photoDAO.getPhoto(clickedImageId).getDate() != null){
             String stringDate = formatter.format(selectedPhoto.getDate());
@@ -180,6 +189,8 @@ public class IndividualPhoto {
             getLocation();
         }
         photoDAO.updatePhoto(selectedPhoto);
+        selectedPhoto = photoDAO.getPhoto(clickedImageId);
+        tags = selectedPhoto.getTagged();
 
         editState = false;
         if (selectedPhoto.getDate() != null) {
