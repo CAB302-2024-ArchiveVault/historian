@@ -22,6 +22,7 @@ public class Photo {
   private Location location;
   private byte[] image;
   private String imageType;
+  private int uploaderAccountId;
 
   /**
    * Constructs a Photo object with the specified image data, image type, and description.
@@ -34,14 +35,31 @@ public class Photo {
    * @param imageType   the type of the image (e.g., "jpg", "png")
    * @param description the description of the photo
    */
-  public Photo(byte[] image, String imageType, String description) {
+  public Photo(byte[] image, String imageType, String description, int uploaderAccountId) {     //
     this.image = image;
     this.imageType = imageType;
     this.description = description;
+    this.uploaderAccountId = uploaderAccountId; //
     date = null;
     tagged = new ArrayList<>();
     location = null;
   }
+
+  //
+  // Constructor with 3 arguments (backward compatibility)
+  public Photo(byte[] image, String imageType, String description) {
+    this(image, imageType, description, -1);  // Default uploaderAccountId (-1 or other default value)
+  }
+
+  // Add getter and setter for uploaderAccountId
+  public int getUploaderAccountId() {
+    return uploaderAccountId;
+  }
+
+  public void setUploaderAccountId(int uploaderAccountId) {
+    this.uploaderAccountId = uploaderAccountId;
+  }
+  //
 
   /**
    * Returns the ID of the photo.

@@ -160,10 +160,22 @@ public class IndividualPhoto {
     setPageEditMode(editMode);
 
     Account currentUser = AuthSingleton.getInstance().getAccount();
-    if (currentUser != null && currentUser.getAccountPrivilege() == AccountPrivilege.MEMBER) {
-      // Hide the Edit button for members
-      editButton.setVisible(false);
-      editButton.setManaged(false);
+    if (currentUser != null) {
+      // Check if the current user is a MEMBER
+      if (currentUser.getAccountPrivilege() == AccountPrivilege.MEMBER) {
+        // If the user is a member, only show the edit button if they uploaded the photo
+        if (currentUser.getId() == selectedPhoto.getUploaderAccountId()) {
+          editButton.setVisible(true);  // Show the Edit button
+          editButton.setManaged(true);
+        } else {
+          editButton.setVisible(false);
+          editButton.setManaged(false);
+        }
+      } else {
+        // For all other privilege levels
+        editButton.setVisible(true);
+        editButton.setManaged(true);
+      }
     }
   }
 

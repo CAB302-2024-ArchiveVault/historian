@@ -13,6 +13,7 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.GallerySingleton;
+import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -60,6 +61,7 @@ public class GalleryController {
   public Button applyFilterButton;
 
   private int photosPerPage = 6;
+  private int photoPage = 0;
 
   private AuthSingleton authSingleton;
   private GallerySingleton gallerySingleton;
@@ -243,10 +245,18 @@ public class GalleryController {
     fileChooser.setTitle("Choose photo/s to upload");
     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
     List<File> selectedFiles = fileChooser.showOpenMultipleDialog(primaryStage);
+
+    // Get the current authenticated user
+    Account currentUser = AuthSingleton.getInstance().getAccount();
+    int uploaderAccountId = currentUser != null ? currentUser.getId() : -1;  // Assign uploader's account ID
+
+
     if (selectedFiles != null) {
       for (File selectedFile : selectedFiles) {
         try {
-          int photoId = photoDAO.addPhoto(Photo.fromFile(selectedFile, ""));
+          Photo newPhoto = Photo.fromFile(selectedFile, "");
+          newPhoto.setUploaderAccountId(uploaderAccountId);
+          int photoId = photoDAO.addPhoto(newPhoto);
           gallerySingleton.addToPhotoQueue(new GallerySingleton.PhotoQueueItem(photoId, true));
         } catch (Exception e) {
           e.printStackTrace();
@@ -277,7 +287,7 @@ public class GalleryController {
     List<Photo> photosToDisplay = new ArrayList<>();
 
     // Find all images to display
-    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
+    for (int i = (photoPage * photosPerPage); i < Math.min((photoPage * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
     }
 
