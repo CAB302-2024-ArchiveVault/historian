@@ -6,7 +6,9 @@ import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.location.ILocationDAO;
 import com.example.historian.models.location.Location;
 import com.example.historian.models.location.SqliteLocationDAO;
+import com.example.historian.models.person.IPersonDAO;
 import com.example.historian.models.person.Person;
+import com.example.historian.models.person.SqlitePersonDAO;
 import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
@@ -52,6 +54,7 @@ public class IndividualPhoto {
   private Pane imagePane;
   @FXML
   private Label dateLabel;
+
   @FXML
   private ComboBox<Location> locationComboBox;
   @FXML
@@ -62,20 +65,28 @@ public class IndividualPhoto {
   private HBox newLocationSelector;
   @FXML
   private Label locationLabel;
+
   @FXML
   private Label tagsLabel;
   @FXML
   private DatePicker myDatePicker;
   @FXML
   public ImageView imageDisplay;
+
   @FXML
-  public HBox tagModeHBox;
+  private HBox tagModeHBox;
   @FXML
-  public HBox tagOptionsHBox;
+  private VBox tagOptionsVBox;
   @FXML
-  public TextField firstNameTextField;
+  private HBox tagExistingPersonSelector;
   @FXML
-  public TextField lastNameTextField;
+  private HBox tagNewPersonSelector;
+  @FXML
+  private ComboBox<Person> personComboBox;
+  @FXML
+  private TextField firstNameTextField;
+  @FXML
+  private TextField lastNameTextField;
 
   @FXML
   private VBox imageInfo;
@@ -93,6 +104,7 @@ public class IndividualPhoto {
   public Photo selectedPhoto;
   private IPhotoDAO photoDAO;
   private ILocationDAO locationDAO;
+  private IPersonDAO personDAO;
 
   // Page state
   private boolean isEditingTags = false;
@@ -102,11 +114,12 @@ public class IndividualPhoto {
   private Double newTagXCoord;
   private Double newTagYCoord;
   private List<Tag> tempTags;
+  private boolean isAddingNewPerson = false;
 
   // Misc
   SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
   private final int MAX_COMBOBOX_ITEMS = 10;
-  boolean isAddingNewLocation = false;
+  private boolean isAddingNewLocation = false;
 
 
   @FXML
@@ -114,6 +127,7 @@ public class IndividualPhoto {
     gallerySingleton = GallerySingleton.getInstance();
     photoDAO = new SqlitePhotoDAO();
     locationDAO = new SqliteLocationDAO();
+    personDAO = new SqlitePersonDAO();
 
     loadFirstPhotoFromQueue();
 
@@ -274,6 +288,83 @@ public class IndividualPhoto {
   }
 
 
+  private void initializePersonComboBox() {
+    AtomicBoolean isUpdatingPersonComboBox = new AtomicBoolean(false);
+
+    // Collect a list of existing people to display
+    ObservableList<Person> personList = FXCollections.observableArrayList(personDAO.getAllPersons());
+    FilteredList<Person> filteredPeople = new FilteredList<>(personList, p -> true);
+    personComboBox.setItems(filteredPeople);
+
+    // Custom string converter to display only the name of the person in the ComboBox
+    personComboBox.setConverter(new StringConverter<Person>() {
+      @Override
+      public String toString(Person person) {
+        return person != null ? person.getFullName() : null;
+      }
+
+      @Override
+      public Person fromString(String s) {
+        return personList.stream()
+                .filter(p -> p.getFullName().equals(s))
+                .findFirst()
+                .orElse(null);
+      }
+    });
+
+    // Handle the selection of an item in the ComboBox
+    TextField personField = personComboBox.getEditor();
+    personField.setOnMouseClicked(event -> {
+      personComboBox.getSelectionModel().clearSelection();
+      personField.selectAll();
+      personComboBox.show();
+    });
+    personField.textProperty().addListener((obs, oldValue, newValue) -> {
+      if (isUpdatingPersonComboBox.get()) return;
+      isUpdatingPersonComboBox.set(true);
+
+      final String input = newValue.toLowerCase();
+      if (personComboBox.getSelectionModel().getSelectedItem() == null) {
+        filteredPeople.setPredicate(p -> {
+          if (input.isEmpty() || input.isBlank()) return true;
+          return p.getFullName().toLowerCase().contains(input);
+        });
+      }
+
+      if (!filteredPeople.isEmpty()) {
+        personComboBox.setVisibleRowCount(Math.min(filteredPeople.size(), MAX_COMBOBOX_ITEMS));
+        if (personComboBox.isShowing()) {
+          personComboBox.hide();
+          personComboBox.show();
+        }
+      } else personComboBox.hide();
+
+      isUpdatingPersonComboBox.set(false);
+    });
+  }
+
+  @FXML
+  protected void showNewPersonSelector() {
+    updateNewPersonSelectorVisibility(true);
+    initializePersonComboBox();
+  }
+
+  @FXML
+  protected void hideNewPersonSelector() {
+    updateNewPersonSelectorVisibility(false);
+  }
+
+  private void updateNewPersonSelectorVisibility(boolean shown) {
+    isAddingNewPerson = shown;
+    tagExistingPersonSelector.setVisible(!shown);
+    tagExistingPersonSelector.setManaged(!shown);
+    tagNewPersonSelector.setVisible(shown);
+    tagNewPersonSelector.setManaged(shown);
+    firstNameTextField.setText(null);
+    lastNameTextField.setText(null);
+  }
+
+
   private void switchToGalleryScene() {
     try {
       StageManager.switchScene("gallery-view.fxml");
@@ -328,7 +419,6 @@ public class IndividualPhoto {
   public void getDate(ActionEvent event) {
     LocalDate myDate = myDatePicker.getValue();
     selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
   }
 
   @FXML
@@ -417,14 +507,20 @@ public class IndividualPhoto {
 
   @FXML
   public void onTagSaveButtonClick() throws IOException {
-    String firstName = firstNameTextField.getText();
-    String lastName = lastNameTextField.getText();
+    if (isAddingNewPerson) {
+      String firstName = firstNameTextField.getText();
+      String lastName = lastNameTextField.getText();
+      Person person = new Person(firstName, lastName);
 
-    Person person = new Person(firstName, lastName);
-
-    Tag tag = new Tag(selectedPhoto.getId(), person, newTagXCoord.intValue(), newTagYCoord.intValue());
-    tempTags.add(tag);
-    renderTag(tag, true);
+      Tag tag = new Tag(selectedPhoto.getId(), person, newTagXCoord.intValue(), newTagYCoord.intValue());
+      tempTags.add(tag);
+      renderTag(tag, true);
+    } else {
+      Person person = personComboBox.getSelectionModel().getSelectedItem();
+      Tag tag = new Tag(selectedPhoto.getId(), person, newTagXCoord.intValue(), newTagYCoord.intValue());
+      tempTags.add(tag);
+      renderTag(tag, true);
+    }
 
     setTagOptionsVisible(false);
     removeAllCircles();
@@ -456,8 +552,10 @@ public class IndividualPhoto {
   private void setTagOptionsVisible(Boolean visible) {
     tagModeHBox.setVisible(!visible);
     tagModeHBox.setManaged(!visible);
-    tagOptionsHBox.setVisible(visible);
-    tagOptionsHBox.setManaged(visible);
+    tagOptionsVBox.setVisible(visible);
+    tagOptionsVBox.setManaged(visible);
+    hideNewPersonSelector();
+    initializePersonComboBox();
   }
 
   private void deleteAllRenderedTags() {

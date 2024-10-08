@@ -98,13 +98,22 @@
     </VBox>
 
     <!-- [Tag edit] Tag editing tools -->
-    <HBox fx:id="tagOptionsHBox" alignment="CENTER" managed="false" spacing="10.0"
+    <VBox fx:id="tagOptionsVBox" alignment="CENTER" managed="false" spacing="10.0"
           style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
-        <TextField fx:id="firstNameTextField" maxWidth="100"/>
-        <TextField fx:id="lastNameTextField" maxWidth="100"/>
-        <Button onAction="#onTagSaveButtonClick" text="Save"/>
-        <Button onAction="#onTagCancelButtonClick" text="Cancel"/>
-    </HBox>
+        <HBox spacing="5.0" fx:id="tagExistingPersonSelector">
+            <ComboBox fx:id="personComboBox" promptText="Select a person" editable="true"/>
+            <Button text="+" onMouseClicked="#showNewPersonSelector" />
+        </HBox>
+        <HBox spacing="5.0" fx:id="tagNewPersonSelector" visible="false" managed="false">
+            <TextField fx:id="firstNameTextField" maxWidth="100"/>
+            <TextField fx:id="lastNameTextField" maxWidth="100"/>
+            <Button text="x" onMouseClicked="#hideNewPersonSelector" />
+        </HBox>
+        <HBox spacing="5.0">
+            <Button onAction="#onTagSaveButtonClick" text="Save"/>
+            <Button onAction="#onTagCancelButtonClick" text="Cancel"/>
+        </HBox>
+    </VBox>
     <HBox fx:id="tagModeHBox" alignment="CENTER" managed="false" spacing="10.0"
           style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
         <Label text="Click a person on the image to tag."/>
