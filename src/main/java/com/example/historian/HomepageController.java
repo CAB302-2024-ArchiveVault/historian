@@ -64,7 +64,7 @@ public class HomepageController {
     if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
       StageManager.switchScene("admin-options-view.fxml");
     } else {
-      StageManager.switchScene("gallery-view.fxml");
+      StageManager.switchScene("gallery-view.fxml",1000,900);
     }
   }
 
