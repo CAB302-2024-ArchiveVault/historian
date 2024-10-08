@@ -248,8 +248,9 @@ public class GalleryController {
     if (selectedFiles != null) {
       for (File selectedFile : selectedFiles) {
         try {
-          //Photo newPhoto = Photo.fromFile(selectedFile, "Temporary description!", uploaderAccountId);
-          photoDAO.addPhoto(Photo.fromFile(selectedFile, "Temporary description!"));
+          Photo newPhoto = Photo.fromFile(selectedFile, "Temporary description!");
+          newPhoto.setUploaderAccountId(uploaderAccountId);
+          photoDAO.addPhoto(newPhoto);
           //photoDAO.addPhoto(newPhoto);
 
         } catch (Exception e) {

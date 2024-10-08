@@ -47,18 +47,18 @@ public class SqlitePhotoDAO implements IPhotoDAO {
               + ")";
       statement.execute(query);
 
-      //
-      // Add the uploaderAccountId column if it doesn't exist
-      String alterTableQuery = "ALTER TABLE photos ADD COLUMN uploaderAccountId INTEGER";
-      try {
-        statement.execute(alterTableQuery);
-      } catch (SQLException e) {
-        // Ignore if the column already exists
-        if (!e.getMessage().contains("duplicate column name")) {
-          throw e;
-        }
-      }
-      //
+//      //
+//      // Add the uploaderAccountId column if it doesn't exist
+//      String alterTableQuery = "ALTER TABLE photos ADD COLUMN uploaderAccountId INTEGER";
+//      try {
+//        statement.execute(alterTableQuery);
+//      } catch (SQLException e) {
+//        // Ignore if the column already exists
+//        if (!e.getMessage().contains("duplicate column name")) {
+//          throw e;
+//        }
+//      }
+//      //
 
     } catch (Exception e) {
       e.printStackTrace();
