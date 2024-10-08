@@ -9,6 +9,8 @@ import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.StageManager;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
@@ -23,6 +25,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.scene.control.Label;
 
+import javax.swing.event.ChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -54,6 +57,7 @@ public class GalleryController {
 
   Image tagImage = new Image("file:src/icons/tag-removebg-preview.png");
 
+  Scene thisScene = primaryStage.getScene();
 
   @FXML
   public void initialize() throws IOException {
