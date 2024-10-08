@@ -3,22 +3,36 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
+import com.example.historian.models.location.ILocationDAO;
+import com.example.historian.models.location.Location;
+import com.example.historian.models.location.SqliteLocationDAO;
+import com.example.historian.models.person.IPersonDAO;
+import com.example.historian.models.person.Person;
+import com.example.historian.models.person.SqlitePersonDAO;
 import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.StageManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.util.StringConverter;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.example.historian.utils.StageManager.primaryStage;
 
@@ -33,6 +47,16 @@ public class GalleryController {
   public Text accountText;
   @FXML
   public Button logoutButton;
+  @FXML
+  public DatePicker fromDateFilter;
+  @FXML
+  public DatePicker toDateFilter;
+  @FXML
+  public ComboBox<Location> locationFilterComboBox;
+  @FXML
+  public ComboBox<Person> personFilterComboBox;
+  @FXML
+  public Button applyFilterButton;
 
   private int photosPerPage = 6;
   private int photoPage = 0;
@@ -40,6 +64,11 @@ public class GalleryController {
   private AuthSingleton authSingleton;
   private IPhotoDAO photoDAO;
   public List<Photo> photoList;
+
+  private ILocationDAO locationDAO;
+  private ObservableList<Location> locationList;
+  private IPersonDAO personDAO;
+  private ObservableList<Person> personList;
 
 
   @FXML
@@ -61,6 +90,136 @@ public class GalleryController {
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
     buttonUpdate();
+
+    // Setup location ComboBox
+    locationDAO = new SqliteLocationDAO();
+    AtomicBoolean updatingLocationComboBox = new AtomicBoolean(false);
+    locationList = FXCollections.observableArrayList(locationDAO.getAllLocations());
+    FilteredList<Location> filteredItemsLocation = new FilteredList<>(locationList, p -> true);
+    locationFilterComboBox.setItems(filteredItemsLocation);
+    // Custom StringConverter to display only the location name in the ComboBox
+    locationFilterComboBox.setConverter(new StringConverter<Location>() {
+      @Override
+      public String toString(Location location) {
+        return location != null ? location.getLocationName() : "";
+      }
+
+      @Override
+      public Location fromString(String string) {
+        return locationList.stream().filter(location -> location.getLocationName().equals(string)).findFirst().orElse(null);
+      }
+    });
+
+    TextField locationEditor = locationFilterComboBox.getEditor();
+    locationEditor.setOnMouseClicked(event -> {
+      locationFilterComboBox.getSelectionModel().clearSelection();
+      locationEditor.selectAll();
+      if (!locationFilterComboBox.isShowing()) {
+        locationFilterComboBox.show();
+      }
+    });
+    locationEditor.textProperty().addListener((obs, oldValue, newValue) -> {
+      if (updatingLocationComboBox.get()) {
+        return;
+      }
+      updatingLocationComboBox.set(true);
+
+      final String input = newValue.toLowerCase();
+
+      if (locationFilterComboBox.getSelectionModel().getSelectedItem() == null) {
+        filteredItemsLocation.setPredicate(location -> {
+          if (input == null || input.isEmpty()) {
+            return true;
+          }
+          return location.getLocationName().toLowerCase().contains(input);
+        });
+      }
+
+      if (!filteredItemsLocation.isEmpty()) {
+        int size = filteredItemsLocation.size();
+        int maxVisibleRows = 10; // You can adjust this limit
+        locationFilterComboBox.setVisibleRowCount(Math.min(size, maxVisibleRows));
+        if (locationFilterComboBox.isShowing()) {
+          locationFilterComboBox.hide();
+          locationFilterComboBox.show();
+        }
+      } else {
+        locationFilterComboBox.hide();
+      }
+
+      updatingLocationComboBox.set(false);
+    });
+
+    locationFilterComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldLocation, newLocation) -> {
+      if (newLocation != null) {
+        applyFilterButton.requestFocus();
+      }
+    });
+
+    // Setup person ComboBox
+    personDAO = new SqlitePersonDAO();
+    AtomicBoolean updatingPersonComboBox = new AtomicBoolean(false);
+    personList = FXCollections.observableArrayList(personDAO.getAllPersons());
+    FilteredList<Person> filteredItemsPerson = new FilteredList<>(personList, p -> true);
+    personFilterComboBox.setItems(filteredItemsPerson);
+    personFilterComboBox.setConverter(new StringConverter<Person>() {
+      @Override
+      public String toString(Person person) {
+        return person != null ? person.getFullName() : "";
+      }
+
+      @Override
+      public Person fromString(String string) {
+        return personList.stream().filter(person -> person.getFullName().equals(string)).findFirst().orElse(null);
+      }
+    });
+
+    TextField personEditor = personFilterComboBox.getEditor();
+    personEditor.setOnMouseClicked(event -> {
+      personFilterComboBox.getSelectionModel().clearSelection();
+      personEditor.selectAll();
+      if (!personFilterComboBox.isShowing()) {
+        personFilterComboBox.show();
+      }
+    });
+    personEditor.textProperty().addListener((obs, oldValue, newValue) -> {
+      if (updatingPersonComboBox.get()) {
+        return;
+      }
+      updatingPersonComboBox.set(true);
+
+      final String input = newValue.toLowerCase();
+
+      if (personFilterComboBox.getSelectionModel().getSelectedItem() == null) {
+        filteredItemsPerson.setPredicate(person -> {
+          if (input == null || input.isEmpty()) {
+            return true;
+          }
+          return person.getFullName().toLowerCase().contains(input);
+        });
+      }
+
+      if (!filteredItemsPerson.isEmpty()) {
+        int size = filteredItemsPerson.size();
+        int maxVisibleRows = 10; // You can adjust this limit
+        personFilterComboBox.setVisibleRowCount(Math.min(size, maxVisibleRows));
+        if (personFilterComboBox.isShowing()) {
+          personFilterComboBox.hide();
+          personFilterComboBox.show();
+        }
+      } else {
+        personFilterComboBox.hide();
+      }
+
+      updatingPersonComboBox.set(false);
+    });
+
+    personFilterComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldPerson, newPerson) -> {
+      if (newPerson != null) {
+        applyFilterButton.requestFocus();
+      }
+    });
+
   }
 
   @FXML
@@ -154,6 +313,73 @@ public class GalleryController {
   public void buttonUpdate() {
     backButton.setVisible(photoPage > 0);
     forwardButton.setVisible(photoList.size() > 6 && ((photoPage + 1) * 6) < photoList.size());
+  }
+
+  private void disableDates(boolean afterDate, LocalDate cutOffDate, DatePicker datePicker) {
+    datePicker.setDayCellFactory(picker -> new DateCell() {
+      public void updateItem(LocalDate date, boolean empty) {
+        super.updateItem(date, empty);
+
+        if (afterDate) {
+          setDisable(empty || date.compareTo(cutOffDate) > 0 );
+        } else {
+          setDisable(empty || date.compareTo(cutOffDate) < 0 );
+        }
+      }
+    });
+  }
+
+  private void enableAllDates(DatePicker datePicker) {
+    datePicker.setDayCellFactory(picker -> new DateCell() {
+      public void updateItem(LocalDate date, boolean empty) {
+        super.updateItem(date, empty);
+        setDisable(false);
+      }
+    });
+  }
+
+  @FXML
+  public void onFromDateFilterChange() {
+    if (toDateFilter.getValue() == null) {
+      enableAllDates(toDateFilter);
+    } else {
+      if (toDateFilter.getValue() != null) {
+        if (toDateFilter.getValue().compareTo(fromDateFilter.getValue()) < 0) {
+          toDateFilter.setValue(null);
+        }
+      }
+      disableDates(false, fromDateFilter.getValue(), toDateFilter);
+    }
+  }
+
+  @FXML
+  public void onToDateFilterChange() {
+    if (toDateFilter.getValue() == null) {
+      enableAllDates(fromDateFilter);
+    } else {
+      if (fromDateFilter.getValue() != null) {
+        if (fromDateFilter.getValue().compareTo(toDateFilter.getValue()) > 0) {
+          fromDateFilter.setValue(null);
+        }
+      }
+      disableDates(true, toDateFilter.getValue(), fromDateFilter);
+    }
+  }
+
+  @FXML
+  public void onApplyFilterButtonClick() {
+    Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
+    int selectedLocationId = selectedLocation != null ? selectedLocation.getId() : -1;
+    Person selectedPerson = personFilterComboBox.getSelectionModel().getSelectedItem();
+    int selectedPersonId = selectedPerson != null ? selectedPerson.getId() : -1;
+    LocalDate fromLocalDate = fromDateFilter.getValue();
+    Date fromDate = fromLocalDate != null ? Date.from(fromLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    LocalDate toLocalDate = toDateFilter.getValue();
+    Date toDate = toLocalDate != null ? Date.from(toLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+
+    photoList = photoDAO.getPhotosByFilter(fromDate, toDate, selectedLocationId, selectedPersonId);
+    displayPhotos();
+    buttonUpdate();
   }
 
   @FXML

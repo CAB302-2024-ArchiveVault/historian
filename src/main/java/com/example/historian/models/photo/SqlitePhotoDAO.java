@@ -7,7 +7,6 @@ import com.example.historian.models.tag.ITagDAO;
 import com.example.historian.models.tag.SqliteTagDAO;
 import com.example.historian.models.tag.Tag;
 import com.example.historian.utils.SqliteConnection;
-import com.example.historian.utils.SqliteDate;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       Statement statement = connection.createStatement();
       String query = "CREATE TABLE IF NOT EXISTS photos ("
               + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-              + "date VARCHAR,"
+              + "date INTEGER,"
               + "description VARCHAR NOT NULL,"
               + "locationId VARCHAR,"
               + "image BLOB NOT NULL,"
@@ -98,9 +97,8 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     int uploaderAccountId = resultSet.getInt("uploaderAccountId");  //
 
     // Get nullable values
-    String dateString = resultSet.getObject("date") != null ? resultSet.getString("date") : null;
-    Date date = dateString != null ? new SqliteDate(dateString).getDate() : null;
-
+    long dateLong = resultSet.getObject("date") != null ? resultSet.getLong("date") : -1;
+    Date date = dateLong != -1 ? new Date(dateLong) : null;
     Integer locationId = resultSet.getObject("locationId") != null ? resultSet.getInt("locationId") : null;
     Location location = null;
     if (locationId != null) {
@@ -129,9 +127,9 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType, uploaderAccountId) VALUES (?, ?, ?, ?, ?, ?)");
 
       if (photo.getDate() != null) {
-        statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+        statement.setLong(1, photo.getDate().getTime());
       } else {
-        statement.setNull(1, Types.DATE);
+        statement.setNull(1, Types.INTEGER);
       }
       statement.setString(2, photo.getDescription());
 
@@ -162,9 +160,9 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       PreparedStatement statement = connection.prepareStatement("UPDATE photos SET date = ?, description = ?, locationId = ?, image = ?, imageType = ? WHERE id = ?");
 
       if (photo.getDate() != null) {
-        statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+        statement.setLong(1, photo.getDate().getTime());
       } else {
-        statement.setNull(1, Types.DATE);
+        statement.setNull(1, Types.INTEGER);
       }
       statement.setString(2, photo.getDescription());
 
@@ -224,6 +222,52 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     List<Photo> photos = new ArrayList<>();
     try {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos");
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        photos.add(createFromResultSet(resultSet));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return photos;
+  }
+
+  @Override
+  public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person) {
+    List<Photo> photos = new ArrayList<>();
+    try {
+      StringBuilder queryBuilder = new StringBuilder("SELECT * FROM photos WHERE 1=1 ");
+      int paramIndex = 1;
+
+      if (startDate != null) {
+        queryBuilder.append("AND date >= ? ");
+      }
+      if (endDate != null) {
+        queryBuilder.append("AND date <= ? ");
+      }
+      if (location != -1) {
+        queryBuilder.append("AND locationId = ? ");
+      }
+      if (person != -1) {
+        queryBuilder.append("AND id IN (SELECT photoId FROM tags WHERE personId = ?) ");
+      }
+      queryBuilder.append("ORDER BY date ASC;");
+
+      PreparedStatement statement = connection.prepareStatement(queryBuilder.toString());
+
+      if (startDate != null) {
+        statement.setLong(paramIndex++, startDate.getTime());
+      }
+      if (endDate != null) {
+        statement.setLong(paramIndex++, endDate.getTime());
+      }
+      if (location != -1) {
+        statement.setInt(paramIndex++, location);
+      }
+      if (person != -1) {
+        statement.setInt(paramIndex, person);
+      }
+
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
         photos.add(createFromResultSet(resultSet));
