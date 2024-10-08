@@ -164,7 +164,7 @@ public class IndividualPhoto {
 
     @FXML
     protected void onBackButtonClick() throws IOException {
-        StageManager.switchScene("gallery-view.fxml");
+        StageManager.switchScene("gallery-view.fxml", 1000,600);
     }
 
     @FXML

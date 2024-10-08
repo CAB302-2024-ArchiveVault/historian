@@ -373,7 +373,7 @@ public class GalleryController {
 
   public void buttonUpdate() {
     backButton.setVisible(photoPage > 0);
-    forwardButton.setVisible(photoList.size() > 6 && ((photoPage + 1) * 6) < photoList.size());
+    forwardButton.setVisible(photoList.size() > photosPerPage && ((photoPage + 1) * photosPerPage) < photoList.size());
   }
 
   private void disableDates(boolean afterDate, LocalDate cutOffDate, DatePicker datePicker) {
