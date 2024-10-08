@@ -100,7 +100,7 @@
     <HBox fx:id="tagModeHBox" alignment="CENTER" managed="false" spacing="10.0"
           style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
         <Label text="Click a person on the image to tag."/>
-        <Button onAction="#onTagBackButtonClick" text="Back"/>
+        <Button onAction="#onTagBackButtonClick" text="Save"/>
     </HBox>
 
     <!-- Page navigation -->

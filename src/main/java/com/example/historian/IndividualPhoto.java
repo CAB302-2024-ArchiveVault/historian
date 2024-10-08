@@ -315,6 +315,9 @@ public class IndividualPhoto {
     isEditingTags = false;
     setTagModeVisible();
     deleteAllRenderedTags();
+
+    isViewingTags = true;
+    viewTagMode();
   }
 
   @FXML
