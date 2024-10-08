@@ -1,5 +1,8 @@
 package com.example.historian;
 
+import com.example.historian.auth.AuthSingleton;
+import com.example.historian.models.account.Account;
+import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.location.ILocationDAO;
 import com.example.historian.models.location.Location;
 import com.example.historian.models.location.SqliteLocationDAO;
@@ -71,6 +74,8 @@ public class IndividualPhoto {
   private HBox pageNavigation;
   @FXML
   private Button returnButton;
+  @FXML
+  private Button editButton;
 
   // Global data handlers
   private GallerySingleton gallerySingleton;
@@ -153,6 +158,13 @@ public class IndividualPhoto {
     }
 
     setPageEditMode(editMode);
+
+    Account currentUser = AuthSingleton.getInstance().getAccount();
+    if (currentUser != null && currentUser.getAccountPrivilege() == AccountPrivilege.MEMBER) {
+      // Hide the Edit button for members
+      editButton.setVisible(false);
+      editButton.setManaged(false);
+    }
   }
 
   private void switchToGalleryScene() {
