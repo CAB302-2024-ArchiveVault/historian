@@ -69,6 +69,8 @@ public class IndividualPhoto {
   private VBox editOptions;
   @FXML
   private HBox pageNavigation;
+  @FXML
+  private Button returnButton;
 
   // Global data handlers
   private GallerySingleton gallerySingleton;
@@ -96,6 +98,12 @@ public class IndividualPhoto {
     locationDAO = new SqliteLocationDAO();
 
     loadFirstPhotoFromQueue();
+
+    if (gallerySingleton.isPhotoQueueEmpty()) {
+      returnButton.setText("Return to gallery");
+    } else {
+      returnButton.setText("Next photo");
+    }
   }
 
   private void loadFirstPhotoFromQueue() {
@@ -116,22 +124,30 @@ public class IndividualPhoto {
     if (photoDate != null) {
       String stringDate = formatter.format(photoDate);
       dateLabel.setText(stringDate);
+      myDatePicker.setValue(
+          photoDate.toInstant()
+              .atZone(ZoneId.systemDefault())
+              .toLocalDate()
+      );
     } else {
       dateLabel.setText("Unknown");
+      myDatePicker.setValue(null);
     }
 
     Location photoLocation = photoDAO.getPhoto(selectedPhoto.getId()).getLocation();
     if (photoLocation != null && !photoLocation.getLocationName().isEmpty()) {
       locationLabel.setText(photoLocation.getLocationName());
+      locationTextField.setText(photoLocation.getLocationName());
     } else {
       locationLabel.setText("Unknown");
+      locationTextField.setText(null);
     }
 
     tempTags = selectedPhoto.getTagged();
     if (!tempTags.isEmpty()) {
       tagsLabel.setText(tempTags.stream()
-              .map(tag -> tag.getPerson().getFullName())
-              .collect(Collectors.joining(", ")));
+          .map(tag -> tag.getPerson().getFullName())
+          .collect(Collectors.joining(", ")));
     } else {
       tagsLabel.setText("Nobody tagged");
     }
@@ -324,21 +340,21 @@ public class IndividualPhoto {
     Label label = new Label(" " + tag.getPerson().getFullName());
 
     label.setStyle("-fx-background-color: rgba(255, 255, 255, 0.8);" +
-            "-fx-background-radius: 15;" +
-            "-fx-border-radius: 15;" +
-            "-fx-border-color: rgba(0, 0, 0, 0.2);" +
-            "-fx-padding: 5 10 5 10;" +
-            "-fx-font-size: 14px;" +
-            "-fx-font-family: Arial;" +
-            "-fx-text-fill: black;");
+        "-fx-background-radius: 15;" +
+        "-fx-border-radius: 15;" +
+        "-fx-border-color: rgba(0, 0, 0, 0.2);" +
+        "-fx-padding: 5 10 5 10;" +
+        "-fx-font-size: 14px;" +
+        "-fx-font-family: Arial;" +
+        "-fx-text-fill: black;");
 
     Polygon triangle = new Polygon();
     double triangleSize = 6;
 
     triangle.getPoints().addAll(
-            x - triangleSize, y + triangleSize,
-            x + triangleSize, y + triangleSize,
-            x, y
+        x - triangleSize, y + triangleSize,
+        x + triangleSize, y + triangleSize,
+        x, y
     );
     triangle.setFill(Color.rgb(255, 255, 255, 0.8));
     triangle.setStroke(Color.rgb(0, 0, 0, 0.2));

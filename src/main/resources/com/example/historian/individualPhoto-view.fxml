@@ -105,6 +105,6 @@
 
     <!-- Page navigation -->
     <HBox spacing="5.0" fx:id="pageNavigation">
-        <Button onAction="#onBackButtonClick" text="Return to gallery"/>
+        <Button onAction="#onBackButtonClick" fx:id="returnButton" text="Return to gallery"/>
     </HBox>
 </VBox>
