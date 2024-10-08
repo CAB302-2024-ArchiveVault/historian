@@ -13,7 +13,7 @@ public interface IPhotoDAO {
    *
    * @param photo the Photo object to be added
    */
-  public void addPhoto(Photo photo);
+  public int addPhoto(Photo photo);
 
   /**
    * Updates an existing photo in the data store.
