@@ -2,6 +2,8 @@ package com.example.historian.models.tag;
 
 import com.example.historian.models.person.Person;
 
+import java.util.Objects;
+
 /**
  * The Tag class represents a tag associated with a photo, including the ID, photo ID, person, and coordinates.
  */
@@ -70,5 +72,18 @@ public class Tag {
    */
   public Person getPerson() {
     return person;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    Tag tag = (Tag) obj;
+    return Objects.equals(id, tag.id);  // Compare by relevant field (e.g., id)
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);  // Use the same field as in equals()
   }
 }
