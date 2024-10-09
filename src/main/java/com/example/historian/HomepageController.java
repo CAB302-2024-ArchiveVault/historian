@@ -16,14 +16,10 @@ import java.io.IOException;
 
 public class HomepageController {
 
-  @FXML
-  private Button loginButton;
-  @FXML
-  private TextField usernameField;
-  @FXML
-  private PasswordField passwordField;
-  @FXML
-  private Text errorText;
+  @FXML private Button loginButton;
+  @FXML private TextField usernameField;
+  @FXML private PasswordField passwordField;
+  @FXML private Text errorText;
 
   @FXML
   protected void onLoginButtonClick() throws IOException {

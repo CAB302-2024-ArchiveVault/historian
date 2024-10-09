@@ -1,11 +1,7 @@
 package com.example.historian.models.tag;
 
-import com.example.historian.models.person.IPersonDAO;
-import com.example.historian.models.person.Person;
-import com.example.historian.models.person.SqlitePersonDAO;
-import com.example.historian.models.photo.IPhotoDAO;
-import com.example.historian.models.photo.Photo;
-import com.example.historian.models.photo.SqlitePhotoDAO;
+import com.example.historian.models.person.*;
+import com.example.historian.models.photo.*;
 import com.example.historian.utils.SqliteConnection;
 
 import java.sql.Connection;
@@ -136,10 +132,11 @@ public class SqliteTagDAO implements ITagDAO {
     tagsToBeRemoved.removeAll(tagsSet);
 
     for (Tag tag : tagsToBeAdded) {
-      if (tag.getPerson().getId() < 0) {}
-      SqlitePersonDAO personDAO = new SqlitePersonDAO();
-      int personId = personDAO.addPerson(tag.getPerson());
-      tag.getPerson().setId(personId);
+      if (tag.getPerson().getId() < 0) {
+        SqlitePersonDAO personDAO = new SqlitePersonDAO();
+        int personId = personDAO.addPerson(tag.getPerson());
+        tag.getPerson().setId(personId);
+      }
       addTag(tag);
     }
     for (Tag tag : tagsToBeRemoved) {

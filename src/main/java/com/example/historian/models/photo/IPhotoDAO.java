@@ -1,5 +1,6 @@
 package com.example.historian.models.photo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ public interface IPhotoDAO {
    *
    * @param photo the Photo object to be added
    */
-  public void addPhoto(Photo photo);
+  public int addPhoto(Photo photo);
 
   /**
    * Updates an existing photo in the data store.
@@ -42,4 +43,6 @@ public interface IPhotoDAO {
    * @return a list of all Photo objects
    */
   public List<Photo> getAllPhotos();
+
+  public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person);
 }

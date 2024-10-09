@@ -7,19 +7,19 @@ public class LocationTest {
     private Location location;
 
     @BeforeEach
-    public void setup() {
+    protected void setup() {
         location = new Location("testLocation");
     }
 
     @Test
-    public void testGetId() {
+    protected void testGetId() {
         location.setId(100);
         assertEquals(100, location.getId());
     }
 
     @Test
-    public void testGetLocationName(){
-        location.getLocationName();
+    protected void testGetLocationName(){
+        //location.getLocationName();
         assertEquals("testLocation", location.getLocationName());
     }
 }

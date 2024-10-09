@@ -1,13 +1,8 @@
 package com.example.historian.models.photo;
 
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.tag.ITagDAO;
-import com.example.historian.models.tag.SqliteTagDAO;
-import com.example.historian.models.tag.Tag;
+import com.example.historian.models.location.*;
+import com.example.historian.models.tag.*;
 import com.example.historian.utils.SqliteConnection;
-import com.example.historian.utils.SqliteDate;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,14 +33,29 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       Statement statement = connection.createStatement();
       String query = "CREATE TABLE IF NOT EXISTS photos ("
               + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-              + "date VARCHAR,"
+              + "date INTEGER,"
               + "description VARCHAR NOT NULL,"
               + "locationId VARCHAR,"
               + "image BLOB NOT NULL,"
               + "imageType VARCHAR NOT NULL,"
+              + "uploaderAccountId INTEGER NOT NULL,"  //
               + "FOREIGN KEY(locationId) REFERENCES location(id)"
               + ")";
       statement.execute(query);
+
+//      //
+//      // Add the uploaderAccountId column if it doesn't exist
+//      String alterTableQuery = "ALTER TABLE photos ADD COLUMN uploaderAccountId INTEGER";
+//      try {
+//        statement.execute(alterTableQuery);
+//      } catch (SQLException e) {
+//        // Ignore if the column already exists
+//        if (!e.getMessage().contains("duplicate column name")) {
+//          throw e;
+//        }
+//      }
+//      //
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -80,11 +90,11 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     String description = resultSet.getString("description");
     byte[] imageStream = resultSet.getBytes("image");
     String imageType = resultSet.getString("imageType");
+    int uploaderAccountId = resultSet.getInt("uploaderAccountId");  //
 
     // Get nullable values
-    String dateString = resultSet.getObject("date") != null ? resultSet.getString("date") : null;
-    Date date = dateString != null ? new SqliteDate(dateString).getDate() : null;
-
+    long dateLong = resultSet.getObject("date") != null ? resultSet.getLong("date") : -1;
+    Date date = dateLong != -1 ? new Date(dateLong) : null;
     Integer locationId = resultSet.getObject("locationId") != null ? resultSet.getInt("locationId") : null;
     Location location = null;
     if (locationId != null) {
@@ -98,7 +108,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     ITagDAO tagDAO = new SqliteTagDAO();
     List<Tag> tags = tagDAO.getTagsForPhoto(id);
 
-    Photo photo = new Photo(imageStream, imageType, description);
+    Photo photo = new Photo(imageStream, imageType, description, uploaderAccountId);    //
     photo.setId(id);
     photo.setLocation(location);
     photo.setDate(date);
@@ -108,14 +118,14 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   }
 
   @Override
-  public void addPhoto(Photo photo) {
+  public int addPhoto(Photo photo) {
     try {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType) VALUES (?, ?, ?, ?, ?)");
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO photos (date, description, locationId, image, imageType, uploaderAccountId) VALUES (?, ?, ?, ?, ?, ?)");
 
       if (photo.getDate() != null) {
-        statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+        statement.setLong(1, photo.getDate().getTime());
       } else {
-        statement.setNull(1, Types.DATE);
+        statement.setNull(1, Types.INTEGER);
       }
       statement.setString(2, photo.getDescription());
 
@@ -127,6 +137,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
 
       statement.setBytes(4, photo.getImageAsBytes());
       statement.setString(5, photo.getImageType());
+      statement.setInt(6, photo.getUploaderAccountId());  //
       statement.executeUpdate();
 
       // Set the ID of the new photo
@@ -134,9 +145,11 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       if (generatedKeys.next()) {
         photo.setId(generatedKeys.getInt(1));
       }
+      return photo.getId();
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return -1;
   }
 
   @Override
@@ -145,9 +158,9 @@ public class SqlitePhotoDAO implements IPhotoDAO {
       PreparedStatement statement = connection.prepareStatement("UPDATE photos SET date = ?, description = ?, locationId = ?, image = ?, imageType = ? WHERE id = ?");
 
       if (photo.getDate() != null) {
-        statement.setString(1, new SqliteDate(photo.getDate()).toSqliteFormat());
+        statement.setLong(1, photo.getDate().getTime());
       } else {
-        statement.setNull(1, Types.DATE);
+        statement.setNull(1, Types.INTEGER);
       }
       statement.setString(2, photo.getDescription());
 
@@ -207,6 +220,52 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     List<Photo> photos = new ArrayList<>();
     try {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos");
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        photos.add(createFromResultSet(resultSet));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return photos;
+  }
+
+  @Override
+  public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person) {
+    List<Photo> photos = new ArrayList<>();
+    try {
+      StringBuilder queryBuilder = new StringBuilder("SELECT * FROM photos WHERE 1=1 ");
+      int paramIndex = 1;
+
+      if (startDate != null) {
+        queryBuilder.append("AND date >= ? ");
+      }
+      if (endDate != null) {
+        queryBuilder.append("AND date <= ? ");
+      }
+      if (location != -1) {
+        queryBuilder.append("AND locationId = ? ");
+      }
+      if (person != -1) {
+        queryBuilder.append("AND id IN (SELECT photoId FROM tags WHERE personId = ?) ");
+      }
+      queryBuilder.append("ORDER BY date ASC;");
+
+      PreparedStatement statement = connection.prepareStatement(queryBuilder.toString());
+
+      if (startDate != null) {
+        statement.setLong(paramIndex++, startDate.getTime());
+      }
+      if (endDate != null) {
+        statement.setLong(paramIndex++, endDate.getTime());
+      }
+      if (location != -1) {
+        statement.setInt(paramIndex++, location);
+      }
+      if (person != -1) {
+        statement.setInt(paramIndex, person);
+      }
+
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
         photos.add(createFromResultSet(resultSet));
