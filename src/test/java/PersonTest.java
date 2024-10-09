@@ -7,31 +7,31 @@ public class PersonTest {
     private Person person;
 
     @BeforeEach
-    public void setup() {
+    protected void setup() {
         person = new Person("testFirstName", "testLastName");
     }
 
     @Test
-    public void testGetId() {
+    protected void testGetId() {
         person.setId(5);
         assertEquals(5, person.getId());
     }
 
     @Test
-    public void testGetFirstName(){
-        person.getFirstName();
+    protected void testGetFirstName(){
+        //person.getFirstName();
         assertEquals("testFirstName", person.getFirstName());
     }
 
     @Test
-    public void testGetLastName(){
-        person.getLastName();
+    protected void testGetLastName(){
+        //person.getLastName();
         assertEquals("testLastName", person.getLastName());
     }
 
     @Test
-    public void testFullName(){
-        person.getFullName();
+    protected void testFullName(){
+        //person.getFullName();
         assertEquals("testFirstName testLastName", person.getFullName());
     }
 }

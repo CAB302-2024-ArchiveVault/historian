@@ -3,20 +3,13 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.person.IPersonDAO;
-import com.example.historian.models.person.Person;
-import com.example.historian.models.person.SqlitePersonDAO;
-import com.example.historian.models.photo.IPhotoDAO;
-import com.example.historian.models.photo.Photo;
-import com.example.historian.models.photo.SqlitePhotoDAO;
-import com.example.historian.utils.GallerySingleton;
+import com.example.historian.models.location.*;
+import com.example.historian.models.person.*;
+import com.example.historian.models.photo.*;
 import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
+
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
@@ -39,26 +32,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.example.historian.utils.StageManager.primaryStage;
 
 public class GalleryController {
-  @FXML
-  public GridPane imageContainer;
-  @FXML
-  public Button backButton;
-  @FXML
-  public Button forwardButton;
-  @FXML
-  public Text accountText;
-  @FXML
-  public Button logoutButton;
-  @FXML
-  public DatePicker fromDateFilter;
-  @FXML
-  public DatePicker toDateFilter;
-  @FXML
-  public ComboBox<Location> locationFilterComboBox;
-  @FXML
-  public ComboBox<Person> personFilterComboBox;
-  @FXML
-  public Button applyFilterButton;
+  @FXML public GridPane imageContainer;
+  @FXML public Button backButton;
+  @FXML public Button forwardButton;
+  @FXML public Text accountText;
+  @FXML public Button logoutButton;
+  @FXML public DatePicker fromDateFilter;
+  @FXML public DatePicker toDateFilter;
+  @FXML public ComboBox<Location> locationFilterComboBox;
+  @FXML public ComboBox<Person> personFilterComboBox;
+  @FXML public Button applyFilterButton;
 
   private int photosPerPage = 6;
   private int photoPage = 0;

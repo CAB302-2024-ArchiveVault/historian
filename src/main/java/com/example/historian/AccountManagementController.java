@@ -24,11 +24,9 @@ public class AccountManagementController {
     private ListView<Account> accountsListView;
     private final IAccountDAO accountDAO;
 
-    @FXML
-    private VBox accountContainer;
+    @FXML private VBox accountContainer;
 
-    @FXML
-    private ComboBox<AccountPrivilege> privilegeComboBox;
+    @FXML private ComboBox<AccountPrivilege> privilegeComboBox;
 
 
     private static Account currentUser;

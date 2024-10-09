@@ -10,30 +10,30 @@ public class TagTest {
     private Tag tag;
 
     @BeforeEach
-    public void setup() {
+    protected void setup() {
         tag = new Tag(4, new Person("testFirstName", "testLastName"), 50, 72);
     }
 
     @Test
-    public void testGetId() {
+    protected void testGetId() {
         tag.setId(100);
         assertEquals(100, tag.getId());
     }
 
     @Test
-    public void testGetPhotoId (){
-        tag.getPhotoId();
+    protected void testGetPhotoId (){
+        //tag.getPhotoId();
         assertEquals(4, tag.getPhotoId());
     }
 
     @Test
-    public void testGetCoordinates(){
-        tag.getCoordinates();
+    protected void testGetCoordinates(){
+        //tag.getCoordinates();
         assertArrayEquals(new int[]{50, 72}, tag.getCoordinates());
     }
 
     @Test
-    public void testGetPerson(){
+    protected void testGetPerson(){
         assertEquals("testFirstName", tag.getPerson().getFirstName());
         assertEquals("testLastName", tag.getPerson().getLastName());
     }

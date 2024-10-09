@@ -3,101 +3,64 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.person.IPersonDAO;
-import com.example.historian.models.person.Person;
-import com.example.historian.models.person.SqlitePersonDAO;
-import com.example.historian.models.photo.IPhotoDAO;
-import com.example.historian.models.photo.Photo;
-import com.example.historian.models.photo.SqlitePhotoDAO;
+import com.example.historian.models.location.*;
+import com.example.historian.models.person.*;
+import com.example.historian.models.photo.*;
 import com.example.historian.models.tag.Tag;
 import com.example.historian.utils.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.event.ActionEvent;
-
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-
-
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 import javafx.util.StringConverter;
 
 
 public class IndividualPhoto {
-  @FXML
-  private Pane imagePane;
-  @FXML
-  private Label dateLabel;
+  @FXML private Pane imagePane;
+  @FXML private Label dateLabel;
 
-  @FXML
-  private ComboBox<Location> locationComboBox;
-  @FXML
-  private TextField newLocationTextField;
-  @FXML
-  private HBox existingLocationSelector;
-  @FXML
-  private HBox newLocationSelector;
-  @FXML
-  private Label locationLabel;
+  @FXML private ComboBox<Location> locationComboBox;
+  @FXML private TextField newLocationTextField;
+  @FXML private HBox existingLocationSelector;
+  @FXML private HBox newLocationSelector;
+  @FXML private Label locationLabel;
 
-  @FXML
-  private Label tagsLabel;
-  @FXML
-  private DatePicker myDatePicker;
-  @FXML
-  public ImageView imageDisplay;
+  @FXML private Label tagsLabel;
+  @FXML private DatePicker myDatePicker;
+  @FXML public ImageView imageDisplay;
 
-  @FXML
-  private HBox tagModeHBox;
-  @FXML
-  private VBox tagOptionsVBox;
-  @FXML
-  private HBox tagExistingPersonSelector;
-  @FXML
-  private HBox tagNewPersonSelector;
-  @FXML
-  private ComboBox<Person> personComboBox;
-  @FXML
-  private TextField firstNameTextField;
-  @FXML
-  private TextField lastNameTextField;
+  @FXML private HBox tagModeHBox;
+  @FXML private VBox tagOptionsVBox;
+  @FXML private HBox tagExistingPersonSelector;
+  @FXML private HBox tagNewPersonSelector;
+  @FXML private ComboBox<Person> personComboBox;
+  @FXML private TextField firstNameTextField;
+  @FXML private TextField lastNameTextField;
 
-  @FXML
-  private VBox imageInfo;
-  @FXML
-  private VBox editOptions;
-  @FXML
-  private HBox pageNavigation;
-  @FXML
-  private Button returnButton;
-  @FXML
-  private Button editButton;
+  @FXML private VBox imageInfo;
+  @FXML private VBox editOptions;
+  @FXML private HBox pageNavigation;
+  @FXML private Button returnButton;
+  @FXML private Button editButton;
 
   // Global data handlers
   private GallerySingleton gallerySingleton;
@@ -137,7 +100,7 @@ public class IndividualPhoto {
       returnButton.setText("Next photo");
     }
   }
-
+  
   private void loadFirstPhotoFromQueue() {
     GallerySingleton.PhotoQueueItem photoQueueItem = gallerySingleton.popFromPhotoQueue();
     loadPhoto(photoQueueItem.photoId(), photoQueueItem.openToEditMode());
