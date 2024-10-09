@@ -12,14 +12,14 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.control.ComboBox?>
-<VBox spacing="15.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
+<VBox alignment = "CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.historian.IndividualPhoto">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
     <!-- Image -->
-    <Pane fx:id="imagePane">
-        <ImageView fx:id="imageDisplay" fitHeight="491.0" fitWidth="436.0" pickOnBounds="true" preserveRatio="true"/>
+    <Pane fx:id="imagePane" >
+        <ImageView fx:id="imageDisplay" fitHeight="500" fitWidth="500" pickOnBounds="true" preserveRatio="true" />
     </Pane>
     <!-- Information about the image -->
     <VBox fx:id="imageInfo" spacing="10.0" style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 8;">

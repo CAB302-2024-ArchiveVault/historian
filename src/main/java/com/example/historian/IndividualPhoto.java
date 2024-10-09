@@ -18,6 +18,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -46,7 +47,10 @@ import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Screen;
 import javafx.util.StringConverter;
+
+import static com.example.historian.utils.StageManager.*;
 
 
 public class IndividualPhoto {
@@ -110,6 +114,7 @@ public class IndividualPhoto {
   private boolean isEditingTags = false;
   private boolean isViewingTags = false;
 
+
   // Tag editor
   private Double newTagXCoord;
   private Double newTagYCoord;
@@ -128,6 +133,8 @@ public class IndividualPhoto {
     photoDAO = new SqlitePhotoDAO();
     locationDAO = new SqliteLocationDAO();
     personDAO = new SqlitePersonDAO();
+
+
 
     loadFirstPhotoFromQueue();
 
@@ -149,8 +156,14 @@ public class IndividualPhoto {
       switchToGalleryScene();
     }
 
+    double centerX = (540- imageDisplay.getFitWidth()) / 2;
+
+    imageDisplay.setLayoutX(centerX);
+
     imageDisplay.setImage(selectedPhoto.getImage());
     imageDisplay.setOnMouseClicked(this::handleImageViewClick);
+
+
 
     Date photoDate = selectedPhoto.getDate();
     if (photoDate != null) {
@@ -367,7 +380,7 @@ public class IndividualPhoto {
 
   private void switchToGalleryScene() {
     try {
-      StageManager.switchScene("gallery-view.fxml");
+      switchScene("gallery-view.fxml", 1000, 850);
     } catch (Exception e) {
       e.printStackTrace();
     }

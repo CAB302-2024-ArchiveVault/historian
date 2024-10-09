@@ -292,8 +292,32 @@ public class GalleryController {
 
   private void checkToDisplayIndividualPhoto() {
     if (!gallerySingleton.isPhotoQueueEmpty()) {
+
+      double originalWidth = photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getImage().getWidth();
+      double originalHeight = photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getImage().getHeight();
+      double maxWidth = 500;
+      double maxHeight = 500;
+      double aspectRatio = originalWidth/originalHeight;
+
+      double newHeight;
+
+      if (aspectRatio > 1) {
+        // Image is wider than it is tall
+        newHeight = maxWidth / aspectRatio;
+      }
+      else if (aspectRatio == 1)
+      {
+        newHeight = maxHeight;
+      }
+      else {
+        // Image is taller than it is wide
+        newHeight = maxHeight;
+      }
+
+
       try {
-        StageManager.switchScene("individualPhoto-view.fxml", 500, 800);
+        //StageManager.switchScene("individualPhoto-view.fxml", 540, 630);
+        StageManager.switchScene("individualPhoto-view.fxml", 580, (int) (newHeight + 200));
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -393,7 +417,7 @@ public class GalleryController {
 
   public void buttonUpdate() {
     backButton.setVisible(gallerySingleton.getCurrentPage() > 0);
-    forwardButton.setVisible(photoList.size() > 6 && ((gallerySingleton.getCurrentPage() + 1) * 6) < photoList.size());
+    forwardButton.setVisible(photoList.size() > photosPerPage && ((gallerySingleton.getCurrentPage() + 1) * photosPerPage) < photoList.size());
   }
 
   private void disableDates(boolean afterDate, LocalDate cutOffDate, DatePicker datePicker) {
