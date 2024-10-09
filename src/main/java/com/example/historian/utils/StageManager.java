@@ -2,6 +2,7 @@ package com.example.historian.utils;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -35,8 +36,29 @@ public class StageManager {
   public static void switchScene(String fxmlFilePath, int width, int height) throws IOException {
     FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(ABSOLUTE_RESOURCES_PATH + fxmlFilePath));
     Scene scene = new Scene(loader.load(), width, height);
+
+
+    //Fix the minimum height and width of a scene to prevent resizing smaller than nodes
+
+
+    //primaryStage.setHeight(height);
+    //primaryStage.setWidth(width);
+
+
     primaryStage.setScene(scene);
     primaryStage.show();
+
+
+    // Get screen bounds
+    double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
+    double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+    // Center the stage within the screen bounds
+    primaryStage.setX((screenWidth - primaryStage.getWidth()) / 2);
+    primaryStage.setY((screenHeight - primaryStage.getHeight()) / 2);
+
+    //primaryStage.setMinHeight(height);
+    //primaryStage.setMinWidth(width);
   }
 
   /**

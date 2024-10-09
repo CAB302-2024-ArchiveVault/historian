@@ -42,6 +42,7 @@ import java.util.Optional;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Screen;
 
 public class IndividualPhoto {
     @FXML
@@ -109,6 +110,7 @@ public class IndividualPhoto {
         selectedPhoto = photoDAO.getPhoto(clickedImageId);
         imageDisplay.setImage(selectedPhoto.getImage());
 
+
         Account currentUser = AuthSingleton.getInstance().getAccount();
         if (currentUser != null && currentUser.getAccountPrivilege() == AccountPrivilege.MEMBER) {
             // Hide the Edit button for members
@@ -164,7 +166,7 @@ public class IndividualPhoto {
 
     @FXML
     protected void onBackButtonClick() throws IOException {
-        StageManager.switchScene("gallery-view.fxml", 1000,600);
+        StageManager.switchScene("gallery-view.fxml", 1000,850);
     }
 
     @FXML
@@ -251,7 +253,7 @@ public class IndividualPhoto {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             photoDAO.removePhoto(photoDAO.getPhoto(clickedImageId));
-            StageManager.switchScene("gallery-view.fxml");
+            StageManager.switchScene("gallery-view.fxml", 1000, 850);
         }
     }
 

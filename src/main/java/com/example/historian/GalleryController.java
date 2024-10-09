@@ -20,6 +20,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -28,10 +29,6 @@ import javafx.scene.image.Image;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
@@ -284,6 +281,7 @@ public class GalleryController {
       photosToDisplay.add(photoList.get(i));
     }
 
+
     // Render photos
     imageContainer.getChildren().clear();
     for (int i = 0; i < photosToDisplay.size(); i++) {
@@ -294,14 +292,10 @@ public class GalleryController {
 
       // Create the imageview
       ImageView imageView = new ImageView();
-      imageView.setFitHeight(100.0);
-      imageView.setFitWidth(135.0);
-      imageView.setPickOnBounds(true);
       imageView.setPreserveRatio(false);
-
-      //Rectangle2D viewportRect = new Rectangle2D(0, 0, 135, 100);
-      //imageView.setViewport(viewportRect);
-
+      imageView.setFitHeight(200.0);
+      imageView.setFitWidth(200.0);
+      imageView.setPickOnBounds(true);
       imageView.setId(String.valueOf(photo.getId()));
       imageView.setOnMouseClicked(onImageClick());
       imageView.setImage(photo.getImage());
@@ -309,7 +303,7 @@ public class GalleryController {
 
       //Create the hbox to store the location and date label
       HBox hbox = new HBox(8);
-      hbox.setAlignment(Pos.TOP_CENTER);
+      hbox.setAlignment(Pos.TOP_LEFT);
 
 
       //Create the location label
@@ -335,6 +329,7 @@ public class GalleryController {
       imageContainer.add(vbox, i % photosPerRow, i / photosPerRow);
       vbox.getChildren().add(tagStack);
       tagStack.getChildren().add(imageView);
+      StackPane.setAlignment(imageView,Pos.TOP_LEFT);
       vbox.getChildren().add(hbox);
       hbox.getChildren().add(LocationLabel);
       hbox.getChildren().add(DateLabel);
@@ -342,13 +337,14 @@ public class GalleryController {
       if(!photo.getTagged().isEmpty())
       {
         ImageView tagView = new ImageView();
-        tagView.setFitHeight(30);
-        tagView.setFitWidth(30);
+        tagView.setFitHeight(23);
+        tagView.setFitWidth(23);
+        tagView.setSmooth(true);
         tagView.setPreserveRatio(true);
         //Image tagImage = new Image("file:tag.jpg");
         tagView.setImage(tagImage);
         //imageView.setImage(tagImage);
-        StackPane.setAlignment(tagView,Pos.TOP_LEFT);
+        StackPane.setAlignment(tagView,Pos.BOTTOM_LEFT);
         tagStack.getChildren().add(tagView);
       }
     }
@@ -362,8 +358,12 @@ public class GalleryController {
       // Get the ID of the clicked node
       int id = Integer.parseInt(clickedImage.getId());
       IndividualPhoto.clickedImageId = id;
+
+      //int imageHeight = (int) photoDAO.getPhoto(id).getImage().getHeight();
+      //int imageWidth = (int) photoDAO.getPhoto(id).getImage().getWidth();
       try {
-        StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
+        StageManager.switchScene("individualPhoto-view.fxml", 700, 700);
+        //StageManager.switchScene("individualPhoto-view.fxml", imageWidth, imageHeight);
       } catch (Exception e) {
         e.printStackTrace();
       }

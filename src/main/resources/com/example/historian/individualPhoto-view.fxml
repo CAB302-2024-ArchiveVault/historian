@@ -15,7 +15,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <Pane fx:id="imagePane">
-        <ImageView fx:id="imageDisplay" fitHeight="491.0" fitWidth="436.0" pickOnBounds="true" preserveRatio="true" />
+        <ImageView fx:id="imageDisplay" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" />
     </Pane>
     <HBox fx:id="editOptionsHBox" alignment="CENTER" spacing="15.0">
         <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" visible ="false" managed = "false" />
