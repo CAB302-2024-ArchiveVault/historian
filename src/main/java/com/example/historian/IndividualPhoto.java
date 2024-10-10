@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javafx.util.StringConverter;
+import jdk.jfr.Description;
 
 
 public class IndividualPhoto {
@@ -139,6 +140,9 @@ public class IndividualPhoto {
     } else {
       locationLabel.setText("Unknown");
     }
+
+    descriptionLabel.setText(selectedPhoto.getDescription());
+
 
     tempTags = selectedPhoto.getTagged();
     if (!tempTags.isEmpty()) {
