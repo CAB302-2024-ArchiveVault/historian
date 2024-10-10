@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javafx.util.StringConverter;
+import jdk.jfr.Description;
 
 
 public class IndividualPhoto {
@@ -43,6 +44,9 @@ public class IndividualPhoto {
   @FXML private HBox existingLocationSelector;
   @FXML private HBox newLocationSelector;
   @FXML private Label locationLabel;
+
+  @FXML private TextField newDescriptionTextField;
+  @FXML private Label descriptionLabel;
 
   @FXML private Label tagsLabel;
   @FXML private DatePicker myDatePicker;
@@ -136,6 +140,15 @@ public class IndividualPhoto {
     } else {
       locationLabel.setText("Unknown");
     }
+
+    String description = selectedPhoto.getDescription();
+    if(description != null){
+      descriptionLabel.setText(selectedPhoto.getDescription());
+    } else {
+      descriptionLabel.setText("Unknown");
+    }
+
+
 
     tempTags = selectedPhoto.getTagged();
     if (!tempTags.isEmpty()) {
@@ -407,10 +420,19 @@ public class IndividualPhoto {
   }
 
   @FXML
+  public void getDescription(){
+    String newDescription = newDescriptionTextField.getText();
+    if (newDescription == null || newDescription.isEmpty() || newDescription.isBlank()) return;
+    descriptionLabel.setText(selectedPhoto.getDescription());
+    selectedPhoto.setDescription(newDescription);
+  }
+
+  @FXML
   public void onSaveButtonClick() {
 
     selectedPhoto.setTagged(tempTags);
     getLocation();
+    getDescription();
     photoDAO.updatePhoto(selectedPhoto);
 
     // Check if the photo contains minimum necessary fields
