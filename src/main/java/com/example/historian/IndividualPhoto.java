@@ -44,6 +44,9 @@ public class IndividualPhoto {
   @FXML private HBox newLocationSelector;
   @FXML private Label locationLabel;
 
+  @FXML private TextField newDescriptionTextField;
+  @FXML private Label descriptionLabel;
+
   @FXML private Label tagsLabel;
   @FXML private DatePicker myDatePicker;
   @FXML public ImageView imageDisplay;
@@ -407,10 +410,18 @@ public class IndividualPhoto {
   }
 
   @FXML
+  public void getDescription(){
+    String newDescription = newDescriptionTextField.getText();
+    selectedPhoto.setDescription(newDescription);
+    descriptionLabel.setText(selectedPhoto.getDescription());
+  }
+
+  @FXML
   public void onSaveButtonClick() {
 
     selectedPhoto.setTagged(tempTags);
     getLocation();
+    getDescription();
     photoDAO.updatePhoto(selectedPhoto);
 
     // Check if the photo contains minimum necessary fields
