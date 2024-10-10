@@ -48,6 +48,9 @@ public class IndividualPhoto {
   @FXML private DatePicker myDatePicker;
   @FXML public ImageView imageDisplay;
 
+  @FXML private TextField descriptionTextField;
+  @FXML private Label descriptionLabel;
+
   @FXML private HBox tagModeHBox;
   @FXML private VBox tagOptionsVBox;
   @FXML private HBox tagExistingPersonSelector;
@@ -127,6 +130,7 @@ public class IndividualPhoto {
     } else {
       dateLabel.setText("Unknown");
       myDatePicker.setValue(null);
+      descriptionLabel.setText("Unknown");
     }
 
     Location photoLocation = photoDAO.getPhoto(selectedPhoto.getId()).getLocation();
@@ -407,10 +411,21 @@ public class IndividualPhoto {
   }
 
   @FXML
+  public void getDescription(){
+    String newDescription = descriptionTextField.getText();
+    if (newDescription == null || newDescription.isEmpty() || newDescription.isBlank()) return;
+    else{
+      String descriptionLabel = newDescription;
+      selectedPhoto.setDescription(newDescription);
+    }
+  }
+
+  @FXML
   public void onSaveButtonClick() {
 
     selectedPhoto.setTagged(tempTags);
     getLocation();
+    getDescription();
     photoDAO.updatePhoto(selectedPhoto);
 
     // Check if the photo contains minimum necessary fields
