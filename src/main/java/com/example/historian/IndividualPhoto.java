@@ -141,7 +141,13 @@ public class IndividualPhoto {
       locationLabel.setText("Unknown");
     }
 
-    descriptionLabel.setText(selectedPhoto.getDescription());
+    String description = selectedPhoto.getDescription();
+    if(description != null){
+      descriptionLabel.setText(selectedPhoto.getDescription());
+    } else {
+      descriptionLabel.setText("Unknown");
+    }
+
 
 
     tempTags = selectedPhoto.getTagged();
