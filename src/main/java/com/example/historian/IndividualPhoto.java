@@ -416,6 +416,7 @@ public class IndividualPhoto {
   @FXML
   public void getDescription(){
     String newDescription = newDescriptionTextField.getText();
+    if (newDescription == null || newDescription.isEmpty() || newDescription.isBlank()) return;
     descriptionLabel.setText(selectedPhoto.getDescription());
     selectedPhoto.setDescription(newDescription);
   }
