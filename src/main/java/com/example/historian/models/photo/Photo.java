@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 /**
  * The Photo class represents a photo with an ID, date, description, tags, location, and image data.
  */
@@ -23,6 +24,13 @@ public class Photo {
   private byte[] image;
   private String imageType;
   private int uploaderAccountId;
+
+  private static final int defaultHeight = 500;
+  private static final int defaultWidth = 500;
+
+  private final int adjustedImageWidth;
+  private final int adjustedImageHeight;
+
 
   /**
    * Constructs a Photo object with the specified image data, image type, and description.
@@ -43,6 +51,26 @@ public class Photo {
     date = null;
     tagged = new ArrayList<>();
     location = null;
+
+      double imageHeight = this.getImage().getHeight();
+      double imageWidth = this.getImage().getWidth();
+      double aspectRatio = imageWidth / imageHeight;
+
+    if (aspectRatio > 1)
+    {
+      adjustedImageWidth = defaultWidth;
+      adjustedImageHeight = (int) (defaultWidth/ aspectRatio);
+    }
+    else if (aspectRatio == 1)
+    {
+      adjustedImageWidth = defaultWidth;
+      adjustedImageHeight = defaultHeight;
+    }
+    else
+    {
+      adjustedImageWidth = (int) (defaultHeight* aspectRatio);
+      adjustedImageHeight = defaultHeight;
+    }
   }
 
   //
@@ -171,6 +199,16 @@ public class Photo {
     }
     return null;
   }
+
+
+  public int getAdjustedImageHeight(){
+    return adjustedImageHeight;
+  }
+
+  public int getAdjustedImageWidth(){
+    return adjustedImageWidth;
+  }
+
 
   /**
    * Sets the image data.

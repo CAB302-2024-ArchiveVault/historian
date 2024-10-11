@@ -23,7 +23,7 @@
     </Pane>
     <!-- Information about the image -->
     <VBox fx:id="imageInfo" spacing="10.0" style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 8;">
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <HBox alignment="CENTER_LEFT" spacing="5.0">
             <Label prefWidth="100.0" text="Date:">
                 <font>
                     <Font name="System Bold" size="12.0"/>

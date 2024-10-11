@@ -1,7 +1,9 @@
 package com.example.historian.utils;
 
+import com.example.historian.models.photo.Photo;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -38,15 +40,11 @@ public class StageManager {
     Scene scene = new Scene(loader.load(), width, height);
 
 
-    //Fix the minimum height and width of a scene to prevent resizing smaller than nodes
-
-
-    //primaryStage.setHeight(height);
-    //primaryStage.setWidth(width);
-
-
     primaryStage.setScene(scene);
     primaryStage.show();
+
+    primaryStage.setHeight(height);
+    primaryStage.setWidth(width);
 
 
     // Get screen bounds
@@ -57,8 +55,12 @@ public class StageManager {
     primaryStage.setX((screenWidth - primaryStage.getWidth()) / 2);
     primaryStage.setY((screenHeight - primaryStage.getHeight()) / 2);
 
-    //primaryStage.setMinHeight(height);
-    //primaryStage.setMinWidth(width);
+  }
+
+  public static void adjustToImage(Photo photo)
+  {
+    primaryStage.setHeight(photo.getAdjustedImageHeight()+250);
+    primaryStage.setWidth(580);
   }
 
   /**

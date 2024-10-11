@@ -71,16 +71,18 @@ public class GalleryController {
 
   private int photosPerPage = 12;
   private int photosPerRow = 4;
-  private int photoPage = 0;
+  //private int photoPage = 0;
+
+
 
   private AuthSingleton authSingleton;
   private GallerySingleton gallerySingleton;
   private IPhotoDAO photoDAO;
   public List<Photo> photoList;
 
-  SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+  SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-  Image tagImage = new Image("file:src/icons/tag-removebg-preview.png");
+  Image tagImage = new Image("file:src/icons/tag.png");
 
   Scene thisScene = primaryStage.getScene();
 
@@ -292,32 +294,9 @@ public class GalleryController {
 
   private void checkToDisplayIndividualPhoto() {
     if (!gallerySingleton.isPhotoQueueEmpty()) {
-
-      double originalWidth = photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getImage().getWidth();
-      double originalHeight = photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getImage().getHeight();
-      double maxWidth = 500;
-      double maxHeight = 500;
-      double aspectRatio = originalWidth/originalHeight;
-
-      double newHeight;
-
-      if (aspectRatio > 1) {
-        // Image is wider than it is tall
-        newHeight = maxWidth / aspectRatio;
-      }
-      else if (aspectRatio == 1)
-      {
-        newHeight = maxHeight;
-      }
-      else {
-        // Image is taller than it is wide
-        newHeight = maxHeight;
-      }
-
-
       try {
-        //StageManager.switchScene("individualPhoto-view.fxml", 540, 630);
-        StageManager.switchScene("individualPhoto-view.fxml", 580, (int) (newHeight + 200));
+        StageManager.switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 250);
+        //StageManager.switchScene("individualPhoto-view.fxml");
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -328,7 +307,7 @@ public class GalleryController {
     List<Photo> photosToDisplay = new ArrayList<>();
 
     // Find all images to display
-    for (int i = (photoPage * photosPerPage); i < Math.min((photoPage * photosPerPage) + photosPerPage, photoList.size()); i++) {
+    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
     }
 

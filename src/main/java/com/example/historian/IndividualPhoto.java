@@ -19,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -135,14 +136,13 @@ public class IndividualPhoto {
     personDAO = new SqlitePersonDAO();
 
 
-
     loadFirstPhotoFromQueue();
 
-    if (gallerySingleton.isPhotoQueueEmpty()) {
+/*    if (gallerySingleton.isPhotoQueueEmpty()) {
       returnButton.setText("Return to gallery");
     } else {
       returnButton.setText("Next photo");
-    }
+    }*/
   }
 
   private void loadFirstPhotoFromQueue() {
@@ -156,14 +156,19 @@ public class IndividualPhoto {
       switchToGalleryScene();
     }
 
-    double centerX = (540- imageDisplay.getFitWidth()) / 2;
+    if (gallerySingleton.isPhotoQueueEmpty()) {
+      returnButton.setText("Return to gallery");
+    } else {
+      returnButton.setText("Next photo");
+    }
 
-    imageDisplay.setLayoutX(centerX);
+    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight()+250);
+    primaryStage.setWidth(580);
 
     imageDisplay.setImage(selectedPhoto.getImage());
     imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
-
+    imagePane.setTranslateX((double) (520 - selectedPhoto.getAdjustedImageWidth()) /2);
 
     Date photoDate = selectedPhoto.getDate();
     if (photoDate != null) {
@@ -195,6 +200,8 @@ public class IndividualPhoto {
     } else {
       tagsLabel.setText("Nobody tagged");
     }
+    isViewingTags = false;
+    viewTagMode();
 
     setPageEditMode(editMode);
     updateNewLocationSelectorVisibility(false);
@@ -218,6 +225,11 @@ public class IndividualPhoto {
       }
     }
   }
+
+
+
+
+
 
 
   private void initializeLocationComboBox(Location location) {
@@ -356,6 +368,7 @@ public class IndividualPhoto {
     });
   }
 
+
   @FXML
   protected void showNewPersonSelector() {
     updateNewPersonSelectorVisibility(true);
@@ -380,7 +393,7 @@ public class IndividualPhoto {
 
   private void switchToGalleryScene() {
     try {
-      switchScene("gallery-view.fxml", 1000, 850);
+      switchScene("gallery-view.fxml", 1000, 900);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -441,7 +454,7 @@ public class IndividualPhoto {
       if (locationName == null || locationName.isEmpty() || locationName.isBlank()) return;
 
       Optional<Location> locationMatch = locationDAO.getAllLocations().stream()
-              .filter(l -> l.getLocationName().equals(locationName))
+              .filter(l -> l.getLocationName().equalsIgnoreCase(locationName))
               .findFirst();
 
       if (locationMatch.isPresent()) {
