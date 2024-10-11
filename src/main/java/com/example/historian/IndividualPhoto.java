@@ -162,13 +162,13 @@ public class IndividualPhoto {
       returnButton.setText("Next photo");
     }
 
-    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight()+250);
-    primaryStage.setWidth(580);
+    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 250);
+    primaryStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
 
     imageDisplay.setImage(selectedPhoto.getImage());
     imageDisplay.setOnMouseClicked(this::handleImageViewClick);
 
-    imagePane.setTranslateX((double) (520 - selectedPhoto.getAdjustedImageWidth()) /2);
+    imagePane.setTranslateX((double) ((selectedPhoto.getDefaultWidth() + 20) - (selectedPhoto.getAdjustedImageWidth())) /2);
 
     Date photoDate = selectedPhoto.getDate();
     if (photoDate != null) {

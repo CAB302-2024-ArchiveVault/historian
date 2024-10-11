@@ -209,6 +209,16 @@ public class Photo {
     return adjustedImageWidth;
   }
 
+  public int getDefaultHeight()
+  {
+    return defaultHeight;
+  }
+
+  public int getDefaultWidth()
+  {
+    return defaultWidth;
+  }
+
 
   /**
    * Sets the image data.

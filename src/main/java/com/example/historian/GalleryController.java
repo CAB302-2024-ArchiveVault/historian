@@ -13,19 +13,15 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.GallerySingleton;
-import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.control.*;
@@ -35,8 +31,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import javafx.scene.control.Label;
-
-import javax.swing.event.ChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -84,7 +78,6 @@ public class GalleryController {
 
   Image tagImage = new Image("file:src/icons/tag.png");
 
-  Scene thisScene = primaryStage.getScene();
 
   private ILocationDAO locationDAO;
   private ObservableList<Location> locationList;
@@ -322,7 +315,7 @@ public class GalleryController {
 
       // Create the imageview
       ImageView imageView = new ImageView();
-      imageView.setPreserveRatio(false);
+      imageView.setPreserveRatio(true);
       imageView.setFitHeight(200.0);
       imageView.setFitWidth(200.0);
       imageView.setPickOnBounds(true);
