@@ -4,9 +4,10 @@ module com.example.historian {
   requires java.sql;
   requires java.desktop;
   requires org.xerial.sqlitejdbc;
+    requires jdk.jfr;
 
 
-  opens com.example.historian to javafx.fxml;
+    opens com.example.historian to javafx.fxml;
   exports com.example.historian;
 
   exports com.example.historian.auth;

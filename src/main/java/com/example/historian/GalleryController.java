@@ -13,7 +13,12 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.GallerySingleton;
+import com.example.historian.models.location.*;
+import com.example.historian.models.person.*;
+import com.example.historian.models.photo.*;
+import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -42,26 +47,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.example.historian.utils.StageManager.primaryStage;
 
 public class GalleryController {
-  @FXML
-  public GridPane imageContainer;
-  @FXML
-  public Button backButton;
-  @FXML
-  public Button forwardButton;
-  @FXML
-  public Text accountText;
-  @FXML
-  public Button logoutButton;
-  @FXML
-  public DatePicker fromDateFilter;
-  @FXML
-  public DatePicker toDateFilter;
-  @FXML
-  public ComboBox<Location> locationFilterComboBox;
-  @FXML
-  public ComboBox<Person> personFilterComboBox;
-  @FXML
-  public Button applyFilterButton;
+  @FXML public GridPane imageContainer;
+  @FXML public Button backButton;
+  @FXML public Button forwardButton;
+  @FXML public Text accountText;
+  @FXML public Button logoutButton;
+  @FXML public DatePicker fromDateFilter;
+  @FXML public DatePicker toDateFilter;
+  @FXML public ComboBox<Location> locationFilterComboBox;
+  @FXML public ComboBox<Person> personFilterComboBox;
+  @FXML public Button applyFilterButton;
 
   private int photosPerPage = 12;
   private int photosPerRow = 4;

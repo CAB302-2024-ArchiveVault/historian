@@ -4,24 +4,23 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-
 public class PhotoTest{
     private Photo photo;
 
     @BeforeEach
-    public void setup() {
+    protected void setup() {
         byte[] exampleImage = new byte[] { 0x1, 0x2, 0x3, 0x4 };
         photo = new Photo(exampleImage, "png", "this is a image");
     }
 
     @Test
-    public void testGetSetId(){
+    protected void testGetSetId(){
         photo.setId(15);
         assertEquals(15, photo.getId());
     }
 
     @Test
-    public void testGetImageAsBytes() {
+    protected void testGetImageAsBytes() {
         // Retrieve the image data from the photo using the method
         byte[] retrievedImage = photo.getImageAsBytes();
 
@@ -33,14 +32,14 @@ public class PhotoTest{
     }
 
     @Test
-    public void testgetImageType(){
-        photo.getImageType();
+    protected void testGetImageType(){
+        //photo.getImageType();
         assertEquals("png",photo.getImageType());
     }
 
     @Test
-    public void testgetDescription(){
-        photo.getDescription();
+    protected void testGetDescription(){
+        //photo.getDescription();
         assertEquals("this is a image", photo.getDescription());
 
     }

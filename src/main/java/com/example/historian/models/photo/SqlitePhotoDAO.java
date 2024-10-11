@@ -1,11 +1,7 @@
 package com.example.historian.models.photo;
 
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.tag.ITagDAO;
-import com.example.historian.models.tag.SqliteTagDAO;
-import com.example.historian.models.tag.Tag;
+import com.example.historian.models.location.*;
+import com.example.historian.models.tag.*;
 import com.example.historian.utils.SqliteConnection;
 
 import java.sql.*;

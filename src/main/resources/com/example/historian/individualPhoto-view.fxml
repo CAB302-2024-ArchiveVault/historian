@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -14,8 +15,9 @@
 <?import javafx.scene.control.ComboBox?>
 <VBox alignment = "CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.historian.IndividualPhoto">
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.historian.IndividualPhoto">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <!-- Image -->
     <Pane fx:id="imagePane" >
@@ -26,29 +28,39 @@
         <HBox alignment="CENTER_LEFT" spacing="5.0">
             <Label prefWidth="100.0" text="Date:">
                 <font>
-                    <Font name="System Bold" size="12.0"/>
+                    <Font name="System Bold" size="12.0" />
                 </font>
             </Label>
-            <Label fx:id="dateLabel"/>
+            <Label fx:id="dateLabel" />
         </HBox>
         <HBox alignment="CENTER_LEFT" spacing="5.0">
             <Label prefWidth="100.0" text="Location:">
                 <font>
-                    <Font name="System Bold" size="12.0"/>
+                    <Font name="System Bold" size="12.0" />
                 </font>
             </Label>
-            <Label fx:id="locationLabel"/>
+            <Label fx:id="locationLabel" />
         </HBox>
         <HBox alignment="CENTER_LEFT" spacing="5.0">
             <Label prefWidth="100.0" text="Tagged people:">
                 <font>
-                    <Font name="System Bold" size="12.0"/>
+                    <Font name="System Bold" size="12.0" />
                 </font>
             </Label>
-            <Label fx:id="tagsLabel"/>
+            <Label fx:id="tagsLabel" />
         </HBox>
+      <HBox alignment="CENTER_LEFT" spacing="5.0">
+         <children>
+            <Label prefWidth="100.0" text="Description:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="descriptionLabel" />
+         </children>
+      </HBox>
 
-        <Button fx:id="editButton" onAction="#onEditButtonClick" text="Edit information"/>
+        <Button fx:id="editButton" onAction="#onEditButtonClick" text="Edit information" />
     </VBox>
 
     <!-- [Edit mode] Edit inputs & buttons -->
@@ -57,71 +69,79 @@
         <HBox alignment="CENTER_LEFT" spacing="5.0">
             <Label prefWidth="100.0" text="Date:">
                 <font>
-                    <Font name="System Bold" size="12.0"/>
+                    <Font name="System Bold" size="12.0" />
                 </font>
             </Label>
-            <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date"/>
+            <DatePicker fx:id="myDatePicker" onAction="#getDate" promptText="Date" />
         </HBox>
         <HBox alignment="CENTER_LEFT" spacing="5.0">
             <Label prefWidth="100.0" text="Location:">
                 <font>
-                    <Font name="System Bold" size="12.0"/>
+                    <Font name="System Bold" size="12.0" />
                 </font>
             </Label>
-            <HBox alignment="CENTER_LEFT" spacing="5.0" fx:id="existingLocationSelector">
-                <ComboBox fx:id="locationComboBox" promptText="Location" editable="true"/>
-                <Button text="+" onMouseClicked="#showNewLocationSelector"/>
+            <HBox fx:id="existingLocationSelector" alignment="CENTER_LEFT" spacing="5.0">
+                <ComboBox fx:id="locationComboBox" editable="true" promptText="Location" />
+                <Button onMouseClicked="#showNewLocationSelector" text="+" />
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="5.0" fx:id="newLocationSelector" visible="false" managed="false">
-                <TextField fx:id="newLocationTextField" promptText="Add location"/>
-                <Button text="x" onMouseClicked="#hideNewLocationSelector"/>
+            <HBox fx:id="newLocationSelector" alignment="CENTER_LEFT" managed="false" spacing="5.0" visible="false">
+                <TextField fx:id="newLocationTextField" promptText="Add location" />
+                <Button onMouseClicked="#hideNewLocationSelector" text="x" />
             </HBox>
         </HBox>
+      <HBox alignment="CENTER_LEFT" spacing="5.0">
+         <children>
+            <Label prefWidth="100.0" text="Description:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="newDescriptionTextField" promptText="Add Description" />
+         </children>
+      </HBox>
         <HBox spacing="5.0">
-            <Button onAction="#onTagButtonClick" text="Tag people"/>
+            <Button onAction="#onTagButtonClick" text="Tag people" />
         </HBox>
 
         <!-- Options -->
         <HBox alignment="TOP_RIGHT" spacing="5.0">
             <Button onAction="#deletePhoto" text="Delete Photo">
                 <HBox.margin>
-                    <Insets/>
+                    <Insets />
                 </HBox.margin>
             </Button>
             <Button onAction="#onCancelButtonClick" text="Discard changes">
                 <HBox.margin>
-                    <Insets left="20.0"/>
+                    <Insets left="20.0" />
                 </HBox.margin>
             </Button>
-            <Button onAction="#onSaveButtonClick" text="Save"/>
+            <Button onAction="#onSaveButtonClick" text="Save" />
         </HBox>
     </VBox>
 
     <!-- [Tag edit] Tag editing tools -->
-    <VBox fx:id="tagOptionsVBox" alignment="CENTER" managed="false" spacing="10.0"
-          style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
-        <HBox spacing="5.0" fx:id="tagExistingPersonSelector">
-            <ComboBox fx:id="personComboBox" promptText="Select a person" editable="true"/>
-            <Button text="+" onMouseClicked="#showNewPersonSelector" />
+    <VBox fx:id="tagOptionsVBox" alignment="CENTER" managed="false" spacing="10.0" style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
+        <HBox fx:id="tagExistingPersonSelector" spacing="5.0">
+            <ComboBox fx:id="personComboBox" editable="true" promptText="Select a person" />
+            <Button onMouseClicked="#showNewPersonSelector" text="+" />
         </HBox>
-        <HBox spacing="5.0" fx:id="tagNewPersonSelector" visible="false" managed="false">
-            <TextField fx:id="firstNameTextField" maxWidth="100"/>
-            <TextField fx:id="lastNameTextField" maxWidth="100"/>
-            <Button text="x" onMouseClicked="#hideNewPersonSelector" />
+        <HBox fx:id="tagNewPersonSelector" managed="false" spacing="5.0" visible="false">
+            <TextField fx:id="firstNameTextField" maxWidth="100" />
+            <TextField fx:id="lastNameTextField" maxWidth="100" />
+            <Button onMouseClicked="#hideNewPersonSelector" text="x" />
         </HBox>
         <HBox spacing="5.0">
-            <Button onAction="#onTagSaveButtonClick" text="Save"/>
-            <Button onAction="#onTagCancelButtonClick" text="Cancel"/>
+            <Button onAction="#onTagSaveButtonClick" text="Save" />
+            <Button onAction="#onTagCancelButtonClick" text="Cancel" />
         </HBox>
     </VBox>
-    <HBox fx:id="tagModeHBox" alignment="CENTER" managed="false" spacing="10.0"
-          style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
-        <Label text="Click a person on the image to tag."/>
-        <Button onAction="#onTagBackButtonClick" text="Save"/>
+    <HBox fx:id="tagModeHBox" alignment="CENTER" managed="false" spacing="10.0" style="-fx-border-color: gray; -fx-padding: 5; -fx-border-radius: 5;" visible="false">
+        <Label text="Click a person on the image to tag." />
+        <Button onAction="#onTagBackButtonClick" text="Save" />
     </HBox>
 
     <!-- Page navigation -->
-    <HBox spacing="5.0" fx:id="pageNavigation">
-        <Button onAction="#onBackButtonClick" fx:id="returnButton" text="Return to gallery"/>
+    <HBox fx:id="pageNavigation" spacing="5.0">
+        <Button fx:id="returnButton" onAction="#onBackButtonClick" text="Return to gallery" />
     </HBox>
 </VBox>

@@ -12,12 +12,9 @@ import java.io.IOException;
 public class AdminOptionsController {
     private AuthSingleton authSingleton;
 
-    @FXML
-    private Button databaseManagementButton;
-    @FXML
-    private Button galleriesButton;
-    @FXML
-    private Button logoutButton;
+    @FXML private Button databaseManagementButton;
+    @FXML private Button galleriesButton;
+    @FXML private Button logoutButton;
 
     @FXML
     public void initialize() throws IOException {
