@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.example.historian.utils.StageManager.primaryStage;
+import static com.example.historian.utils.StageManager.switchScene;
 
 public class GalleryController {
   @FXML public GridPane imageContainer;
@@ -239,7 +240,7 @@ public class GalleryController {
   protected void onLogoutButtonClick() throws IOException {
     Account authorisedAccount = authSingleton.getAccount();
     if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
-      StageManager.switchScene("admin-options-view.fxml");
+      switchScene("admin-options-view.fxml");
     } else {
       authSingleton.signOut();
       StageManager.switchToHomepage();
@@ -283,7 +284,7 @@ public class GalleryController {
   private void checkToDisplayIndividualPhoto() {
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       try {
-        StageManager.switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 250);
+        switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
         //StageManager.switchScene("individualPhoto-view.fxml");
       } catch (Exception e) {
         e.printStackTrace();

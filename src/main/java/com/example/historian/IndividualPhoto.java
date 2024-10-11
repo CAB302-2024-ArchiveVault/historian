@@ -133,7 +133,7 @@ public class IndividualPhoto {
       returnButton.setText("Next photo");
     }
 
-    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 250);
+    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 280);
     primaryStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
 
     imageDisplay.setImage(selectedPhoto.getImage());
