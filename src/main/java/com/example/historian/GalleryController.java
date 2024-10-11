@@ -58,6 +58,8 @@ public class GalleryController {
   @FXML
   public Button applyFilterButton;
 
+  public static String galleryCode;
+
   private int photosPerPage = 6;
   private int photoPage = 0;
 
@@ -220,6 +222,8 @@ public class GalleryController {
       }
     });
 
+    enableAllDates(fromDateFilter);
+    enableAllDates(toDateFilter);
   }
 
   @FXML
@@ -324,14 +328,15 @@ public class GalleryController {
     datePicker.setDayCellFactory(picker -> new DateCell() {
       public void updateItem(LocalDate date, boolean empty) {
         super.updateItem(date, empty);
-        setDisable(false);
+        LocalDate today = LocalDate.now();
+        setDisable(empty || date.compareTo(today) > 0 );
       }
     });
   }
 
   @FXML
   public void onFromDateFilterChange() {
-    if (toDateFilter.getValue() == null) {
+    if (fromDateFilter.getValue() == null) {
       enableAllDates(toDateFilter);
     } else {
       if (toDateFilter.getValue() != null) {
