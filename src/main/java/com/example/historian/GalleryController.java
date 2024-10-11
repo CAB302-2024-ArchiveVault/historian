@@ -3,18 +3,13 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.person.IPersonDAO;
-import com.example.historian.models.person.Person;
-import com.example.historian.models.person.SqlitePersonDAO;
-import com.example.historian.models.photo.IPhotoDAO;
-import com.example.historian.models.photo.Photo;
-import com.example.historian.models.photo.SqlitePhotoDAO;
+import com.example.historian.models.location.*;
+import com.example.historian.models.person.*;
+import com.example.historian.models.photo.*;
+import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.StageManager;
+
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
@@ -37,26 +32,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.example.historian.utils.StageManager.primaryStage;
 
 public class GalleryController {
-  @FXML
-  public GridPane imageContainer;
-  @FXML
-  public Button backButton;
-  @FXML
-  public Button forwardButton;
-  @FXML
-  public Text accountText;
-  @FXML
-  public Button logoutButton;
-  @FXML
-  public DatePicker fromDateFilter;
-  @FXML
-  public DatePicker toDateFilter;
-  @FXML
-  public ComboBox<Location> locationFilterComboBox;
-  @FXML
-  public ComboBox<Person> personFilterComboBox;
-  @FXML
-  public Button applyFilterButton;
+  @FXML public GridPane imageContainer;
+  @FXML public Button backButton;
+  @FXML public Button forwardButton;
+  @FXML public Text accountText;
+  @FXML public Button logoutButton;
+  @FXML public DatePicker fromDateFilter;
+  @FXML public DatePicker toDateFilter;
+  @FXML public ComboBox<Location> locationFilterComboBox;
+  @FXML public ComboBox<Person> personFilterComboBox;
+  @FXML public Button applyFilterButton;
 
   public static String galleryCode;
 
@@ -64,6 +49,7 @@ public class GalleryController {
   private int photoPage = 0;
 
   private AuthSingleton authSingleton;
+  private GallerySingleton gallerySingleton;
   private IPhotoDAO photoDAO;
   public List<Photo> photoList;
 
@@ -80,6 +66,9 @@ public class GalleryController {
     if (!authSingleton.checkAuthorised()) {
       StageManager.switchToHomepage();
     }
+
+    // Get the gallery singleton
+    gallerySingleton = GallerySingleton.getInstance();
 
     Account authorisedAccount = authSingleton.getAccount();
     accountText.setText(authorisedAccount.getUsername());
@@ -243,22 +232,43 @@ public class GalleryController {
     fileChooser.setTitle("Choose photo/s to upload");
     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
     List<File> selectedFiles = fileChooser.showOpenMultipleDialog(primaryStage);
+
+    // Get the current authenticated user
+    Account currentUser = AuthSingleton.getInstance().getAccount();
+    int uploaderAccountId = currentUser != null ? currentUser.getId() : -1;  // Assign uploader's account ID
+
+
     if (selectedFiles != null) {
       for (File selectedFile : selectedFiles) {
         try {
-          photoDAO.addPhoto(Photo.fromFile(selectedFile, "Temporary description!"));
+          Photo newPhoto = Photo.fromFile(selectedFile, "");
+          newPhoto.setUploaderAccountId(uploaderAccountId);
+          int photoId = photoDAO.addPhoto(newPhoto);
+          gallerySingleton.addToPhotoQueue(new GallerySingleton.PhotoQueueItem(photoId, true));
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
     }
+
+    // Update the display
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
     buttonUpdate();
+
+    // Check whether the individual photo view needs to be opened
+    checkToDisplayIndividualPhoto();
   }
 
-  //Potentially redundant function, creates a second list to display images, used to avoid indexing issues
-
+  private void checkToDisplayIndividualPhoto() {
+    if (!gallerySingleton.isPhotoQueueEmpty()) {
+      try {
+        StageManager.switchScene("individualPhoto-view.fxml", 500, 800);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
   public void displayPhotos() {
     List<Photo> photosToDisplay = new ArrayList<>();
@@ -293,21 +303,18 @@ public class GalleryController {
       // Get the source of the event (the clicked node)
       ImageView clickedImage = (ImageView) event.getSource();
 
-      // Get the ID of the clicked node
-      int id = Integer.parseInt(clickedImage.getId());
-      IndividualPhoto.clickedImageId = id;
-      try {
-        StageManager.switchScene("individualPhoto-view.fxml", 500, 600);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      // Add this image to the photo queue, then open the individual photo page
+      gallerySingleton.addToPhotoQueue(
+          new GallerySingleton.PhotoQueueItem(Integer.parseInt(clickedImage.getId()), false)
+      );
+      checkToDisplayIndividualPhoto();
     };
   }
 
 
   public void buttonUpdate() {
-    backButton.setVisible(photoPage > 0);
-    forwardButton.setVisible(photoList.size() > 6 && ((photoPage + 1) * 6) < photoList.size());
+    backButton.setVisible(gallerySingleton.getCurrentPage() > 0);
+    forwardButton.setVisible(photoList.size() > 6 && ((gallerySingleton.getCurrentPage() + 1) * 6) < photoList.size());
   }
 
   private void disableDates(boolean afterDate, LocalDate cutOffDate, DatePicker datePicker) {
@@ -380,14 +387,14 @@ public class GalleryController {
 
   @FXML
   public void onBackButtonClick() {
-    photoPage--;
+    gallerySingleton.setCurrentPage(gallerySingleton.getCurrentPage() - 1);
     displayPhotos();
     buttonUpdate();
   }
 
   @FXML
   public void onForwardButtonClick() {
-    photoPage++;
+    gallerySingleton.setCurrentPage(gallerySingleton.getCurrentPage() + 1);
     displayPhotos();
     buttonUpdate();
   }

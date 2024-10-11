@@ -21,6 +21,10 @@ import java.io.IOException;
 public class HomepageController {
   private Boolean codeMode;
 
+  @FXML private Button loginButton;
+  @FXML private TextField usernameField;
+  @FXML private PasswordField passwordField;
+  @FXML private Text errorText;
   @FXML
   private Button loginButton;
   @FXML

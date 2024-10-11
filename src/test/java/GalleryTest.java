@@ -10,23 +10,23 @@ public class GalleryTest {
     private Gallery gallery;
 
     @BeforeEach
-    public void setup() {
+    protected void setup() {
         gallery = new Gallery("title", photos );
     }
 
     @Test
-    public void testGetId() {
+    protected void testGetId() {
         gallery.setId(3);
         assertEquals(3, gallery.getId());
     }
 
     @Test
-    public void testGetTitle() {
+    protected void testGetTitle() {
         assertEquals("title", gallery.getTitle());
     }
 
     @Test
-    public void testGetPhotos() {
+    protected void testGetPhotos() {
         assertNotNull(gallery.getPhotos());
         assertEquals(photos.size(), gallery.getPhotos().size());
     }
