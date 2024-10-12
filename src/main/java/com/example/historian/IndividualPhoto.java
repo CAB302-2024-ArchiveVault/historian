@@ -38,6 +38,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Screen;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import jdk.jfr.Description;
 
@@ -151,7 +152,7 @@ public class IndividualPhoto {
                       .toLocalDate()
       );
     } else {
-      dateLabel.setText("Unknown");
+      dateLabel.setText("No date selected");
       myDatePicker.setValue(null);
     }
 
@@ -160,14 +161,14 @@ public class IndividualPhoto {
     if (photoLocation != null && !photoLocation.getLocationName().isEmpty()) {
       locationLabel.setText(photoLocation.getLocationName());
     } else {
-      locationLabel.setText("Unknown");
+      locationLabel.setText("No location added");
     }
 
     String description = selectedPhoto.getDescription();
-    if(description != null){
+    if(description != null && !selectedPhoto.getDescription().isEmpty()){
       descriptionLabel.setText(selectedPhoto.getDescription());
     } else {
-      descriptionLabel.setText("Unknown");
+      descriptionLabel.setText("No description set");
     }
 
 
@@ -417,14 +418,16 @@ public class IndividualPhoto {
       loadFirstPhotoFromQueue();
       return;
     }
-
     switchToGalleryScene();
   }
 
   @FXML
   public void getDate(ActionEvent event) {
-    LocalDate myDate = myDatePicker.getValue();
-    selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    if (!(myDatePicker.getValue() == null))
+    {
+      LocalDate myDate = myDatePicker.getValue();
+      selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    }
   }
 
   @FXML
@@ -465,18 +468,10 @@ public class IndividualPhoto {
     getDescription();
     photoDAO.updatePhoto(selectedPhoto);
 
-    // Check if the photo contains minimum necessary fields
-    if (!selectedPhoto.hasMinimumFields()) {
-      Alert alert = new Alert(Alert.AlertType.WARNING);
-      alert.setTitle("Unable to Save");
-      alert.setWidth(400);
-      alert.setHeight(400);
-      alert.setContentText("This photo cannot be saved because it does not have a date, description, location or any tagged people. Please add at least one of those to save this photo.");
-      alert.show();
-      return;
+    if (minimumFieldsCheck()) {
+      loadPhoto(this.selectedPhoto.getId(), false);
     }
 
-    loadPhoto(this.selectedPhoto.getId(), false);
   }
 
   @FXML
@@ -486,13 +481,49 @@ public class IndividualPhoto {
 
   @FXML
   public void onCancelButtonClick() throws IOException {
-    setPageEditMode(false);
+    if(minimumFieldsCheck()) {
+      setPageEditMode(false);
+    }
+  }
+
+  private boolean minimumFieldsCheck()
+  {
+    if (!selectedPhoto.hasMinimumFields()) {
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("Unable to Save");
+      alert.setWidth(400);
+      alert.setHeight(400);
+      alert.setContentText("This photo cannot be saved because it does not have a date, description, location or any tagged people. Please add at least one of those to save this photo.");
+      alert.show();
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
 
 
   private void setPageEditMode(boolean isEditMode) {
     editOptions.setVisible(isEditMode);
     editOptions.setManaged(isEditMode);
+
+    //Prevent selection of future date
+    myDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+      @Override
+      public javafx.scene.control.DateCell call(DatePicker datePicker) {
+        return new javafx.scene.control.DateCell() {
+          @Override
+          public void updateItem(LocalDate item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null && item.isAfter(LocalDate.now())) {
+              setDisable(true); // Disable future dates
+              setStyle("-fx-background-color: #ffc0cb;"); // Optional: style to indicate disabled
+            }
+          }
+        };
+      }
+    });
 
     imageInfo.setVisible(!isEditMode);
     imageInfo.setManaged(!isEditMode);

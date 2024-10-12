@@ -24,6 +24,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
@@ -104,6 +106,7 @@ public class GalleryController {
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
     buttonUpdate();
+
 
     // Setup location ComboBox
     locationDAO = new SqliteLocationDAO();
@@ -346,9 +349,12 @@ public class GalleryController {
 
       // Set gridpane params
       imageContainer.add(vbox, i % photosPerRow, i / photosPerRow);
+      GridPane.setHalignment(vbox, HPos.CENTER );
+      GridPane.setValignment(vbox, VPos.BOTTOM);
       vbox.getChildren().add(tagStack);
+      vbox.setAlignment(Pos.CENTER);
       tagStack.getChildren().add(imageView);
-      StackPane.setAlignment(imageView,Pos.TOP_LEFT);
+      StackPane.setAlignment(imageView,Pos.BOTTOM_CENTER);
       vbox.getChildren().add(hbox);
       hbox.getChildren().add(LocationLabel);
       hbox.getChildren().add(DateLabel);
