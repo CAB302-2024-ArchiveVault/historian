@@ -110,11 +110,6 @@ public class IndividualPhoto {
 
     loadFirstPhotoFromQueue();
 
-/*    if (gallerySingleton.isPhotoQueueEmpty()) {
-      returnButton.setText("Return to gallery");
-    } else {
-      returnButton.setText("Next photo");
-    }*/
   }
 
   private void loadFirstPhotoFromQueue() {
