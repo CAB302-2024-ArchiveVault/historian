@@ -1,7 +1,10 @@
 package com.example.historian.utils;
 
+import com.example.historian.models.photo.Photo;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -35,8 +38,29 @@ public class StageManager {
   public static void switchScene(String fxmlFilePath, int width, int height) throws IOException {
     FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(ABSOLUTE_RESOURCES_PATH + fxmlFilePath));
     Scene scene = new Scene(loader.load(), width, height);
+
+
     primaryStage.setScene(scene);
     primaryStage.show();
+
+    primaryStage.setHeight(height);
+    primaryStage.setWidth(width);
+
+
+    // Get screen bounds
+    double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
+    double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+    // Center the stage within the screen bounds
+    primaryStage.setX((screenWidth - primaryStage.getWidth()) / 2);
+    primaryStage.setY((screenHeight - primaryStage.getHeight()) / 2);
+
+  }
+
+  public static void adjustToImage(Photo photo)
+  {
+    primaryStage.setHeight(photo.getAdjustedImageHeight()+250);
+    primaryStage.setWidth(580);
   }
 
   /**

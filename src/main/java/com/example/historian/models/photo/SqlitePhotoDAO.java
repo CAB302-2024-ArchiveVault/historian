@@ -219,7 +219,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   public List<Photo> getAllPhotos() {
     List<Photo> photos = new ArrayList<>();
     try {
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos");
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos ORDER BY date ASC");
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
         photos.add(createFromResultSet(resultSet));
