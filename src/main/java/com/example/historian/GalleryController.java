@@ -44,6 +44,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.scene.control.Label;
 import java.io.File;
@@ -72,6 +74,7 @@ public class GalleryController {
   private int photosPerRow = 4;
   //private int photoPage = 0;
 
+  private Stage loadingStage;
 
 
   private AuthSingleton authSingleton;
@@ -278,6 +281,7 @@ public class GalleryController {
   }
   private void onImageUpdated()
   {
+
     // Create a Task for the long-running operation
     Task<Void> longTask = new Task<Void>() {
       @Override
@@ -296,6 +300,7 @@ public class GalleryController {
       protected void succeeded() {
         super.succeeded();
         SharedProperties.imageUpdated.set(false); // Set property to false when done
+
         System.out.println("Task succeeded");
       }
 
@@ -303,6 +308,7 @@ public class GalleryController {
       protected void failed() {
         super.failed();
         SharedProperties.imageUpdated.set(false); // Set property to false on failure
+
         System.out.println("Task failed");
       }
     };

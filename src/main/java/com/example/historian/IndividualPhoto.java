@@ -12,6 +12,7 @@ import com.example.historian.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -37,7 +38,9 @@ import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import jdk.jfr.Description;
@@ -543,9 +546,69 @@ public class IndividualPhoto {
     alert.setTitle("Delete Photo");
     alert.setContentText("Are you sure you want to delete the photo?");
     Optional<ButtonType> result = alert.showAndWait();
-    if (result.get() == ButtonType.OK) {
+    /*if (result.get() == ButtonType.OK) {
       photoDAO.removePhoto(photoDAO.getPhoto(selectedPhoto.getId()));
+      SharedProperties.imageUpdated.set(true);
       switchToGalleryScene();
+    }*/
+
+    if (result.isPresent() && result.get() == ButtonType.OK) {
+
+      // Create a new Stage for the progress indicator
+      Stage progressStage = new Stage();
+      progressStage.initModality(Modality.APPLICATION_MODAL); // Block input to other windows
+      progressStage.setTitle("Deleting");
+
+      // Create a ProgressIndicator and Label
+      ProgressIndicator progressIndicator = new ProgressIndicator();
+      Label label = new Label("Deleting your photo...");
+
+      // Create a VBox to hold the progress indicator and label
+      VBox vbox = new VBox(10, progressIndicator, label);
+      vbox.setAlignment(Pos.CENTER);
+      Scene scene = new Scene(vbox, 200, 100);
+      progressStage.setScene(scene);
+      progressStage.show(); // Show the progress window
+
+      Task<Void> deleteTask = new Task<Void>() {
+        @Override
+        protected Void call() throws Exception {
+          // Perform the delete operation
+          photoDAO.removePhoto(photoDAO.getPhoto(selectedPhoto.getId()));
+          SharedProperties.imageUpdated.set(true); // Notify that image has been updated
+
+          // Wait for imageUpdated to become false
+          while (SharedProperties.imageUpdated.get()) {
+            Thread.sleep(100); // Sleep for a short time to avoid busy waiting
+            //alert.setTitle("Photo being deleted");
+            //alert.setContentText("Your photo is being deleted from the database");
+          }
+
+          return null;
+        }
+
+        @Override
+        protected void succeeded() {
+          super.succeeded();
+          // After the task has succeeded, switch to the gallery scene
+          switchToGalleryScene();
+          progressStage.close();
+        }
+
+        @Override
+        protected void failed() {
+          super.failed();
+          // Handle the error if needed
+          Throwable exception = getException();
+          System.err.println("Error deleting photo: " + exception.getMessage());
+          progressStage.close();
+        }
+      };
+
+      // Start the task in a new thread
+      new Thread(deleteTask).start();
+
+      // Optionally show a loading indicator here if you want
     }
   }
 
