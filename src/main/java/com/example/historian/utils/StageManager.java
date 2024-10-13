@@ -14,6 +14,7 @@ import java.io.IOException;
  */
 public class StageManager {
   public static Stage primaryStage;
+  public static Stage individualPhotoStage;
   public static final int WIDTH = 640;
   public static final int HEIGHT = 360;
   public static final String ABSOLUTE_RESOURCES_PATH = "/com/example/historian/";
@@ -43,8 +44,8 @@ public class StageManager {
     primaryStage.setScene(scene);
     primaryStage.show();
 
-    primaryStage.setHeight(height);
-    primaryStage.setWidth(width);
+    //primaryStage.setHeight(height);
+    //primaryStage.setWidth(width);
 
 
     // Get screen bounds
@@ -72,6 +73,22 @@ public class StageManager {
   public static void switchScene(String fxmlFilePath) throws IOException {
     switchScene(fxmlFilePath, WIDTH, HEIGHT);
   }
+
+  public static void switchToIndividualPhoto(int width, int height) throws IOException
+  {
+    individualPhotoStage = new Stage();
+    FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(ABSOLUTE_RESOURCES_PATH + "individualPhoto-view.fxml"));
+    Scene scene = new Scene(loader.load(), width, height);
+
+    individualPhotoStage.setScene(scene);
+    individualPhotoStage.show();
+
+    individualPhotoStage.setHeight(height);
+    individualPhotoStage.setWidth(width);
+
+  }
+
+
 
   /**
    * Switches the scene of the primary stage to the homepage view.

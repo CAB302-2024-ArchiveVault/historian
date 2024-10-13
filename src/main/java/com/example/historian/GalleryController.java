@@ -17,15 +17,23 @@ import com.example.historian.models.location.*;
 import com.example.historian.models.person.*;
 import com.example.historian.models.photo.*;
 import com.example.historian.utils.GallerySingleton;
+import com.example.historian.utils.SharedProperties;
 import com.example.historian.utils.StageManager;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.CacheHint;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
@@ -46,8 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.example.historian.utils.StageManager.primaryStage;
-import static com.example.historian.utils.StageManager.switchScene;
+import static com.example.historian.utils.StageManager.*;
 
 public class GalleryController {
   @FXML public GridPane imageContainer;
@@ -81,6 +88,8 @@ public class GalleryController {
   private ObservableList<Location> locationList;
   private IPersonDAO personDAO;
   private ObservableList<Person> personList;
+
+  //public static SimpleBooleanProperty imageUpdated = new SimpleBooleanProperty(false);
 
 
   @FXML
@@ -237,6 +246,79 @@ public class GalleryController {
       }
     });
 
+/*    imageUpdated.addListener(new ChangeListener<Boolean>() {
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        // Use if-else to handle true and false states
+        if (newValue) {
+            System.out.println("Task started");
+            onImageUpdated();
+        }
+      }
+    });*/
+
+    SharedProperties.imageUpdated.addListener((obs, oldValue, newValue) -> {
+      if (newValue) {
+        onImageUpdated();
+      }
+    });
+
+    primaryStage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        if (newValue) {
+          onMinimize();  // Stage is minimized
+        } else {
+          onRestore();   // Stage is restored (maximized)
+        }
+      }
+    });
+
+
+  }
+  private void onImageUpdated()
+  {
+    // Create a Task for the long-running operation
+    Task<Void> longTask = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        // Simulate a long-running task
+        System.out.println("Task started");
+        Platform.runLater(() -> {
+          photoList = photoDAO.getAllPhotos();
+          displayPhotos();
+          buttonUpdate();
+        });
+        return null;
+      }
+
+      @Override
+      protected void succeeded() {
+        super.succeeded();
+        SharedProperties.imageUpdated.set(false); // Set property to false when done
+        System.out.println("Task succeeded");
+      }
+
+      @Override
+      protected void failed() {
+        super.failed();
+        SharedProperties.imageUpdated.set(false); // Set property to false on failure
+        System.out.println("Task failed");
+      }
+    };
+
+    // Start the task in a new thread
+    new Thread(longTask).start();
+
+    //imageUpdated.set(false);
+  }
+
+  private void onMinimize() {
+    System.out.println("Stage minimized");
+  }
+
+  private void onRestore() {
+    System.out.println("Stage restored");
   }
 
   @FXML
@@ -246,9 +328,11 @@ public class GalleryController {
       switchScene("admin-options-view.fxml");
     } else {
       authSingleton.signOut();
+      gallerySingleton.setCurrentPage(0);
       StageManager.switchToHomepage();
     }
   }
+  //public void update
 
   @FXML
   protected void onUploadPhotoClick() {
@@ -276,18 +360,24 @@ public class GalleryController {
     }
 
     // Update the display
-    photoList = photoDAO.getAllPhotos();
+    SharedProperties.imageUpdated.set(true);
+    /*photoList = photoDAO.getAllPhotos();
     displayPhotos();
-    buttonUpdate();
+    buttonUpdate();*/
 
     // Check whether the individual photo view needs to be opened
     checkToDisplayIndividualPhoto();
   }
 
   private void checkToDisplayIndividualPhoto() {
+    long startTime = System.currentTimeMillis();
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       try {
-        switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
+        //switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
+        switchToIndividualPhoto(580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
+        primaryStage.setIconified(true);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Scene loaded in: " + (endTime - startTime) + " ms");
         //StageManager.switchScene("individualPhoto-view.fxml");
       } catch (Exception e) {
         e.printStackTrace();
@@ -295,13 +385,16 @@ public class GalleryController {
     }
   }
 
+
+
   public void displayPhotos() {
-    List<Photo> photosToDisplay = new ArrayList<>();
+    List<Photo> photosToDisplay = getPhotosForCurrentPage();
+    //photoList = photoDAO.getAllPhotos();
 
     // Find all images to display
-    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
+/*    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
-    }
+    }*/
 
 
     // Render photos
@@ -311,6 +404,7 @@ public class GalleryController {
 
       //Create the VBox
       VBox vbox = new VBox();
+      vbox.setId(String.valueOf(i));
 
       // Create the imageview
       ImageView imageView = new ImageView();
@@ -319,8 +413,11 @@ public class GalleryController {
       imageView.setFitWidth(200.0);
       imageView.setPickOnBounds(true);
       imageView.setId(String.valueOf(photo.getId()));
+      //imageView.setId(String.valueOf(i));
       imageView.setOnMouseClicked(onImageClick());
-      imageView.setImage(photo.getImage());
+      imageView.setImage(photo.getThumbNail());
+      imageView.setCache(true);
+      imageView.setCacheHint(CacheHint.SPEED);
 
 
       //Create the hbox to store the location and date label
@@ -337,6 +434,7 @@ public class GalleryController {
 
       //Create the date label
       Label DateLabel = new Label();
+      DateLabel.setId(String.valueOf(i));
 
       if(photo.getDate() != null){
         String stringDate = formatter.format(photo.getDate());
@@ -374,6 +472,15 @@ public class GalleryController {
       }
     }
   }
+
+
+  private List<Photo> getPhotosForCurrentPage() {
+    int startIndex = gallerySingleton.getCurrentPage() * photosPerPage;
+    int endIndex = Math.min(startIndex + photosPerPage, photoList.size());
+    return photoList.subList(startIndex, endIndex);
+  }
+
+
 
   protected EventHandler<? super MouseEvent> onImageClick() {
     return event -> {

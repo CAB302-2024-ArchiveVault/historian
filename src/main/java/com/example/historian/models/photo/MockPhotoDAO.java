@@ -60,4 +60,16 @@ public class MockPhotoDAO implements IPhotoDAO {
   public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person) {
     return new ArrayList<>(photos);
   }
+
+  @Override
+  public List<Integer> getAllPhotoIDs()
+  {
+    List<Integer> photoIDList = new ArrayList<>();
+
+    for (Photo photo : photos) {
+      photoIDList.add(photo.getId());
+    }
+
+    return new ArrayList<>();
+  }
 }

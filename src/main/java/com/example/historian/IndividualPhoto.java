@@ -108,6 +108,7 @@ public class IndividualPhoto {
     personDAO = new SqlitePersonDAO();
 
 
+
     loadFirstPhotoFromQueue();
 
   }
@@ -129,8 +130,8 @@ public class IndividualPhoto {
       returnButton.setText("Next photo");
     }
 
-    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 280);
-    primaryStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
+    individualPhotoStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 280);
+    individualPhotoStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
 
     imageDisplay.setImage(selectedPhoto.getImage());
     imageDisplay.setOnMouseClicked(this::handleImageViewClick);
@@ -369,7 +370,10 @@ public class IndividualPhoto {
 
   private void switchToGalleryScene() {
     try {
-      switchScene("gallery-view.fxml", 1000, 900);
+      //displayPhotos();
+      primaryStage.setIconified(false);
+      individualPhotoStage.close();
+      //switchScene("gallery-view.fxml", 1000, 900);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -409,11 +413,14 @@ public class IndividualPhoto {
   @FXML
   protected void onBackButtonClick() throws IOException {
     // Check if there are more items in the display queue
+    long startTime = System.currentTimeMillis();
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       loadFirstPhotoFromQueue();
       return;
     }
     switchToGalleryScene();
+    long endTime = System.currentTimeMillis();
+    System.out.println("Scene loaded in: " + (endTime - startTime) + " ms");
   }
 
   @FXML
@@ -462,6 +469,9 @@ public class IndividualPhoto {
     getLocation();
     getDescription();
     photoDAO.updatePhoto(selectedPhoto);
+    SharedProperties.imageUpdated.set(true);
+
+
 
     if (minimumFieldsCheck()) {
       loadPhoto(this.selectedPhoto.getId(), false);
