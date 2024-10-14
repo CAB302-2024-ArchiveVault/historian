@@ -26,14 +26,6 @@ public class HomepageController {
   @FXML private PasswordField passwordField;
   @FXML private Text errorText;
   @FXML
-  private Button loginButton;
-  @FXML
-  private TextField usernameField;
-  @FXML
-  private PasswordField passwordField;
-  @FXML
-  private Text errorText;
-  @FXML
   private GridPane loginGridPane;
   @FXML
   private GridPane codeGridPane;

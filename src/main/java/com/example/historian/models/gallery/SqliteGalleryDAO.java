@@ -74,8 +74,10 @@ public class SqliteGalleryDAO implements IGalleryDAO {
                     + "key VARCHAR,"
                     + "from_date INTEGER,"
                     + "to_date INTEGER,"
-                    + "FOREIGN KEY(locationId) REFERENCES location(id),"
-                    + "FOREIGN KEY(personId) REFERENCES person(id))";
+                    + "locationId VARCHAR,"
+                    + "personId VARCHAR,"
+                    + "FOREIGN KEY(locationId) REFERENCES locations(id),"
+                    + "FOREIGN KEY(personId) REFERENCES people(id))";
             statement.execute(query);
         } catch (Exception e) {
             e.printStackTrace();
