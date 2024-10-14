@@ -128,7 +128,9 @@ public class HomepageController {
       return;
     }
 
-    GalleryController.galleryCode = inputtedCode;
-    StageManager.switchScene("gallery-view.fxml");
+    AuthSingleton authSingleton = AuthSingleton.getInstance();
+    authSingleton.signOut();
+    authSingleton.setGalleryCode(inputtedCode);
+    StageManager.switchScene("gallery-code-view.fxml", 1000, 900);
   }
 }

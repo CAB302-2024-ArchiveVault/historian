@@ -19,30 +19,29 @@ public class SqliteGalleryDAO implements IGalleryDAO {
     }
 
     @Override
-    public String addGallery(String title, Date fromDate, Date toDate, int location, int person) {
+    public String addGallery(Date fromDate, Date toDate, int location, int person) {
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO galleries (title, from_date, to_date, locationId, personId) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO galleries (from_date, to_date, locationId, personId) VALUES (?, ?, ?, ?)");
 
-            statement.setString(1, title);
             if (fromDate != null) {
-                statement.setLong(2, fromDate.getTime());
+                statement.setLong(1, fromDate.getTime());
+            } else {
+                statement.setNull(1, Types.INTEGER);
+            }
+            if (toDate != null) {
+                statement.setLong(2, toDate.getTime());
             } else {
                 statement.setNull(2, Types.INTEGER);
             }
-            if (toDate != null) {
-                statement.setLong(3, toDate.getTime());
+            if (location != -1) {
+                statement.setInt(3, location);
             } else {
                 statement.setNull(3, Types.INTEGER);
             }
-            if (location != -1) {
-                statement.setInt(4, location);
+            if (person != -1) {
+                statement.setInt(4, person);
             } else {
                 statement.setNull(4, Types.INTEGER);
-            }
-            if (person != -1) {
-                statement.setInt(5, person);
-            } else {
-                statement.setNull(5, Types.INTEGER);
             }
             statement.executeUpdate();
 
@@ -70,7 +69,6 @@ public class SqliteGalleryDAO implements IGalleryDAO {
             Statement statement = connection.createStatement();
             String query = "CREATE TABLE IF NOT EXISTS galleries ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "title VARCHAR NOT NULL,"
                     + "key VARCHAR,"
                     + "from_date INTEGER,"
                     + "to_date INTEGER,"
@@ -87,7 +85,6 @@ public class SqliteGalleryDAO implements IGalleryDAO {
     private Gallery createFromResultSet(ResultSet resultSet) throws Exception {
 
         int id = resultSet.getInt("id");
-        String title = resultSet.getString("title");
 
         long fromDateLong = resultSet.getObject("from_date") != null ? resultSet.getLong("from_date") : -1;
         Date fromDate = fromDateLong != -1 ? new Date(fromDateLong) : null;
@@ -98,7 +95,7 @@ public class SqliteGalleryDAO implements IGalleryDAO {
 
         IPhotoDAO photoDAO = new SqlitePhotoDAO();
         List<Photo> photos =  photoDAO.getPhotosByFilter(fromDate, toDate, locationId, personId);
-        Gallery gallery = new Gallery(title, photos);
+        Gallery gallery = new Gallery(photos);
         gallery.setId(id);
         return gallery;
     }

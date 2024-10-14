@@ -22,10 +22,9 @@ public class MockGalleryDAO implements IGalleryDAO {
   /**
    * Adds a new gallery to the in-memory list.
    *
-   * @param gallery the Gallery object to be added
    */
   @Override
-  public String addGallery(String title, Date fromDate, Date toDate, int location, int person) {
+  public String addGallery(Date fromDate, Date toDate, int location, int person) {
     autoIncrementId++;
     return "HASH!@";
   }
