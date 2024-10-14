@@ -78,6 +78,7 @@ public class IndividualPhoto {
   @FXML private HBox pageNavigation;
   @FXML private Button returnButton;
   @FXML private Button editButton;
+  @FXML private Button deleteButton;
 
   // Global data handlers
   private GallerySingleton gallerySingleton;
@@ -126,6 +127,7 @@ public class IndividualPhoto {
     if (selectedPhoto == null) {
       switchToGalleryScene();
     }
+
 
     if (gallerySingleton.isPhotoQueueEmpty()) {
       returnButton.setText("Return to gallery");
@@ -466,21 +468,18 @@ public class IndividualPhoto {
   }
 
   @FXML
-  public void onSaveButtonClick() {
-
+    public void onSaveButtonClick() {
     selectedPhoto.setTagged(tempTags);
     getLocation();
     getDescription();
     photoDAO.updatePhoto(selectedPhoto);
     SharedProperties.imageUpdated.set(true);
-
-
-
     if (minimumFieldsCheck()) {
       loadPhoto(this.selectedPhoto.getId(), false);
     }
-
   }
+
+
 
   @FXML
   public void onEditButtonClick() throws IOException {
@@ -516,6 +515,8 @@ public class IndividualPhoto {
     editOptions.setVisible(isEditMode);
     editOptions.setManaged(isEditMode);
 
+
+
     //Prevent selection of future date
     myDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
       @Override
@@ -535,8 +536,10 @@ public class IndividualPhoto {
 
     imageInfo.setVisible(!isEditMode);
     imageInfo.setManaged(!isEditMode);
-    pageNavigation.setVisible(!isEditMode);
-    pageNavigation.setManaged(!isEditMode);
+    //pageNavigation.setVisible(!isEditMode);
+    //pageNavigation.setManaged(!isEditMode);
+    deleteButton.setVisible(isEditMode);
+    returnButton.setVisible(!isEditMode);
   }
 
 
@@ -659,6 +662,8 @@ public class IndividualPhoto {
   private void setTagModeVisible() {
     editOptions.setVisible(!isEditingTags);
     editOptions.setManaged(!isEditingTags);
+    deleteButton.setVisible(!isEditingTags);
+    deleteButton.setManaged(!isEditingTags);
     tagModeHBox.setVisible(isEditingTags);
     tagModeHBox.setManaged(isEditingTags);
   }

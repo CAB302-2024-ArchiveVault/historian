@@ -46,6 +46,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.scene.control.Label;
 import java.io.File;
@@ -72,9 +73,7 @@ public class GalleryController {
 
   private int photosPerPage = 12;
   private int photosPerRow = 4;
-  //private int photoPage = 0;
-
-  private Stage loadingStage;
+  private int currentPage;
 
 
   private AuthSingleton authSingleton;
@@ -86,13 +85,15 @@ public class GalleryController {
 
   Image tagImage = new Image("file:src/icons/tag.png");
 
+  public List<Photo> filterList;
+  private boolean filterState = false;
 
   private ILocationDAO locationDAO;
   private ObservableList<Location> locationList;
   private IPersonDAO personDAO;
   private ObservableList<Person> personList;
 
-  //public static SimpleBooleanProperty imageUpdated = new SimpleBooleanProperty(false);
+
 
 
   @FXML
@@ -249,16 +250,6 @@ public class GalleryController {
       }
     });
 
-/*    imageUpdated.addListener(new ChangeListener<Boolean>() {
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        // Use if-else to handle true and false states
-        if (newValue) {
-            System.out.println("Task started");
-            onImageUpdated();
-        }
-      }
-    });*/
 
     SharedProperties.imageUpdated.addListener((obs, oldValue, newValue) -> {
       if (newValue) {
@@ -266,66 +257,41 @@ public class GalleryController {
       }
     });
 
-    primaryStage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        if (newValue) {
-          onMinimize();  // Stage is minimized
-        } else {
-          onRestore();   // Stage is restored (maximized)
-        }
-      }
-    });
-
 
   }
   private void onImageUpdated()
   {
-
     // Create a Task for the long-running operation
     Task<Void> longTask = new Task<Void>() {
       @Override
       protected Void call() throws Exception {
         // Simulate a long-running task
-        System.out.println("Task started");
-        Platform.runLater(() -> {
-          photoList = photoDAO.getAllPhotos();
-          displayPhotos();
-          buttonUpdate();
-        });
+        photoList = photoDAO.getAllPhotos();
         return null;
       }
 
       @Override
       protected void succeeded() {
         super.succeeded();
-        SharedProperties.imageUpdated.set(false); // Set property to false when done
-
-        System.out.println("Task succeeded");
+        Platform.runLater(() -> {
+          displayPhotos();
+          buttonUpdate();
+          SharedProperties.imageUpdated.set(false); // Set property to false when done
+        });
       }
 
       @Override
       protected void failed() {
         super.failed();
         SharedProperties.imageUpdated.set(false); // Set property to false on failure
-
         System.out.println("Task failed");
       }
     };
 
     // Start the task in a new thread
     new Thread(longTask).start();
-
-    //imageUpdated.set(false);
   }
 
-  private void onMinimize() {
-    System.out.println("Stage minimized");
-  }
-
-  private void onRestore() {
-    System.out.println("Stage restored");
-  }
 
   @FXML
   protected void onLogoutButtonClick() throws IOException {
@@ -375,6 +341,31 @@ public class GalleryController {
     checkToDisplayIndividualPhoto();
   }
 
+  @FXML
+  protected void onSortViewClick()
+  {
+    boolean areSortButtonsVisible = fromDateFilter.isVisible();
+    fromDateFilter.setVisible(!areSortButtonsVisible);
+    toDateFilter.setVisible(!areSortButtonsVisible);
+    locationFilterComboBox.setVisible(!areSortButtonsVisible);
+    personFilterComboBox.setVisible(!areSortButtonsVisible);
+    applyFilterButton.setVisible(!areSortButtonsVisible);
+
+    if (!areSortButtonsVisible)
+    {
+      currentPage = gallerySingleton.getCurrentPage();
+    }
+    else if(areSortButtonsVisible)
+    {
+      gallerySingleton.setCurrentPage(currentPage);
+      filterState = false;
+      //photoList=photoDAO.getAllPhotos();
+    }
+
+    displayPhotos();
+    buttonUpdate();
+  }
+
   private void checkToDisplayIndividualPhoto() {
     long startTime = System.currentTimeMillis();
     if (!gallerySingleton.isPhotoQueueEmpty()) {
@@ -395,13 +386,6 @@ public class GalleryController {
 
   public void displayPhotos() {
     List<Photo> photosToDisplay = getPhotosForCurrentPage();
-    //photoList = photoDAO.getAllPhotos();
-
-    // Find all images to display
-/*    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
-      photosToDisplay.add(photoList.get(i));
-    }*/
-
 
     // Render photos
     imageContainer.getChildren().clear();
@@ -470,9 +454,7 @@ public class GalleryController {
         tagView.setFitWidth(23);
         tagView.setSmooth(true);
         tagView.setPreserveRatio(true);
-        //Image tagImage = new Image("file:tag.jpg");
         tagView.setImage(tagImage);
-        //imageView.setImage(tagImage);
         StackPane.setAlignment(tagView,Pos.BOTTOM_LEFT);
         tagStack.getChildren().add(tagView);
       }
@@ -482,8 +464,17 @@ public class GalleryController {
 
   private List<Photo> getPhotosForCurrentPage() {
     int startIndex = gallerySingleton.getCurrentPage() * photosPerPage;
-    int endIndex = Math.min(startIndex + photosPerPage, photoList.size());
-    return photoList.subList(startIndex, endIndex);
+    if (filterState)
+    {
+      int endIndex = Math.min(startIndex + photosPerPage, filterList.size());
+      return filterList.subList(startIndex, endIndex);
+    }
+    else
+    {
+      int endIndex = Math.min(startIndex + photosPerPage, photoList.size());
+      return photoList.subList(startIndex, endIndex);
+    }
+
   }
 
 
@@ -504,7 +495,13 @@ public class GalleryController {
 
   public void buttonUpdate() {
     backButton.setVisible(gallerySingleton.getCurrentPage() > 0);
-    forwardButton.setVisible(photoList.size() > photosPerPage && ((gallerySingleton.getCurrentPage() + 1) * photosPerPage) < photoList.size());
+    if (filterState){
+      forwardButton.setVisible(filterList.size() > photosPerPage && ((gallerySingleton.getCurrentPage() + 1) * photosPerPage) < filterList.size());
+    }
+    else
+    {
+      forwardButton.setVisible(photoList.size() > photosPerPage && ((gallerySingleton.getCurrentPage() + 1) * photosPerPage) < photoList.size());
+    }
   }
 
   private void disableDates(boolean afterDate, LocalDate cutOffDate, DatePicker datePicker) {
@@ -560,6 +557,7 @@ public class GalleryController {
 
   @FXML
   public void onApplyFilterButtonClick() {
+
     Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
     int selectedLocationId = selectedLocation != null ? selectedLocation.getId() : -1;
     Person selectedPerson = personFilterComboBox.getSelectionModel().getSelectedItem();
@@ -569,7 +567,9 @@ public class GalleryController {
     LocalDate toLocalDate = toDateFilter.getValue();
     Date toDate = toLocalDate != null ? Date.from(toLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
 
-    photoList = photoDAO.getPhotosByFilter(fromDate, toDate, selectedLocationId, selectedPersonId);
+    filterList = photoDAO.getPhotosByFilter(fromDate, toDate, selectedLocationId, selectedPersonId);
+    gallerySingleton.setCurrentPage(0);
+    filterState = true;
     displayPhotos();
     buttonUpdate();
   }
