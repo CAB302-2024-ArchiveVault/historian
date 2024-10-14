@@ -3,6 +3,16 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
+import com.example.historian.models.location.ILocationDAO;
+import com.example.historian.models.location.Location;
+import com.example.historian.models.location.SqliteLocationDAO;
+import com.example.historian.models.person.IPersonDAO;
+import com.example.historian.models.person.Person;
+import com.example.historian.models.person.SqlitePersonDAO;
+import com.example.historian.models.photo.IPhotoDAO;
+import com.example.historian.models.photo.Photo;
+import com.example.historian.models.photo.SqlitePhotoDAO;
+import com.example.historian.utils.GallerySingleton;
 import com.example.historian.models.location.*;
 import com.example.historian.models.person.*;
 import com.example.historian.models.photo.*;
@@ -14,22 +24,30 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
+import javafx.scene.Scene;
+import javafx.scene.layout.*;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
-
+import javafx.scene.control.Label;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.example.historian.utils.StageManager.primaryStage;
+import static com.example.historian.utils.StageManager.switchScene;
 
 public class GalleryController {
   @FXML public GridPane imageContainer;
@@ -45,13 +63,20 @@ public class GalleryController {
 
   public static String galleryCode;
 
-  private int photosPerPage = 6;
-  private int photoPage = 0;
+  private int photosPerPage = 12;
+  private int photosPerRow = 4;
+
+
 
   private AuthSingleton authSingleton;
   private GallerySingleton gallerySingleton;
   private IPhotoDAO photoDAO;
   public List<Photo> photoList;
+
+  SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+  Image tagImage = new Image("file:src/icons/tag.png");
+
 
   private ILocationDAO locationDAO;
   private ObservableList<Location> locationList;
@@ -219,7 +244,7 @@ public class GalleryController {
   protected void onLogoutButtonClick() throws IOException {
     Account authorisedAccount = authSingleton.getAccount();
     if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
-      StageManager.switchScene("admin-options-view.fxml");
+      switchScene("admin-options-view.fxml");
     } else {
       authSingleton.signOut();
       StageManager.switchToHomepage();
@@ -263,7 +288,8 @@ public class GalleryController {
   private void checkToDisplayIndividualPhoto() {
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       try {
-        StageManager.switchScene("individualPhoto-view.fxml", 500, 800);
+        switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
+        //StageManager.switchScene("individualPhoto-view.fxml");
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -274,7 +300,7 @@ public class GalleryController {
     List<Photo> photosToDisplay = new ArrayList<>();
 
     // Find all images to display
-    for (int i = (photoPage * photosPerPage); i < Math.min((photoPage * photosPerPage) + photosPerPage, photoList.size()); i++) {
+    for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
     }
 
@@ -283,18 +309,69 @@ public class GalleryController {
     for (int i = 0; i < photosToDisplay.size(); i++) {
       Photo photo = photosToDisplay.get(i);
 
+      //Create the VBox
+      VBox vbox = new VBox();
+
       // Create the imageview
       ImageView imageView = new ImageView();
-      imageView.setFitHeight(110.0);
-      imageView.setFitWidth(135.0);
-      imageView.setPickOnBounds(true);
       imageView.setPreserveRatio(true);
+      imageView.setFitHeight(200.0);
+      imageView.setFitWidth(200.0);
+      imageView.setPickOnBounds(true);
       imageView.setId(String.valueOf(photo.getId()));
       imageView.setOnMouseClicked(onImageClick());
       imageView.setImage(photo.getImage());
 
+
+      //Create the hbox to store the location and date label
+      HBox hbox = new HBox(8);
+      hbox.setAlignment(Pos.TOP_LEFT);
+
+
+      //Create the location label
+      Label LocationLabel  = new Label();
+
+      if(photo.getLocation() != null){
+        LocationLabel.setText(photo.getLocation().getLocationName());
+      }
+
+      //Create the date label
+      Label DateLabel = new Label();
+
+      if(photo.getDate() != null){
+        String stringDate = formatter.format(photo.getDate());
+        //String myFormattedDate = photoDAO.getPhoto(clickedImageId).getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        DateLabel.setText(stringDate);
+      }
+      // Create the stackpane
+      StackPane tagStack = new StackPane();
+
+
       // Set gridpane params
-      imageContainer.add(imageView, i % 3, i / 3);
+      imageContainer.add(vbox, i % photosPerRow, i / photosPerRow);
+      GridPane.setHalignment(vbox, HPos.CENTER );
+      GridPane.setValignment(vbox, VPos.BOTTOM);
+      vbox.getChildren().add(tagStack);
+      vbox.setAlignment(Pos.CENTER);
+      tagStack.getChildren().add(imageView);
+      StackPane.setAlignment(imageView,Pos.BOTTOM_CENTER);
+      vbox.getChildren().add(hbox);
+      hbox.getChildren().add(LocationLabel);
+      hbox.getChildren().add(DateLabel);
+
+      if(!photo.getTagged().isEmpty())
+      {
+        ImageView tagView = new ImageView();
+        tagView.setFitHeight(23);
+        tagView.setFitWidth(23);
+        tagView.setSmooth(true);
+        tagView.setPreserveRatio(true);
+        //Image tagImage = new Image("file:tag.jpg");
+        tagView.setImage(tagImage);
+        //imageView.setImage(tagImage);
+        StackPane.setAlignment(tagView,Pos.BOTTOM_LEFT);
+        tagStack.getChildren().add(tagView);
+      }
     }
   }
 
@@ -314,7 +391,7 @@ public class GalleryController {
 
   public void buttonUpdate() {
     backButton.setVisible(gallerySingleton.getCurrentPage() > 0);
-    forwardButton.setVisible(photoList.size() > 6 && ((gallerySingleton.getCurrentPage() + 1) * 6) < photoList.size());
+    forwardButton.setVisible(photoList.size() > photosPerPage && ((gallerySingleton.getCurrentPage() + 1) * photosPerPage) < photoList.size());
   }
 
   private void disableDates(boolean afterDate, LocalDate cutOffDate, DatePicker datePicker) {

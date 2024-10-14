@@ -13,6 +13,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -31,8 +33,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.stage.Screen;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import jdk.jfr.Description;
+
+import static com.example.historian.utils.StageManager.*;
 
 
 public class IndividualPhoto {
@@ -77,6 +87,7 @@ public class IndividualPhoto {
   private boolean isEditingTags = false;
   private boolean isViewingTags = false;
 
+
   // Tag editor
   private Double newTagXCoord;
   private Double newTagYCoord;
@@ -96,15 +107,11 @@ public class IndividualPhoto {
     locationDAO = new SqliteLocationDAO();
     personDAO = new SqlitePersonDAO();
 
+
     loadFirstPhotoFromQueue();
 
-    if (gallerySingleton.isPhotoQueueEmpty()) {
-      returnButton.setText("Return to gallery");
-    } else {
-      returnButton.setText("Next photo");
-    }
   }
-  
+
   private void loadFirstPhotoFromQueue() {
     GallerySingleton.PhotoQueueItem photoQueueItem = gallerySingleton.popFromPhotoQueue();
     loadPhoto(photoQueueItem.photoId(), photoQueueItem.openToEditMode());
@@ -116,8 +123,19 @@ public class IndividualPhoto {
       switchToGalleryScene();
     }
 
+    if (gallerySingleton.isPhotoQueueEmpty()) {
+      returnButton.setText("Return to gallery");
+    } else {
+      returnButton.setText("Next photo");
+    }
+
+    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 280);
+    primaryStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
+
     imageDisplay.setImage(selectedPhoto.getImage());
     imageDisplay.setOnMouseClicked(this::handleImageViewClick);
+
+    imagePane.setTranslateX((double) ((selectedPhoto.getDefaultWidth() + 20) - (selectedPhoto.getAdjustedImageWidth())) /2);
 
     Date photoDate = selectedPhoto.getDate();
     if (photoDate != null) {
@@ -129,7 +147,7 @@ public class IndividualPhoto {
                       .toLocalDate()
       );
     } else {
-      dateLabel.setText("Unknown");
+      dateLabel.setText("No date selected");
       myDatePicker.setValue(null);
     }
 
@@ -138,14 +156,14 @@ public class IndividualPhoto {
     if (photoLocation != null && !photoLocation.getLocationName().isEmpty()) {
       locationLabel.setText(photoLocation.getLocationName());
     } else {
-      locationLabel.setText("Unknown");
+      locationLabel.setText("No location added");
     }
 
     String description = selectedPhoto.getDescription();
-    if(description != null){
+    if(description != null && !selectedPhoto.getDescription().isEmpty()){
       descriptionLabel.setText(selectedPhoto.getDescription());
     } else {
-      descriptionLabel.setText("Unknown");
+      descriptionLabel.setText("No description set");
     }
 
 
@@ -158,6 +176,8 @@ public class IndividualPhoto {
     } else {
       tagsLabel.setText("Nobody tagged");
     }
+    isViewingTags = false;
+    viewTagMode();
 
     setPageEditMode(editMode);
     updateNewLocationSelectorVisibility(false);
@@ -181,6 +201,11 @@ public class IndividualPhoto {
       }
     }
   }
+
+
+
+
+
 
 
   private void initializeLocationComboBox(Location location) {
@@ -319,6 +344,7 @@ public class IndividualPhoto {
     });
   }
 
+
   @FXML
   protected void showNewPersonSelector() {
     updateNewPersonSelectorVisibility(true);
@@ -343,7 +369,7 @@ public class IndividualPhoto {
 
   private void switchToGalleryScene() {
     try {
-      StageManager.switchScene("gallery-view.fxml");
+      switchScene("gallery-view.fxml", 1000, 900);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -387,14 +413,16 @@ public class IndividualPhoto {
       loadFirstPhotoFromQueue();
       return;
     }
-
     switchToGalleryScene();
   }
 
   @FXML
   public void getDate(ActionEvent event) {
-    LocalDate myDate = myDatePicker.getValue();
-    selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    if (!(myDatePicker.getValue() == null))
+    {
+      LocalDate myDate = myDatePicker.getValue();
+      selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    }
   }
 
   @FXML
@@ -404,7 +432,7 @@ public class IndividualPhoto {
       if (locationName == null || locationName.isEmpty() || locationName.isBlank()) return;
 
       Optional<Location> locationMatch = locationDAO.getAllLocations().stream()
-              .filter(l -> l.getLocationName().equals(locationName))
+              .filter(l -> l.getLocationName().equalsIgnoreCase(locationName))
               .findFirst();
 
       if (locationMatch.isPresent()) {
@@ -435,18 +463,10 @@ public class IndividualPhoto {
     getDescription();
     photoDAO.updatePhoto(selectedPhoto);
 
-    // Check if the photo contains minimum necessary fields
-    if (!selectedPhoto.hasMinimumFields()) {
-      Alert alert = new Alert(Alert.AlertType.WARNING);
-      alert.setTitle("Unable to Save");
-      alert.setWidth(400);
-      alert.setHeight(400);
-      alert.setContentText("This photo cannot be saved because it does not have a date, description, location or any tagged people. Please add at least one of those to save this photo.");
-      alert.show();
-      return;
+    if (minimumFieldsCheck()) {
+      loadPhoto(this.selectedPhoto.getId(), false);
     }
 
-    loadPhoto(this.selectedPhoto.getId(), false);
   }
 
   @FXML
@@ -456,13 +476,49 @@ public class IndividualPhoto {
 
   @FXML
   public void onCancelButtonClick() throws IOException {
-    setPageEditMode(false);
+    if(minimumFieldsCheck()) {
+      setPageEditMode(false);
+    }
+  }
+
+  private boolean minimumFieldsCheck()
+  {
+    if (!selectedPhoto.hasMinimumFields()) {
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("Unable to Save");
+      alert.setWidth(400);
+      alert.setHeight(400);
+      alert.setContentText("This photo cannot be saved because it does not have a date, description, location or any tagged people. Please add at least one of those to save this photo.");
+      alert.show();
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
 
 
   private void setPageEditMode(boolean isEditMode) {
     editOptions.setVisible(isEditMode);
     editOptions.setManaged(isEditMode);
+
+    //Prevent selection of future date
+    myDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+      @Override
+      public javafx.scene.control.DateCell call(DatePicker datePicker) {
+        return new javafx.scene.control.DateCell() {
+          @Override
+          public void updateItem(LocalDate item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null && item.isAfter(LocalDate.now())) {
+              setDisable(true); // Disable future dates
+              setStyle("-fx-background-color: #ffc0cb;"); // Optional: style to indicate disabled
+            }
+          }
+        };
+      }
+    });
 
     imageInfo.setVisible(!isEditMode);
     imageInfo.setManaged(!isEditMode);
