@@ -1,6 +1,7 @@
 package com.example.historian.models.gallery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,52 +22,20 @@ public class MockGalleryDAO implements IGalleryDAO {
   /**
    * Adds a new gallery to the in-memory list.
    *
-   * @param gallery the Gallery object to be added
    */
   @Override
-  public void addGallery(Gallery gallery) {
-    gallery.setId(autoIncrementId);
+  public String addGallery(Date fromDate, Date toDate, int location, int person) {
     autoIncrementId++;
-    galleries.add(gallery);
+    return "HASH!@";
   }
 
   @Override
-  public void updateGallery(Gallery gallery) {
-    for (int i = 0; i < galleries.size(); i++) {
-      if (galleries.get(i).getId() == gallery.getId()) {
-        galleries.set(i, gallery);
-        break;
-      }
-    }
-  }
-
-  @Override
-  public void removeGallery(Gallery gallery) {
-    galleries.remove(gallery);
-  }
-
-  @Override
-  public Gallery getGallery(int galleryId) {
-    for (Gallery gallery : galleries) {
-      if (gallery.getId() == galleryId) {
-        return gallery;
-      }
-    }
+  public Gallery getGalleryByKey(String galleryKey) {
     return null;
   }
 
   @Override
-  public Gallery getGallery(String galleryTitle) {
-    for (Gallery gallery : galleries) {
-      if (Objects.equals(gallery.getTitle(), galleryTitle)) {
-        return gallery;
-      }
-    }
+  public Boolean checkIfGalleryExistsByKey(String galleryKey) {
     return null;
-  }
-
-  @Override
-  public List<Gallery> getAllGalleries() {
-    return new ArrayList<>(galleries);
   }
 }

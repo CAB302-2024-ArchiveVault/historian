@@ -9,6 +9,7 @@ public class AuthSingleton {
   // Single instance of AuthSingleton
   private static AuthSingleton instance = new AuthSingleton();
   private Account account;
+  private String galleryCode;
 
   /**
    * Returns the single instance of AuthSingleton.
@@ -52,4 +53,12 @@ public class AuthSingleton {
   public void signOut() {
     this.account = null;
   }
+
+  public String getGalleryCode() { return galleryCode; }
+
+  public void setGalleryCode(String galleryCode) { this.galleryCode = galleryCode; }
+
+  public boolean checkGalleryCode() { return galleryCode != null; }
+
+  public void setGalleryCodeNull() { this.galleryCode = null; }
 }

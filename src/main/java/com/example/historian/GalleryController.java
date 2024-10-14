@@ -3,6 +3,8 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
+import com.example.historian.models.gallery.IGalleryDAO;
+import com.example.historian.models.gallery.SqliteGalleryDAO;
 import com.example.historian.models.location.ILocationDAO;
 import com.example.historian.models.location.Location;
 import com.example.historian.models.location.SqliteLocationDAO;
@@ -27,6 +29,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -60,12 +64,11 @@ public class GalleryController {
   @FXML public ComboBox<Location> locationFilterComboBox;
   @FXML public ComboBox<Person> personFilterComboBox;
   @FXML public Button applyFilterButton;
+  @FXML public Button createCodeButton;
+
 
   private int photosPerPage = 12;
   private int photosPerRow = 4;
-  //private int photoPage = 0;
-
-
 
   private AuthSingleton authSingleton;
   private GallerySingleton gallerySingleton;
@@ -100,13 +103,16 @@ public class GalleryController {
       logoutButton.setText("Back");
     }
 
+    if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.MEMBER) {
+      createCodeButton.setVisible(false);
+      createCodeButton.setManaged(false);
+    }
 
     // Get the photo DAO
     photoDAO = new SqlitePhotoDAO();
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
     buttonUpdate();
-
 
     // Setup location ComboBox
     locationDAO = new SqliteLocationDAO();
@@ -237,6 +243,8 @@ public class GalleryController {
       }
     });
 
+    enableAllDates(fromDateFilter);
+    enableAllDates(toDateFilter);
   }
 
   @FXML
@@ -302,7 +310,6 @@ public class GalleryController {
     for (int i = (gallerySingleton.getCurrentPage() * photosPerPage); i < Math.min((gallerySingleton.getCurrentPage() * photosPerPage) + photosPerPage, photoList.size()); i++) {
       photosToDisplay.add(photoList.get(i));
     }
-
 
     // Render photos
     imageContainer.getChildren().clear();
@@ -402,7 +409,8 @@ public class GalleryController {
         if (afterDate) {
           setDisable(empty || date.compareTo(cutOffDate) > 0 );
         } else {
-          setDisable(empty || date.compareTo(cutOffDate) < 0 );
+          LocalDate today = LocalDate.now();
+          setDisable(empty || date.compareTo(cutOffDate) < 0 || date.compareTo(today) > 0);
         }
       }
     });
@@ -412,14 +420,15 @@ public class GalleryController {
     datePicker.setDayCellFactory(picker -> new DateCell() {
       public void updateItem(LocalDate date, boolean empty) {
         super.updateItem(date, empty);
-        setDisable(false);
+        LocalDate today = LocalDate.now();
+        setDisable(empty || date.compareTo(today) > 0 );
       }
     });
   }
 
   @FXML
   public void onFromDateFilterChange() {
-    if (toDateFilter.getValue() == null) {
+    if (fromDateFilter.getValue() == null) {
       enableAllDates(toDateFilter);
     } else {
       if (toDateFilter.getValue() != null) {
@@ -445,6 +454,18 @@ public class GalleryController {
     }
   }
 
+  private void enableCreateCode() {
+    Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
+    Person selectedPerson = personFilterComboBox.getSelectionModel().getSelectedItem();
+    LocalDate fromLocalDate = fromDateFilter.getValue();
+    LocalDate toLocalDate = toDateFilter.getValue();
+    if (selectedLocation == null && selectedPerson == null && fromLocalDate == null && toLocalDate == null) {
+      createCodeButton.setDisable(true);
+    } else {
+      createCodeButton.setDisable(false);
+    }
+  }
+
   @FXML
   public void onApplyFilterButtonClick() {
     Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
@@ -456,9 +477,64 @@ public class GalleryController {
     LocalDate toLocalDate = toDateFilter.getValue();
     Date toDate = toLocalDate != null ? Date.from(toLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
 
+    enableCreateCode();
+
     photoList = photoDAO.getPhotosByFilter(fromDate, toDate, selectedLocationId, selectedPersonId);
     displayPhotos();
     buttonUpdate();
+  }
+
+  @FXML
+  public void onCreateCodeButtonClick() {
+    Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
+    int selectedLocationId = selectedLocation != null ? selectedLocation.getId() : -1;
+    Person selectedPerson = personFilterComboBox.getSelectionModel().getSelectedItem();
+    int selectedPersonId = selectedPerson != null ? selectedPerson.getId() : -1;
+    LocalDate fromLocalDate = fromDateFilter.getValue();
+    Date fromDate = fromLocalDate != null ? Date.from(fromLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+    LocalDate toLocalDate = toDateFilter.getValue();
+    Date toDate = toLocalDate != null ? Date.from(toLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) : null;
+
+    IGalleryDAO galleryDAO = new SqliteGalleryDAO();
+    String code = galleryDAO.addGallery(fromDate, toDate, selectedLocationId, selectedPersonId);
+
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Gallery Code");
+    alert.setHeaderText("Please copy the generated gallery code.");
+
+    TextArea textArea = new TextArea(code);
+    textArea.setWrapText(true);
+    textArea.setEditable(false);
+    textArea.setStyle("-fx-font-size: 50pt;");
+    textArea.setMaxWidth(Double.MAX_VALUE);
+    textArea.setMaxHeight(Double.MAX_VALUE);
+
+    Text text = new Text(code);
+    text.setStyle("-fx-font-size: 50pt;");
+    double textWidth = text.getBoundsInLocal().getWidth();
+    double textHeight = text.getBoundsInLocal().getHeight();
+    textArea.setPrefWidth(textWidth - 20);
+    textArea.setPrefHeight(textHeight - 60);
+
+    VBox vbox = new VBox(textArea);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setSpacing(10);
+    alert.getDialogPane().setContent(vbox);
+
+//    alert.getDialogPane().setContent(textArea);
+
+    ButtonType confirmButton = new ButtonType("Copy & Close", ButtonBar.ButtonData.OK_DONE);
+    alert.getButtonTypes().setAll(confirmButton);
+
+    alert.showAndWait().ifPresent(response -> {
+      if (response == confirmButton) {
+        ClipboardContent content = new ClipboardContent();
+        content.putString(code);
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        clipboard.setContent(content);
+        System.out.println("Gallery code: " + code);
+      }
+    });
   }
 
   @FXML

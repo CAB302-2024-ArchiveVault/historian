@@ -13,8 +13,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -34,13 +32,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
-import javafx.stage.Screen;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import jdk.jfr.Description;
 
 import static com.example.historian.utils.StageManager.*;
 
@@ -107,9 +100,7 @@ public class IndividualPhoto {
     locationDAO = new SqliteLocationDAO();
     personDAO = new SqlitePersonDAO();
 
-
     loadFirstPhotoFromQueue();
-
   }
 
   private void loadFirstPhotoFromQueue() {
@@ -199,6 +190,9 @@ public class IndividualPhoto {
         editButton.setVisible(true);
         editButton.setManaged(true);
       }
+    } else {
+      editButton.setVisible(false);
+      editButton.setManaged(false);
     }
   }
 
@@ -413,7 +407,11 @@ public class IndividualPhoto {
       loadFirstPhotoFromQueue();
       return;
     }
-    switchToGalleryScene();
+    if (AuthSingleton.getInstance().checkGalleryCode()) {
+      StageManager.switchScene("gallery-code-view.fxml", 1000, 900);
+    } else {
+      switchToGalleryScene();
+    }
   }
 
   @FXML
