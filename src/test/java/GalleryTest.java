@@ -10,25 +10,25 @@ public class GalleryTest {
     private Gallery gallery;
 
     @BeforeEach
-    public void setup() {
-        gallery = new Gallery("title", photos );
+    protected void setup() {
+        gallery = new Gallery(photos );
     }
 
     @Test
-    public void testGetId() {
+    protected void testGetId() {
         gallery.setId(3);
         assertEquals(3, gallery.getId());
     }
 
-    @Test
-    public void testGetTitle() {
-        assertEquals("title", gallery.getTitle());
-    }
+//    @Test
+//    protected void testGetTitle() {
+//        gallery.
+//        assertEquals(gallery.getTitle());
+//    }
 
     @Test
-    public void testGetPhotos() {
+    protected void testGetPhotos() {
         assertNotNull(gallery.getPhotos());
         assertEquals(photos.size(), gallery.getPhotos().size());
     }
-
 }

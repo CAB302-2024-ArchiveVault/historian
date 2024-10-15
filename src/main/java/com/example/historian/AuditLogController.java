@@ -7,8 +7,7 @@ import java.io.IOException;
 import com.example.historian.utils.StageManager;
 
 public class AuditLogController {
-    @FXML
-    private Button exitButton;
+    @FXML private Button exitButton;
 
     @FXML
     protected void onExitButtonClick() throws IOException {

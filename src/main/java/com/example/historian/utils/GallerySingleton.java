@@ -37,6 +37,11 @@ public class GallerySingleton {
     return item;
   }
 
+  public int firstPhotoInQueueID(){
+    PhotoQueueItem item = this.photoQueue.getFirst();
+    return item.photoId;
+  }
+
   public void addToPhotoQueue(PhotoQueueItem item) {
     this.photoQueue.add(item);
   }

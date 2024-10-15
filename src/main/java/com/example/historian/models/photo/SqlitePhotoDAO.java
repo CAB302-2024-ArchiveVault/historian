@@ -1,11 +1,7 @@
 package com.example.historian.models.photo;
 
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.tag.ITagDAO;
-import com.example.historian.models.tag.SqliteTagDAO;
-import com.example.historian.models.tag.Tag;
+import com.example.historian.models.location.*;
+import com.example.historian.models.tag.*;
 import com.example.historian.utils.SqliteConnection;
 
 import java.sql.*;
@@ -223,7 +219,7 @@ public class SqlitePhotoDAO implements IPhotoDAO {
   public List<Photo> getAllPhotos() {
     List<Photo> photos = new ArrayList<>();
     try {
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos");
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos ORDER BY date ASC");
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next()) {
         photos.add(createFromResultSet(resultSet));

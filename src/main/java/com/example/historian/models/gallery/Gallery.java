@@ -14,17 +14,14 @@ import java.util.List;
  */
 public class Gallery {
   private int id;
-  private String title;
   private List<Photo> photos;
 
   /**
    * Constructs a Gallery with the specified title and list of photos.
    *
-   * @param title the title of the gallery
    * @param photos the list of photos in the gallery
    */
-  public Gallery(String title, List<Photo> photos) {
-    this.title = title;
+  public Gallery(List<Photo> photos) {
     this.photos = photos;
   }
 
@@ -44,24 +41,6 @@ public class Gallery {
    */
   public void setId(int id) {
     this.id = id;
-  }
-
-  /**
-   * Gets the title of the gallery.
-   *
-   * @return the title of the gallery
-   */
-  public String getTitle() {
-    return this.title;
-  }
-
-  /**
-   * Sets the title of the gallery.
-   *
-   * @param title the new title of the gallery
-   */
-  public void setTitle(String title) {
-    this.title = title;
   }
 
   /**
