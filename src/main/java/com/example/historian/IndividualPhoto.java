@@ -14,8 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -43,7 +41,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import jdk.jfr.Description;
 
 import static com.example.historian.utils.StageManager.*;
 
@@ -114,7 +111,6 @@ public class IndividualPhoto {
 
 
     loadFirstPhotoFromQueue();
-
   }
 
   private void loadFirstPhotoFromQueue() {
@@ -205,6 +201,9 @@ public class IndividualPhoto {
         editButton.setVisible(true);
         editButton.setManaged(true);
       }
+    } else {
+      editButton.setVisible(false);
+      editButton.setManaged(false);
     }
   }
 
@@ -426,6 +425,11 @@ public class IndividualPhoto {
     switchToGalleryScene();
     long endTime = System.currentTimeMillis();
     System.out.println("Scene loaded in: " + (endTime - startTime) + " ms");
+    if (AuthSingleton.getInstance().checkGalleryCode()) {
+      StageManager.switchScene("gallery-code-view.fxml", 1000, 900);
+    } else {
+      switchToGalleryScene();
+    }
   }
 
   @FXML
@@ -514,8 +518,6 @@ public class IndividualPhoto {
   private void setPageEditMode(boolean isEditMode) {
     editOptions.setVisible(isEditMode);
     editOptions.setManaged(isEditMode);
-
-
 
     //Prevent selection of future date
     myDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
