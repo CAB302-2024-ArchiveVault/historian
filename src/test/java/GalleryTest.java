@@ -11,7 +11,7 @@ public class GalleryTest {
 
     @BeforeEach
     protected void setup() {
-        gallery = new Gallery("title", photos );
+        gallery = new Gallery(photos );
     }
 
     @Test
@@ -20,15 +20,15 @@ public class GalleryTest {
         assertEquals(3, gallery.getId());
     }
 
-    @Test
-    protected void testGetTitle() {
-        assertEquals("title", gallery.getTitle());
-    }
+//    @Test
+//    protected void testGetTitle() {
+//        gallery.
+//        assertEquals(gallery.getTitle());
+//    }
 
     @Test
     protected void testGetPhotos() {
         assertNotNull(gallery.getPhotos());
         assertEquals(photos.size(), gallery.getPhotos().size());
     }
-
 }
