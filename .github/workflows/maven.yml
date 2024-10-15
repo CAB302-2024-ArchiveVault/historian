@@ -31,12 +31,6 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: Run Tests with Maven
       run: mvn test
-    - name: Generate Javadoc
-      run: mvn javadoc:javadoc
-    - name: Publish Javadoc
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: target/docs/javadoc
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: success() || failure()
@@ -44,3 +38,9 @@ jobs:
         name: Maven Tests
         path: target/surefire-reports/*.xml
         reporter: java-junit
+    - name: Generate Javadoc
+      run: mvn javadoc:javadoc
+    - name: Publish Javadoc
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: target/docs/javadoc
