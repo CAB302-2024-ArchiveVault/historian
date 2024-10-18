@@ -20,11 +20,6 @@ public class DatabaseController {
     private AuthSingleton authSingleton;
     private Connection connection;
 
-    @FXML private Button exitButton;
-    @FXML private Button auditLogButton;
-    @FXML private Button accountManagementButton;
-    @FXML private Button deleteDatabaseButton;
-
     @FXML
     public void initialize() throws IOException {
         connection = SqliteConnection.getInstance();

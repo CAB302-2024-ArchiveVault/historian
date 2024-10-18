@@ -9,7 +9,7 @@ import java.io.IOException;
 public class HistorianApplication extends Application {
 
   //Default variables for titles and stage sizes
-  public static final String APPTITLE = "Historian";
+  private static final String APPTITLE = "Historian";
 
   @Override
   public void start(Stage homepageStage) throws IOException {

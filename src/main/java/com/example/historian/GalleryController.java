@@ -3,6 +3,7 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
+import com.example.historian.models.gallery.Gallery;
 import com.example.historian.models.gallery.IGalleryDAO;
 import com.example.historian.models.gallery.SqliteGalleryDAO;
 import com.example.historian.models.location.ILocationDAO;
@@ -15,17 +16,9 @@ import com.example.historian.models.photo.IPhotoDAO;
 import com.example.historian.models.photo.Photo;
 import com.example.historian.models.photo.SqlitePhotoDAO;
 import com.example.historian.utils.GallerySingleton;
-import com.example.historian.models.location.*;
-import com.example.historian.models.person.*;
-import com.example.historian.models.photo.*;
-import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.SharedProperties;
 import com.example.historian.utils.StageManager;
-
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -35,8 +28,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.CacheHint;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
@@ -48,9 +39,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.scene.control.Label;
 import java.io.File;
@@ -64,52 +52,52 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.example.historian.utils.StageManager.*;
 
 public class GalleryController {
-  @FXML public GridPane imageContainer;
-  @FXML public Button backButton;
-  @FXML public Button forwardButton;
-  @FXML public Text accountText;
-  @FXML public Button logoutButton;
-  @FXML public DatePicker fromDateFilter;
-  @FXML public DatePicker toDateFilter;
-  @FXML public ComboBox<Location> locationFilterComboBox;
-  @FXML public ComboBox<Person> personFilterComboBox;
-  @FXML public Button applyFilterButton;
-  @FXML public Button createCodeButton;
+  @FXML private GridPane imageContainer;
+  @FXML private Button backButton;
+  @FXML private Button forwardButton;
+  @FXML private Text accountText;
+  @FXML private Button logoutButton;
+  @FXML private DatePicker fromDateFilter;
+  @FXML private DatePicker toDateFilter;
+  @FXML private ComboBox<Location> locationFilterComboBox;
+  @FXML private ComboBox<Person> personFilterComboBox;
+  @FXML private Button applyFilterButton;
+  @FXML private Button createCodeButton;
+  @FXML private Button uploadPhotoButton;
 
-
+  //Page variables and states
   private int photosPerPage = 12;
   private int photosPerRow = 4;
-  private int currentPage;
+  private boolean filterState = false;
 
-
+  //Global data handlers
   private AuthSingleton authSingleton;
   private GallerySingleton gallerySingleton;
   private IPhotoDAO photoDAO;
-  public List<Photo> photoList;
-
-  SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-
-  Image tagImage = new Image("file:src/icons/tag.png");
-
-  public List<Photo> filterList;
-  private boolean filterState = false;
-
+  private IGalleryDAO galleryDAO;
+  private Gallery gallery;
+  private String galleryCode;
   private ILocationDAO locationDAO;
-  private ObservableList<Location> locationList;
   private IPersonDAO personDAO;
+
+  //Lists
+  private List<Photo> photoList;
+  private ObservableList<Location> locationList;
   private ObservableList<Person> personList;
+  private List<Photo> filterList;
 
-
-
+  //Misc
+  private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+  private final Image tagImage = new Image("file:src/icons/tag.png");
 
   @FXML
-  public void initialize() throws IOException {
+  private void initialize() throws IOException {
+    if (!SharedProperties.galleryCodeState.get()) {
     // Get the Auth Singleton
     authSingleton = AuthSingleton.getInstance();
     if (!authSingleton.checkAuthorised()) {
       StageManager.switchToHomepage();
     }
-
     // Get the gallery singleton
     gallerySingleton = GallerySingleton.getInstance();
 
@@ -129,7 +117,6 @@ public class GalleryController {
     photoList = photoDAO.getAllPhotos();
     displayPhotos();
     buttonUpdate();
-
 
     // Setup location ComboBox
     locationDAO = new SqliteLocationDAO();
@@ -260,8 +247,8 @@ public class GalleryController {
       }
     });
 
-      enableAllDates(fromDateFilter);
-      enableAllDates(toDateFilter);
+    enableAllDates(fromDateFilter);
+    enableAllDates(toDateFilter);
 
     SharedProperties.imageUpdated.addListener((obs, oldValue, newValue) -> {
       if (newValue) {
@@ -269,7 +256,25 @@ public class GalleryController {
       }
     });
 
+  }
+    else if (SharedProperties.galleryCodeState.get())
+    {
+      authSingleton = AuthSingleton.getInstance();
+      if (!authSingleton.checkGalleryCode()) {
+        StageManager.switchToHomepage();
+      }
 
+      galleryCode = authSingleton.getGalleryCode();
+
+      photoDAO = new SqlitePhotoDAO();
+      gallerySingleton = GallerySingleton.getInstance();
+
+      galleryDAO = new SqliteGalleryDAO();
+      gallery = galleryDAO.getGalleryByKey(galleryCode);
+      photoList = gallery.getPhotos();
+      displayPhotos();
+      buttonUpdate();
+    }
   }
   private void onImageUpdated()
   {
@@ -296,7 +301,6 @@ public class GalleryController {
       protected void failed() {
         super.failed();
         SharedProperties.imageUpdated.set(false); // Set property to false on failure
-        System.out.println("Task failed");
       }
     };
 
@@ -306,19 +310,32 @@ public class GalleryController {
 
 
   @FXML
-  protected void onLogoutButtonClick() throws IOException {
-    Account authorisedAccount = authSingleton.getAccount();
-    if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
-      switchScene("admin-options-view.fxml");
-    } else {
-      authSingleton.signOut();
+  private void onLogoutButtonClick() throws IOException {
+    //Account authorisedAccount = authSingleton.getAccount();
+    if (SharedProperties.galleryCodeState.get())
+    {
+      authSingleton.setGalleryCodeNull();
       gallerySingleton.setCurrentPage(0);
+      SharedProperties.galleryCodeState.set(false);
       StageManager.switchToHomepage();
     }
+    else if(!SharedProperties.galleryCodeState.get())
+    {
+      Account authorisedAccount = authSingleton.getAccount();
+      if (authorisedAccount.getAccountPrivilege() == AccountPrivilege.DATABASE_OWNER) {
+        switchScene("admin-options-view.fxml");
+      } else
+      {
+        authSingleton.signOut();
+        gallerySingleton.setCurrentPage(0);
+        StageManager.switchToHomepage();
+      }
+    }
+
   }
 
   @FXML
-  protected void onUploadPhotoClick() {
+  private void onUploadPhotoClick() {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Choose photo/s to upload");
     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
@@ -341,36 +358,25 @@ public class GalleryController {
         }
       }
     }
-
     // Update the display
     SharedProperties.imageUpdated.set(true);
-    /*photoList = photoDAO.getAllPhotos();
-    displayPhotos();
-    buttonUpdate();*/
-
     // Check whether the individual photo view needs to be opened
     checkToDisplayIndividualPhoto();
   }
 
 
-
   private void checkToDisplayIndividualPhoto() {
-    long startTime = System.currentTimeMillis();
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       try {
-        //switchScene("individualPhoto-view.fxml", 580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
         switchToIndividualPhoto(580, photoDAO.getPhoto(gallerySingleton.firstPhotoInQueueID()).getAdjustedImageHeight() + 280);
         primaryStage.setIconified(true);
-        long endTime = System.currentTimeMillis();
-        System.out.println("Scene loaded in: " + (endTime - startTime) + " ms");
-        //StageManager.switchScene("individualPhoto-view.fxml");
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
   }
 
-  public void displayPhotos() {
+  private void displayPhotos() {
     List<Photo> photosToDisplay = getPhotosForCurrentPage();
 
     // Render photos
@@ -380,7 +386,7 @@ public class GalleryController {
 
       //Create the VBox
       VBox vbox = new VBox();
-      vbox.setId(String.valueOf(i));
+      //vbox.setId(String.valueOf(i));
 
       // Create the imageview
       ImageView imageView = new ImageView();
@@ -399,7 +405,6 @@ public class GalleryController {
       //Create the hbox to store the location and date label
       HBox hbox = new HBox(8);
       hbox.setAlignment(Pos.TOP_LEFT);
-
 
       //Create the location label
       Label LocationLabel  = new Label();
@@ -465,7 +470,7 @@ public class GalleryController {
 
 
 
-  protected EventHandler<? super MouseEvent> onImageClick() {
+  private EventHandler<? super MouseEvent> onImageClick() {
     return event -> {
       // Get the source of the event (the clicked node)
       ImageView clickedImage = (ImageView) event.getSource();
@@ -479,8 +484,23 @@ public class GalleryController {
   }
 
 
-  public void buttonUpdate() {
+  private void buttonUpdate() {
     backButton.setVisible(gallerySingleton.getCurrentPage() > 0);
+    if(SharedProperties.galleryCodeState.get())
+    {
+      uploadPhotoButton.setVisible(false);
+      uploadPhotoButton.setManaged(false);
+      createCodeButton.setVisible(false);
+      createCodeButton.setManaged(false);
+      logoutButton.setText("Exit");
+      logoutButton.setAlignment(Pos.CENTER);
+      logoutButton.setManaged(true);
+      toDateFilter.setVisible(false);
+      fromDateFilter.setVisible(false);
+      personFilterComboBox.setVisible(false);
+      locationFilterComboBox.setVisible(false);
+      applyFilterButton.setVisible(false);
+    }
     if (filterState){
       forwardButton.setVisible(filterList.size() > photosPerPage && ((gallerySingleton.getCurrentPage() + 1) * photosPerPage) < filterList.size());
     }
@@ -516,7 +536,7 @@ public class GalleryController {
   }
 
   @FXML
-  public void onFromDateFilterChange() {
+  private void onFromDateFilterChange() {
     if (fromDateFilter.getValue() == null) {
       enableAllDates(toDateFilter);
     } else {
@@ -530,7 +550,7 @@ public class GalleryController {
   }
 
   @FXML
-  public void onToDateFilterChange() {
+  private void onToDateFilterChange() {
     if (toDateFilter.getValue() == null) {
       enableAllDates(fromDateFilter);
     } else {
@@ -556,7 +576,7 @@ public class GalleryController {
   }
 
   @FXML
-  public void onApplyFilterButtonClick() {
+  private void onApplyFilterButtonClick() {
     Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
     int selectedLocationId = selectedLocation != null ? selectedLocation.getId() : -1;
     Person selectedPerson = personFilterComboBox.getSelectionModel().getSelectedItem();
@@ -576,7 +596,7 @@ public class GalleryController {
   }
 
   @FXML
-  public void onCreateCodeButtonClick() {
+  private void onCreateCodeButtonClick() {
     Location selectedLocation = locationFilterComboBox.getSelectionModel().getSelectedItem();
     int selectedLocationId = selectedLocation != null ? selectedLocation.getId() : -1;
     Person selectedPerson = personFilterComboBox.getSelectionModel().getSelectedItem();
@@ -612,7 +632,6 @@ public class GalleryController {
     vbox.setSpacing(10);
     alert.getDialogPane().setContent(vbox);
 
-//    alert.getDialogPane().setContent(textArea);
 
     ButtonType confirmButton = new ButtonType("Copy & Close", ButtonBar.ButtonData.OK_DONE);
     alert.getButtonTypes().setAll(confirmButton);
@@ -629,14 +648,14 @@ public class GalleryController {
   }
 
   @FXML
-  public void onBackButtonClick() {
+  private void onBackButtonClick() {
     gallerySingleton.setCurrentPage(gallerySingleton.getCurrentPage() - 1);
     displayPhotos();
     buttonUpdate();
   }
 
   @FXML
-  public void onForwardButtonClick() {
+  private void onForwardButtonClick() {
     gallerySingleton.setCurrentPage(gallerySingleton.getCurrentPage() + 1);
     displayPhotos();
     buttonUpdate();
