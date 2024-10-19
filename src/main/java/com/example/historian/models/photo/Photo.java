@@ -233,19 +233,39 @@ public class Photo {
   }
 
 
+  /**
+   * Returns the adjusted image height.
+   *
+   * @return the adjusted image height
+   */
   public int getAdjustedImageHeight(){
     return adjustedImageHeight;
   }
 
+  /**
+   * Returns the adjusted image width.
+   *
+   * @return the adjusted image width
+   */
   public int getAdjustedImageWidth(){
     return adjustedImageWidth;
   }
 
+  /**
+   * Returns the default image height.
+   * 
+   * @return the default image height
+   */
   public int getDefaultHeight()
   {
     return defaultHeight;
   }
 
+  /**
+   * Returns the default image width.
+   * 
+   * @return the default image width
+   */
   public int getDefaultWidth()
   {
     return defaultWidth;

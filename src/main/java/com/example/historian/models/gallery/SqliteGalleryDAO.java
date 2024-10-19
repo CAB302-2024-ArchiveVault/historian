@@ -13,6 +13,9 @@ import java.util.Date;
 public class SqliteGalleryDAO implements IGalleryDAO {
     private final Connection connection;
 
+    /**
+     * Constructs a SqliteGalleryDAO object.
+     */
     public SqliteGalleryDAO() {
         connection = SqliteConnection.getInstance();
         createTable();
@@ -64,6 +67,9 @@ public class SqliteGalleryDAO implements IGalleryDAO {
         return null;
     }
 
+    /**
+     * Creates the galleries table in the database.
+     */
     private void createTable() {
         try {
             Statement statement = connection.createStatement();
@@ -82,6 +88,13 @@ public class SqliteGalleryDAO implements IGalleryDAO {
         }
     }
 
+    /**
+     * Creates a Gallery object from a ResultSet.
+     *
+     * @param resultSet the ResultSet to create the Gallery object from
+     * @return the Gallery object
+     * @throws Exception if an error occurs
+     */
     private Gallery createFromResultSet(ResultSet resultSet) throws Exception {
 
         int id = resultSet.getInt("id");

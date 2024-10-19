@@ -6,6 +6,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Main class for the Historian application.
+ */
 public class HistorianApplication extends Application {
 
   //Default variables for titles and stage sizes

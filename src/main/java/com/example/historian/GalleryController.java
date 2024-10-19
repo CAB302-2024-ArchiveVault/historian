@@ -3,18 +3,10 @@ package com.example.historian;
 import com.example.historian.auth.AuthSingleton;
 import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
-import com.example.historian.models.gallery.Gallery;
-import com.example.historian.models.gallery.IGalleryDAO;
-import com.example.historian.models.gallery.SqliteGalleryDAO;
-import com.example.historian.models.location.ILocationDAO;
-import com.example.historian.models.location.Location;
-import com.example.historian.models.location.SqliteLocationDAO;
-import com.example.historian.models.person.IPersonDAO;
-import com.example.historian.models.person.Person;
-import com.example.historian.models.person.SqlitePersonDAO;
-import com.example.historian.models.photo.IPhotoDAO;
-import com.example.historian.models.photo.Photo;
-import com.example.historian.models.photo.SqlitePhotoDAO;
+import com.example.historian.models.gallery.*;
+import com.example.historian.models.location.*;
+import com.example.historian.models.person.*;
+import com.example.historian.models.photo.*;
 import com.example.historian.utils.GallerySingleton;
 import com.example.historian.utils.SharedProperties;
 import com.example.historian.utils.StageManager;
@@ -51,6 +43,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.example.historian.utils.StageManager.*;
 
+/**
+ * Controller for the gallery view.
+ */
 public class GalleryController {
   @FXML private GridPane imageContainer;
   @FXML private Button backButton;

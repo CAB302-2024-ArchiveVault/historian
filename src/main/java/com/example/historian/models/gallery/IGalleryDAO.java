@@ -1,7 +1,6 @@
 package com.example.historian.models.gallery;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * The IGalleryDAO interface provides methods for performing CRUD operations on Gallery objects.
@@ -21,5 +20,10 @@ public interface IGalleryDAO {
    */
   public Gallery getGalleryByKey(String galleryKey);
 
+  /**
+   * Checks if a gallery exists in the data store.
+   * @param galleryKey the key of the gallery to check
+   * @return true if the gallery exists, false otherwise
+   */
   public Boolean checkIfGalleryExistsByKey(String galleryKey);
 }

@@ -5,7 +5,6 @@ import com.example.historian.models.account.Account;
 import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.models.account.IAccountDAO;
 import com.example.historian.models.account.SqliteAccountDAO;
-import com.example.historian.models.gallery.Gallery;
 import com.example.historian.models.gallery.IGalleryDAO;
 import com.example.historian.models.gallery.SqliteGalleryDAO;
 import com.example.historian.utils.SharedProperties;
@@ -19,6 +18,9 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 
+/**
+ * Controller for the homepage view.
+ */
 public class HomepageController {
   private Boolean codeMode;
 

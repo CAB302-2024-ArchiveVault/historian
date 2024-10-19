@@ -13,6 +13,9 @@ import java.util.Set;
 import com.example.historian.utils.StageManager;
 import java.io.IOException;
 
+/**
+ * Controller for the account management view.
+ */
 public class AccountManagementController {
     private Boolean isResetPasswordMode = false;
     private Boolean isCreateAccountMode = false;

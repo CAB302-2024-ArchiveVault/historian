@@ -44,7 +44,19 @@ public interface IPhotoDAO {
    */
   public List<Photo> getAllPhotos();
 
+  /**
+   * Retrieves all photos from the data store that were taken within a specified date range.
+   *
+   * @param startDate the start date of the range
+   * @param endDate the end date of the range
+   * @return a list of all Photo objects taken within the specified date range
+   */
   public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person);
 
+  /**
+   * Retrieves all photo IDs from the data store.
+   *
+   * @return a list of all photo IDs
+   */
   public List<Integer> getAllPhotoIDs();
 }

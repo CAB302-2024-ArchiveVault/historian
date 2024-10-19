@@ -6,7 +6,6 @@ import com.example.historian.models.account.AccountPrivilege;
 import com.example.historian.utils.SqliteConnection;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import com.example.historian.utils.StageManager;
 
@@ -16,6 +15,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
+/**
+ * Controller for the database view.
+ */
 public class DatabaseController {
     private AuthSingleton authSingleton;
     private Connection connection;

@@ -6,6 +6,9 @@ import javafx.scene.control.Button;
 import java.io.IOException;
 import com.example.historian.utils.StageManager;
 
+/**
+ * Controller for the audit log view.
+ */
 public class AuditLogController {
     @FXML private Button exitButton;
 

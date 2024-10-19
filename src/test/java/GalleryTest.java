@@ -20,12 +20,6 @@ public class GalleryTest {
         assertEquals(3, gallery.getId());
     }
 
-//    @Test
-//    protected void testGetTitle() {
-//        gallery.
-//        assertEquals(gallery.getTitle());
-//    }
-
     @Test
     protected void testGetPhotos() {
         assertNotNull(gallery.getPhotos());

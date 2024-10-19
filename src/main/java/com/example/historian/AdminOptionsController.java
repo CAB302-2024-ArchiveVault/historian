@@ -9,6 +9,9 @@ import javafx.scene.control.Button;
 
 import java.io.IOException;
 
+/**
+ * Controller for the admin options view.
+ */
 public class AdminOptionsController {
     private AuthSingleton authSingleton;
 

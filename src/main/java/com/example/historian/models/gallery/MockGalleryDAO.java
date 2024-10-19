@@ -2,8 +2,6 @@ package com.example.historian.models.gallery;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * The MockGalleryDAO class is a mock implementation of the IGalleryDAO interface.
@@ -18,11 +16,7 @@ public class MockGalleryDAO implements IGalleryDAO {
    */
   public MockGalleryDAO() {
   }
-
-  /**
-   * Adds a new gallery to the in-memory list.
-   *
-   */
+  
   @Override
   public String addGallery(Date fromDate, Date toDate, int location, int person) {
     autoIncrementId++;

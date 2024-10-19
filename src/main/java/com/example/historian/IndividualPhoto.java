@@ -40,6 +40,9 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+/**
+ * Controller for the individual photo view.
+ */
 public class IndividualPhoto {
   @FXML private Pane imagePane;
   @FXML private Label dateLabel;
