@@ -7,13 +7,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-
 import java.util.List;
 import java.util.EnumSet;
 import java.util.Set;
-
 import com.example.historian.utils.StageManager;
-
 import java.io.IOException;
 
 public class AccountManagementController {

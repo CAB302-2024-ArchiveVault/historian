@@ -24,12 +24,19 @@ public class Photo {
   private byte[] image;
   private String imageType;
   private int uploaderAccountId;
+  private Image thumbNail;
 
   private static final int defaultHeight = 500;
   private static final int defaultWidth = 500;
 
   private final int adjustedImageWidth;
   private final int adjustedImageHeight;
+
+  private final int thumbnailWidth = 200;
+  private final int thumbnailHeight = 200;
+
+  private final int adjustedThumbnailWidth;
+  private final int adjustedThumbnailHeight;
 
 
   /**
@@ -59,24 +66,49 @@ public class Photo {
     if (aspectRatio > 1)
     {
       adjustedImageWidth = defaultWidth;
+      adjustedThumbnailWidth = thumbnailWidth;
       adjustedImageHeight = (int) (defaultWidth/ aspectRatio);
+      adjustedThumbnailHeight = (int) (thumbnailWidth/aspectRatio);
     }
     else if (aspectRatio == 1)
     {
       adjustedImageWidth = defaultWidth;
+      adjustedThumbnailWidth = thumbnailWidth;
       adjustedImageHeight = defaultHeight;
+      adjustedThumbnailHeight = thumbnailHeight;
     }
     else
     {
       adjustedImageWidth = (int) (defaultHeight* aspectRatio);
+      adjustedThumbnailWidth = (int) (thumbnailHeight* aspectRatio);
       adjustedImageHeight = defaultHeight;
+      adjustedThumbnailHeight = thumbnailHeight;
     }
+
+    thumbNail = createThumbnail(this.getImage(), thumbnailWidth, thumbnailHeight);
+
   }
 
   //
   // Constructor with 3 arguments (backward compatibility)
   public Photo(byte[] image, String imageType, String description) {
     this(image, imageType, description, -1);  // Default uploaderAccountId (-1 or other default value)
+  }
+
+  public Image createThumbnail(Image originalImage, int width, int height) {
+
+    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(this.getImageAsBytes())) {
+      return new Image(inputStream, width, height, true, true);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+    //return new Image(originalImage.get, width, height, true, true);
+  }
+
+  public Image getThumbNail()
+  {
+    return thumbNail;
   }
 
   // Add getter and setter for uploaderAccountId

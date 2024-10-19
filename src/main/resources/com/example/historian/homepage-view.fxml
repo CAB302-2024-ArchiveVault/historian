@@ -39,7 +39,7 @@
         <Label text="Code:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <TextField fx:id="codeField" maxWidth="Infinity" promptText="Your code..." />
-            <Button fx:id="codeButton" defaultButton="true" onAction="#onCodeButtonClick" text="Enter" />
+            <Button fx:id="codeButton" onAction="#onCodeButtonClick" text="Enter" />
         </HBox>
         <columnConstraints>
             <ColumnConstraints />

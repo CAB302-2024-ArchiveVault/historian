@@ -214,6 +214,22 @@ public class SqlitePhotoDAO implements IPhotoDAO {
     }
     return null;
   }
+  @Override
+  public List<Integer> getAllPhotoIDs()
+  {
+    List<Integer> photoIDList = new ArrayList<>();
+    try {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM photos ORDER BY date ASC");
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        photoIDList.add(createFromResultSet(resultSet).getId());
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return photoIDList;
+  }
 
   @Override
   public List<Photo> getAllPhotos() {

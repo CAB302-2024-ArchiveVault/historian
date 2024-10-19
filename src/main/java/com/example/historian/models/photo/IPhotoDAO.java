@@ -45,4 +45,6 @@ public interface IPhotoDAO {
   public List<Photo> getAllPhotos();
 
   public List<Photo> getPhotosByFilter(Date startDate, Date endDate, int location, int person);
+
+  public List<Integer> getAllPhotoIDs();
 }

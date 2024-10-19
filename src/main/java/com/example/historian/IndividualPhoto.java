@@ -8,11 +8,15 @@ import com.example.historian.models.person.*;
 import com.example.historian.models.photo.*;
 import com.example.historian.models.tag.Tag;
 import com.example.historian.utils.*;
+import static com.example.historian.utils.StageManager.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -31,30 +35,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-
-import static com.example.historian.utils.StageManager.*;
-
 
 public class IndividualPhoto {
   @FXML private Pane imagePane;
   @FXML private Label dateLabel;
-
   @FXML private ComboBox<Location> locationComboBox;
   @FXML private TextField newLocationTextField;
   @FXML private HBox existingLocationSelector;
   @FXML private HBox newLocationSelector;
   @FXML private Label locationLabel;
-
   @FXML private TextField newDescriptionTextField;
   @FXML private Label descriptionLabel;
-
   @FXML private Label tagsLabel;
   @FXML private DatePicker myDatePicker;
-  @FXML public ImageView imageDisplay;
-
+  @FXML private ImageView imageDisplay;
   @FXML private HBox tagModeHBox;
   @FXML private VBox tagOptionsVBox;
   @FXML private HBox tagExistingPersonSelector;
@@ -62,16 +60,16 @@ public class IndividualPhoto {
   @FXML private ComboBox<Person> personComboBox;
   @FXML private TextField firstNameTextField;
   @FXML private TextField lastNameTextField;
-
   @FXML private VBox imageInfo;
   @FXML private VBox editOptions;
   @FXML private HBox pageNavigation;
   @FXML private Button returnButton;
   @FXML private Button editButton;
+  @FXML private Button deleteButton;
 
   // Global data handlers
   private GallerySingleton gallerySingleton;
-  public Photo selectedPhoto;
+  private Photo selectedPhoto;
   private IPhotoDAO photoDAO;
   private ILocationDAO locationDAO;
   private IPersonDAO personDAO;
@@ -79,7 +77,6 @@ public class IndividualPhoto {
   // Page state
   private boolean isEditingTags = false;
   private boolean isViewingTags = false;
-
 
   // Tag editor
   private Double newTagXCoord;
@@ -94,11 +91,13 @@ public class IndividualPhoto {
 
 
   @FXML
-  public void initialize() throws IOException {
+  private void initialize() throws IOException {
     gallerySingleton = GallerySingleton.getInstance();
     photoDAO = new SqlitePhotoDAO();
     locationDAO = new SqliteLocationDAO();
     personDAO = new SqlitePersonDAO();
+
+
 
     loadFirstPhotoFromQueue();
   }
@@ -114,14 +113,15 @@ public class IndividualPhoto {
       switchToGalleryScene();
     }
 
+
     if (gallerySingleton.isPhotoQueueEmpty()) {
       returnButton.setText("Return to gallery");
     } else {
       returnButton.setText("Next photo");
     }
 
-    primaryStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 280);
-    primaryStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
+    individualPhotoStage.setHeight(selectedPhoto.getAdjustedImageHeight() + 280);
+    individualPhotoStage.setWidth(selectedPhoto.getDefaultWidth() + 80);
 
     imageDisplay.setImage(selectedPhoto.getImage());
     imageDisplay.setOnMouseClicked(this::handleImageViewClick);
@@ -196,12 +196,6 @@ public class IndividualPhoto {
     }
   }
 
-
-
-
-
-
-
   private void initializeLocationComboBox(Location location) {
     AtomicBoolean isUpdatingLocationComboBox = new AtomicBoolean(false);
 
@@ -264,12 +258,12 @@ public class IndividualPhoto {
   }
 
   @FXML
-  protected void showNewLocationSelector() {
+  private void showNewLocationSelector() {
     updateNewLocationSelectorVisibility(true);
   }
 
   @FXML
-  protected void hideNewLocationSelector() {
+  private void hideNewLocationSelector() {
     updateNewLocationSelectorVisibility(false);
   }
 
@@ -340,13 +334,13 @@ public class IndividualPhoto {
 
 
   @FXML
-  protected void showNewPersonSelector() {
+  private void showNewPersonSelector() {
     updateNewPersonSelectorVisibility(true);
     initializePersonComboBox();
   }
 
   @FXML
-  protected void hideNewPersonSelector() {
+  private void hideNewPersonSelector() {
     updateNewPersonSelectorVisibility(false);
   }
 
@@ -363,7 +357,10 @@ public class IndividualPhoto {
 
   private void switchToGalleryScene() {
     try {
-      switchScene("gallery-view.fxml", 1000, 900);
+      //displayPhotos();
+      primaryStage.setIconified(false);
+      individualPhotoStage.close();
+      //switchScene("gallery-view.fxml", 1000, 900);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -401,21 +398,17 @@ public class IndividualPhoto {
   }
 
   @FXML
-  protected void onBackButtonClick() throws IOException {
+  private void onBackButtonClick() throws IOException {
     // Check if there are more items in the display queue
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       loadFirstPhotoFromQueue();
       return;
     }
-    if (AuthSingleton.getInstance().checkGalleryCode()) {
-      StageManager.switchScene("gallery-code-view.fxml", 1000, 900);
-    } else {
-      switchToGalleryScene();
-    }
+    switchToGalleryScene();
   }
 
   @FXML
-  public void getDate(ActionEvent event) {
+  private void getDate(ActionEvent event) {
     if (!(myDatePicker.getValue() == null))
     {
       LocalDate myDate = myDatePicker.getValue();
@@ -424,7 +417,7 @@ public class IndividualPhoto {
   }
 
   @FXML
-  public void getLocation() {
+  private void getLocation() {
     if (isAddingNewLocation) {
       String locationName = newLocationTextField.getText();
       if (locationName == null || locationName.isEmpty() || locationName.isBlank()) return;
@@ -446,7 +439,7 @@ public class IndividualPhoto {
   }
 
   @FXML
-  public void getDescription(){
+  private void getDescription(){
     String newDescription = newDescriptionTextField.getText();
     if (newDescription == null || newDescription.isEmpty() || newDescription.isBlank()) return;
     descriptionLabel.setText(selectedPhoto.getDescription());
@@ -454,26 +447,26 @@ public class IndividualPhoto {
   }
 
   @FXML
-  public void onSaveButtonClick() {
-
+  private void onSaveButtonClick() {
     selectedPhoto.setTagged(tempTags);
     getLocation();
     getDescription();
     photoDAO.updatePhoto(selectedPhoto);
-
+    SharedProperties.imageUpdated.set(true);
     if (minimumFieldsCheck()) {
       loadPhoto(this.selectedPhoto.getId(), false);
     }
-
   }
 
+
+
   @FXML
-  public void onEditButtonClick() throws IOException {
+  private void onEditButtonClick() throws IOException {
     setPageEditMode(true);
   }
 
   @FXML
-  public void onCancelButtonClick() throws IOException {
+  private void onCancelButtonClick() throws IOException {
     if(minimumFieldsCheck()) {
       setPageEditMode(false);
     }
@@ -496,7 +489,6 @@ public class IndividualPhoto {
     }
   }
 
-
   private void setPageEditMode(boolean isEditMode) {
     editOptions.setVisible(isEditMode);
     editOptions.setManaged(isEditMode);
@@ -511,7 +503,6 @@ public class IndividualPhoto {
             super.updateItem(item, empty);
             if (item != null && item.isAfter(LocalDate.now())) {
               setDisable(true); // Disable future dates
-              setStyle("-fx-background-color: #ffc0cb;"); // Optional: style to indicate disabled
             }
           }
         };
@@ -520,8 +511,8 @@ public class IndividualPhoto {
 
     imageInfo.setVisible(!isEditMode);
     imageInfo.setManaged(!isEditMode);
-    pageNavigation.setVisible(!isEditMode);
-    pageNavigation.setManaged(!isEditMode);
+    deleteButton.setVisible(isEditMode);
+    returnButton.setVisible(!isEditMode);
   }
 
 
@@ -531,21 +522,71 @@ public class IndividualPhoto {
     alert.setTitle("Delete Photo");
     alert.setContentText("Are you sure you want to delete the photo?");
     Optional<ButtonType> result = alert.showAndWait();
-    if (result.get() == ButtonType.OK) {
-      photoDAO.removePhoto(photoDAO.getPhoto(selectedPhoto.getId()));
-      switchToGalleryScene();
+    if (result.isPresent() && result.get() == ButtonType.OK) {
+
+      // Create a new Stage for the progress indicator
+      Stage progressStage = new Stage();
+      progressStage.initModality(Modality.APPLICATION_MODAL); // Block input to other windows
+      progressStage.setTitle("Deleting");
+
+      // Create a ProgressIndicator and Label
+      ProgressIndicator progressIndicator = new ProgressIndicator();
+      Label label = new Label("Deleting your photo...");
+
+      // Create a VBox to hold the progress indicator and label
+      VBox vbox = new VBox(10, progressIndicator, label);
+      vbox.setAlignment(Pos.CENTER);
+      Scene scene = new Scene(vbox, 200, 100);
+      progressStage.setScene(scene);
+      progressStage.show(); // Show the progress window
+
+      Task<Void> deleteTask = new Task<Void>() {
+        @Override
+        protected Void call() throws Exception {
+          // Perform the delete operation
+          photoDAO.removePhoto(photoDAO.getPhoto(selectedPhoto.getId()));
+          SharedProperties.imageUpdated.set(true); // Notify that image has been updated
+          // Wait for imageUpdated to become false
+          while (SharedProperties.imageUpdated.get())
+          {
+            Thread.sleep(100); // Sleep for a short time to avoid busy waiting
+          }
+          return null;
+        }
+
+        @Override
+        protected void succeeded() {
+          super.succeeded();
+          // After the task has succeeded, switch to the gallery scene
+          switchToGalleryScene();
+          progressStage.close();
+        }
+
+        @Override
+        protected void failed() {
+          super.failed();
+          // Handle the error if needed
+          Throwable exception = getException();
+          System.err.println("Error deleting photo: " + exception.getMessage());
+          progressStage.close();
+        }
+      };
+
+      // Start the task in a new thread
+      new Thread(deleteTask).start();
+
     }
   }
 
   @FXML
-  public void onTagButtonClick() throws IOException {
+  private void onTagButtonClick() throws IOException {
     isEditingTags = true;
     renderAllTags(true);
     setTagModeVisible();
   }
 
   @FXML
-  public void onTagSaveButtonClick() throws IOException {
+  private void onTagSaveButtonClick() throws IOException {
     if (isAddingNewPerson) {
       String firstName = firstNameTextField.getText();
       String lastName = lastNameTextField.getText();
@@ -566,7 +607,7 @@ public class IndividualPhoto {
   }
 
   @FXML
-  public void onTagBackButtonClick() throws IOException {
+  private void onTagBackButtonClick() throws IOException {
     isEditingTags = false;
     setTagModeVisible();
     deleteAllRenderedTags();
@@ -576,7 +617,7 @@ public class IndividualPhoto {
   }
 
   @FXML
-  public void onTagCancelButtonClick() throws IOException {
+  private void onTagCancelButtonClick() throws IOException {
     setTagOptionsVisible(false);
     removeAllCircles();
   }
@@ -584,6 +625,8 @@ public class IndividualPhoto {
   private void setTagModeVisible() {
     editOptions.setVisible(!isEditingTags);
     editOptions.setManaged(!isEditingTags);
+    deleteButton.setVisible(!isEditingTags);
+    deleteButton.setManaged(!isEditingTags);
     tagModeHBox.setVisible(isEditingTags);
     tagModeHBox.setManaged(isEditingTags);
   }
