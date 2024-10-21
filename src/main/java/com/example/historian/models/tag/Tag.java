@@ -79,11 +79,15 @@ public class Tag {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
     Tag tag = (Tag) obj;
-    return Objects.equals(id, tag.id);  // Compare by relevant field (e.g., id)
+
+    String thisIdentifier = String.valueOf(id) + getPerson().getFullName();
+    String thatIdentifier = String.valueOf(tag.id) + tag.getPerson().getFullName();
+    return thisIdentifier.equals(thatIdentifier);  // Compare by relevant field (e.g., id)
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);  // Use the same field as in equals()
+    String identifier = String.valueOf(id) + getPerson().getFullName();
+    return identifier.hashCode();  // Use the same field as in equals()
   }
 }
