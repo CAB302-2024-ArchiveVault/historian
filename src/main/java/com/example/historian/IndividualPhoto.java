@@ -107,13 +107,23 @@ public class IndividualPhoto {
 
   private void loadFirstPhotoFromQueue() {
     GallerySingleton.PhotoQueueItem photoQueueItem = gallerySingleton.popFromPhotoQueue();
+
     loadPhoto(photoQueueItem.photoId(), photoQueueItem.openToEditMode());
   }
 
   private void loadPhoto(int photoId, boolean editMode) {
     selectedPhoto = photoDAO.getPhoto(photoId);
+
     if (selectedPhoto == null) {
+      // Reset UI components since no photo is found
+      dateLabel.setText("No date available");
+      locationLabel.setText("No location available");
+      descriptionLabel.setText("No description set");
+      tagsLabel.setText("Nobody tagged");
+
+      // Optionally handle the switch to the gallery scene
       switchToGalleryScene();
+      return; // Exit early since no valid photo was loaded
     }
 
 
@@ -149,15 +159,20 @@ public class IndividualPhoto {
     initializeLocationComboBox(photoLocation);
     if (photoLocation != null && !photoLocation.getLocationName().isEmpty()) {
       locationLabel.setText(photoLocation.getLocationName());
+      newLocationTextField.setText(photoLocation.getLocationName());
     } else {
       locationLabel.setText("No location added");
+      locationComboBox.setPromptText("Add location");
+      newLocationTextField.setText(null);
     }
 
     String description = selectedPhoto.getDescription();
     if(description != null && !selectedPhoto.getDescription().isEmpty()){
       descriptionLabel.setText(selectedPhoto.getDescription());
+      newDescriptionTextField.setText(selectedPhoto.getDescription());
     } else {
       descriptionLabel.setText("No description set");
+      newDescriptionTextField.setText(null);
     }
 
 
@@ -403,6 +418,7 @@ public class IndividualPhoto {
   @FXML
   private void onBackButtonClick() throws IOException {
     // Check if there are more items in the display queue
+    descriptionLabel.setText(null);
     if (!gallerySingleton.isPhotoQueueEmpty()) {
       loadFirstPhotoFromQueue();
       return;
@@ -452,6 +468,8 @@ public class IndividualPhoto {
   @FXML
   private void onSaveButtonClick() {
     selectedPhoto.setTagged(tempTags);
+    LocalDate myDate = myDatePicker.getValue();
+    selectedPhoto.setDate(Date.from(myDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     getLocation();
     getDescription();
     photoDAO.updatePhoto(selectedPhoto);
@@ -561,8 +579,17 @@ public class IndividualPhoto {
         protected void succeeded() {
           super.succeeded();
           // After the task has succeeded, switch to the gallery scene
-          switchToGalleryScene();
-          progressStage.close();
+          if(GallerySingleton.getInstance().isPhotoQueueEmpty())
+          {
+            switchToGalleryScene();
+            progressStage.close();
+          }
+          else
+          {
+            loadFirstPhotoFromQueue();
+            progressStage.close();
+          }
+
         }
 
         @Override
